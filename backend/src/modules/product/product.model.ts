@@ -1,6 +1,4 @@
 import mongoose, { Schema, Types } from 'mongoose'
-import { createHmac } from 'node:crypto'
-import { v1 as uuidv1 } from 'uuid'
 
 interface IProduct {
     name: string;
