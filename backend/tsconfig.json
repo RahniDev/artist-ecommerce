@@ -2,4 +2,5 @@
   "compilerOptions": {
     "types": ["node"]
   },
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
 }

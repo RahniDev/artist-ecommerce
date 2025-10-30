@@ -1,4 +1,4 @@
-import mongoose from 'mongoose'
+import mongoose, { Schema } from 'mongoose'
 import { createHmac } from 'node:crypto'
 import { v1 as uuidv1 } from 'uuid'
 
@@ -8,11 +8,11 @@ interface IUser {
     hashed_password: string;
     salt: string;
     role: number;
-    history: Array<any>;
+    history: Schema.Types.Mixed[];
 
 }
 
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema<IUser>({
     name: {
         type: String,
         trim: true,
@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
         default: 0
     },
     history: {
-        type: Array,
+        type: [Schema.Types.Mixed],
         default: []
     }
 }, { timestamps: true });

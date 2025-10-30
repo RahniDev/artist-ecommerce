@@ -13,15 +13,13 @@ import orderRoutes from './modules/order/order.routes'
 
 const app = express()
 
-// // middlewares 
 app.use(morgan('dev'))
-// used to save users credentials
+
 app.use(cookieParser())
 app.use(express.json())
 app.use(cors())
 
 
-// // routes middleware
 app.use('/api', authRoutes)
 app.use('/api', userRoutes)
 app.use('/api', categoryRoutes)
