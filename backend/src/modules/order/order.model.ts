@@ -1,7 +1,8 @@
 import mongoose, { Schema, Types } from 'mongoose'
+import { IProduct } from '../product/product.model';
 
-interface IOrder {
-    products: Schema.Types.Mixed[];
+export interface IOrder {
+    products: IProduct[];
     transaction_id: string;
     amount: number;
     address: string;
@@ -27,7 +28,7 @@ const CartItemSchema = new Schema<ICartItem>(
     { timestamps: true }
 );
 
-const CartItem = mongoose.model("CartItem", CartItemSchema);
+export const CartItem = mongoose.model("CartItem", CartItemSchema);
 
 const OrderSchema = new Schema<IOrder>({
     products: [CartItemSchema],
@@ -43,6 +44,6 @@ const OrderSchema = new Schema<IOrder>({
     user: { type: Schema.Types.ObjectId, ref: "User" }
 }, { timestamps: true });
 
-const Order = mongoose.model('Order', OrderSchema);
+export const Order = mongoose.model('Order', OrderSchema);
 
 module.exports = { Order, CartItem }
