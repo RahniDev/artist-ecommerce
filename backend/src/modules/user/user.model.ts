@@ -2,7 +2,7 @@ import mongoose, { Schema } from 'mongoose'
 import { createHmac } from 'node:crypto'
 import { v1 as uuidv1 } from 'uuid'
 
-interface IUser {
+export interface IUser {
     name: string;
     email: string;
     hashed_password: string;
