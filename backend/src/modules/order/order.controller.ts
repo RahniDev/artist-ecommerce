@@ -6,7 +6,7 @@ import {errorHandler} from '../../helpers/errorHandler';
 import sgMail = require('@sendgrid/mail');
 //sgMail.setApiKey('');
 
-exports.orderById = (req: Request, res: Response, next: NextFunction, id): void => {
+export const orderById = (req: Request, res: Response, next: NextFunction, id): void => {
     Order.findById(id)
         .populate('products.product', 'name price')
         .then((order: IOrder | null) => {
@@ -25,7 +25,7 @@ exports.orderById = (req: Request, res: Response, next: NextFunction, id): void 
         });
 };
 
-exports.create = (req: Request, res: Response) => {
+export const create = (req: Request, res: Response) => {
     console.log('CREATE ORDER: ', req.body);
     // req.profile is not part of the Express Request type by default — cast to any
     req.body.order.user = (req as any).profile;
@@ -35,8 +35,6 @@ exports.create = (req: Request, res: Response) => {
         .then((data: IOrder) => {
             // send email alert to admin
             // order.address
-            // order.products.length
-            // order.amount
             const emailData = {
                 to: 'rahnidemeis@gmail.com',
                 from: 'rahni32@protonmail.com',
@@ -93,7 +91,7 @@ exports.create = (req: Request, res: Response) => {
         });
 };
 
-exports.listOrders = (req: Request, res: Response) => {
+export const listOrders = (req: Request, res: Response) => {
     Order.find()
         .populate('user', '_id name address')
         .sort('-created')
@@ -107,7 +105,7 @@ exports.listOrders = (req: Request, res: Response) => {
         });
 };
 
-exports.getStatusValues = (req: Request, res: Response) => {
+export const getStatusValues = (req: Request, res: Response) => {
     const schemaPath: any = Order.schema.path('status');
     const enumValues = (schemaPath && (schemaPath.enumValues || (schemaPath.options && schemaPath.options.enum)))
         ? (schemaPath.enumValues || schemaPath.options.enum)
@@ -115,7 +113,7 @@ exports.getStatusValues = (req: Request, res: Response) => {
     res.json(enumValues);
 };
 
-exports.updateOrderStatus = (req: Request, res: Response) => {
+export const updateOrderStatus = (req: Request, res: Response) => {
     Order.findByIdAndUpdate({ _id: req.body.orderId }, { $set: { status: req.body.status } }, (err, order) => {
         if (err) {
             return res.status(400).json({

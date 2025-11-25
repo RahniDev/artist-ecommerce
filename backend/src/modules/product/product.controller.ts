@@ -13,7 +13,7 @@ declare global {
     }
 }
 
-exports.productById = async (req: Request, res: Response, next: NextFunction, id: string) => {
+export const productById = async (req: Request, res: Response, next: NextFunction, id: string) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         return res.status(400).json({ error: 'Invalid product ID' })
     } try {
@@ -28,16 +28,33 @@ exports.productById = async (req: Request, res: Response, next: NextFunction, id
     } catch (err) { return res.status(400).json({ error: errorHandler(err) }) }
 }
 
-exports.read = (req: Request, res: Response): Response => {
+export const read = (req: Request, res: Response): Response => {
     if (!req.product) {
         return res.status(404).json({ error: "Product not loaded" })
     }
     return res.json(req.product)
 }
 
+export const list = async (req: Request, res: Response) => {
+    const order = req.query.order === "desc" ? "desc" : "asc";
+    const sortBy = req.query.sortBy ? String(req.query.sortBy) : "_id";
+    const limit = req.query.limit ? Number(req.query.limit) : 6
+    try {
+        const products = await Product.find()
+            .select("-photo")
+            .populate('category')
+            .sort({ [sortBy]: order })
+            .limit(limit)
+            .lean()
+        return res.json(products)
+    } catch (err) {
+        return res.status(400).json({ error: 'Products not found' })
+    }
+}
+
 
 // returns products in same category 
-exports.listRelated = async (req: Request, res: Response) => {
+export const listRelated = async (req: Request, res: Response) => {
     let limit = req.query.limit ? Number(req.query.limit) : 6
     try {
         const products = await Product.find(
@@ -52,14 +69,14 @@ exports.listRelated = async (req: Request, res: Response) => {
     } catch (err) { return res.status(400).json({ error: 'Products not found' }) }
 }
 
-exports.listCategories = async (req: Request, res: Response) => {
+export const listCategories = async (req: Request, res: Response) => {
     try {
         const categories = await Product.distinct("category")
         return res.json(categories)
     } catch (err) { return res.status(400).json({ error: 'Categories not found' }) }
 }
 
-exports.photo = (req: Request, res: Response, next: NextFunction): Response => {
+export const photo = (req: Request, res: Response, next: NextFunction): Response => {
     const photo = req.product?.photo
     if (photo?.data) {
         res.set('Content-Type', photo.contentType)
@@ -68,7 +85,7 @@ exports.photo = (req: Request, res: Response, next: NextFunction): Response => {
     next()
 }
 
-exports.create = async (req: Request, res: Response) => {
+export const create = async (req: Request, res: Response) => {
     let parsed; const form = formidable()
     try {
         parsed = await new Promise<{ fields: Fields; files: Files }>((resolve, reject) => {
@@ -102,7 +119,7 @@ exports.create = async (req: Request, res: Response) => {
     }
 };
 
-exports.delete = async (req: Request, res: Response) => {
+export const deleteProduct = async (req: Request, res: Response) => {
     const product = req.product
     if (!product) {
         return res.status(404).json({ error: "Product not found" });
@@ -116,7 +133,7 @@ exports.delete = async (req: Request, res: Response) => {
 }
 
 
-exports.update = async (req: Request, res: Response) => {
+export const update = async (req: Request, res: Response) => {
     let form = new formidable.IncomingForm()
     form.keepExtensions = true
     try {
@@ -149,7 +166,7 @@ exports.update = async (req: Request, res: Response) => {
 };
 
 
-exports.listSearch = async (req: Request, res: Response) => {
+export const listSearch = async (req: Request, res: Response) => {
     const search = typeof req.query.search === "string" ? req.query.search : "";
     const category = typeof req.query.category === "string" ? req.query.category : "";
 
@@ -177,7 +194,7 @@ exports.listSearch = async (req: Request, res: Response) => {
 };
 
 
-exports.decreaseQuantity = async (req: Request, res: Response, next: NextFunction) => {
+export const decreaseQuantity = async (req: Request, res: Response, next: NextFunction) => {
     const bulkOps = req.body.order.products.map(
         (item: { _id: string; count: number }) => ({
             updateOne: {
@@ -195,7 +212,7 @@ exports.decreaseQuantity = async (req: Request, res: Response, next: NextFunctio
     }
 };
 
-exports.listBySearch = async (req: Request, res: Response) => {
+export const listBySearch = async (req: Request, res: Response) => {
     const order = req.body.order ? req.body.order : "desc";
     const sortBy = req.body.sortBy ? req.body.sortBy : "_id";
     const limit = req.body.limit ? Number(req.body.limit) : 100;

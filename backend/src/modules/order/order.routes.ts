@@ -10,7 +10,7 @@ import {
     getStatusValues,
     orderById,
     updateOrderStatus
-} from "../order/order.controller";
+} from "./order.controller";
 import { decreaseQuantity } from "../product/product.controller";
 
 router.post(
