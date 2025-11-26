@@ -1,73 +1,71 @@
-import mongoose, { Schema } from 'mongoose'
-import { createHmac } from 'node:crypto'
-import { v1 as uuidv1 } from 'uuid'
+import mongoose, { Schema, Document, Model } from "mongoose";
+import bcrypt from "bcryptjs";
 
-export interface IUser {
+export interface IUser extends Document {
     name: string;
     email: string;
     hashed_password: string;
     salt: string;
     role: number;
-    history: Schema.Types.Mixed[];
+    history: unknown[];
 
+    // virtual property for TypeScript
+    password?: string;
+
+    // methods are synchronous
+    authenticate(password: string): boolean;
+    encryptPassword(password: string): string;
 }
 
-const userSchema = new Schema<IUser>({
-    name: {
-        type: String,
-        trim: true,
-        required: true,
-        maxlength: 32
+const UserSchema = new Schema<IUser>(
+    {
+        name: {
+            type: String,
+            trim: true,
+            required: true,
+            maxlength: 32,
+        },
+        email: {
+            type: String,
+            trim: true,
+            required: true,
+            unique: true, // fixed
+        },
+        hashed_password: {
+            type: String,
+            required: true,
+        },
+        salt: {
+            type: String,
+        },
+        role: {
+            type: Number,
+            default: 0,
+        },
+        history: {
+            type: [Schema.Types.Mixed],
+            default: [],
+        },
     },
-    email: {
-        type: String,
-        trim: true,
-        required: true,
-        unique: 32
-    },
-    hashed_password: {
-        type: String,
-        required: true,
-    },
-    salt: String,
-    role: {
-        type: Number,
-        default: 0
-    },
-    history: {
-        type: [Schema.Types.Mixed],
-        default: []
-    }
-}, { timestamps: true });
+    { timestamps: true }
+);
 
-// a virtual (not stored in DB)
-userSchema.virtual('password')
-    .set(function (this: any, password: string) {
-        this._password = password
-        this.salt = uuidv1()
-        // saves the encrypted password
-        this.hashed_password = this.encryptPassword(password)
+UserSchema.virtual("password")
+    .set(function (this: IUser, password: string) {
+        this.salt = bcrypt.genSaltSync(12);
+        this.hashed_password = bcrypt.hashSync(password, this.salt);
     })
-    .get(function (this: any) {
-        return this._password
-    })
+    .get(function (this: IUser) {
+        return undefined;
+    });
 
-userSchema.methods = {
-    authenticate: function (plainText: string) {
-        return this.encryptPassword(plainText) === this.hashed_password
-    },
-    encryptPassword: function (password) {
-        if (!password) return '';
-        // hashes password
-        try {
-            return createHmac('sha1', this.salt)
-                .update(password)
-                .digest('hex')
-        } catch (err) {
-            return ''
-        }
-    }
-}
+UserSchema.methods.authenticate = async function (this: IUser, plainText: string) {
+    return bcrypt.compare(plainText, this.hashed_password);
+};
 
+UserSchema.methods.encryptPassword = async function (this: IUser, password: string) {
+    if (!password) return "";
+    return bcrypt.hash(password, this.salt);
+};
 
-module.exports = mongoose.model('User', userSchema);
+export const User: Model<IUser> = mongoose.model<IUser>("User", UserSchema);

@@ -1,15 +1,20 @@
 import { Router } from "express";
-import {
-  signup,
-  signin,
-  signout
-} from "./auth.controller";
-import { userSignupValidator } from "../validator/userSignupValidator";
+import { requireSignin, isAuth, isAdmin } from "../auth/auth.controller";
+import { userById, read, update, purchaseHistory } from "../user/user.controller";
 
 const router = Router();
 
-router.post("/signup", userSignupValidator, signup);
-router.post("/signin", signin);
-router.get("/signout", signout);
+// Private route accessible only by admin
+router.get("/admin/:userId", requireSignin, isAuth, isAdmin, (req, res) => {
+  res.json({
+    user: (req as any).profile,
+  });
+});
 
-export default router
+router.get("/user/:userId", requireSignin, isAuth, read);
+router.put("/user/:userId", requireSignin, isAuth, update);
+router.get("/orders/by/user/:userId", requireSignin, isAuth, purchaseHistory);
+
+router.param("userId", userById);
+
+export default router;
