@@ -1,7 +1,5 @@
 import {Router} from "express";
 
-const router: Router = Router();
-
 import { requireSignin, isAuth, isAdmin } from "../auth/auth.controller";
 import { userById, addOrderToUserHistory } from "../user/user.controller";
 import {
@@ -12,6 +10,8 @@ import {
     updateOrderStatus
 } from "./order.controller";
 import { decreaseQuantity } from "../product/product.controller";
+
+const router: Router = Router();
 
 router.post(
     "/order/create/:userId",
@@ -41,4 +41,4 @@ router.put(
 router.param("userId", userById);
 router.param("orderId", orderById);
 
-module.exports = router;
+export default router;

@@ -36,7 +36,7 @@ export const read = (req: Request, res: Response): Response => {
 }
 
 export const list = async (req: Request, res: Response) => {
-    const order = req.query.order === "desc" ? "desc" : "asc";
+    const order = req.query.order === "desc" ? "desc" : "asc"; 
     const sortBy = req.query.sortBy ? String(req.query.sortBy) : "_id";
     const limit = req.query.limit ? Number(req.query.limit) : 6
     try {

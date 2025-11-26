@@ -1,125 +1,114 @@
 import { NextFunction, Request, Response } from "express";
-
 import { Order, IOrder } from './order.model';
-import {errorHandler} from '../../helpers/errorHandler';
-
+import { errorHandler } from '../../helpers/errorHandler';
 import sgMail = require('@sendgrid/mail');
-//sgMail.setApiKey('');
 
-export const orderById = (req: Request, res: Response, next: NextFunction, id): void => {
-    Order.findById(id)
-        .populate('products.product', 'name price')
-        .then((order: IOrder | null) => {
-            if (!order) {
-                return res.status(400).json({
-                    error: errorHandler(new Error('Order not found'))
-                });
-            }
-            (req as any).order = order;
-            next();
-        })
-        .catch(err => {
-            return res.status(400).json({
-                error: errorHandler(err)
-            });
-        });
+interface CustomRequest extends Request {
+  profile?: any;
+  order?: IOrder;
+}
+
+export const orderById = async (req: CustomRequest, res: Response, next: NextFunction, id: string) => {
+    try {
+        const order = await Order.findById(id)
+            .populate("products.product", "name price");
+
+        if (!order) {
+            return res.status(404).json({ error: errorHandler(new Error('Order not found')) });
+        }
+
+        req.order = order;
+        next();
+    } catch (err) {
+        return res.status(400).json({ error: errorHandler(err) });
+    }
 };
 
-export const create = (req: Request, res: Response) => {
-    console.log('CREATE ORDER: ', req.body);
-    // req.profile is not part of the Express Request type by default — cast to any
-    req.body.order.user = (req as any).profile;
-    const order = new Order(req.body.order);
-    order
-        .save()
-        .then((data: IOrder) => {
-            // send email alert to admin
-            // order.address
-            const emailData = {
-                to: 'rahnidemeis@gmail.com',
-                from: 'rahni32@protonmail.com',
-                subject: `A new order is received`,
-                html: `
-                <p>Customer name:</p>
+export const create = async (req: CustomRequest, res: Response) => {
+    try {
+        const profile = req.profile;
+
+        req.body.order.user = profile._id;
+
+        const order = new Order(req.body.order);
+        const savedOrder = await order.save();
+
+        const adminEmail = {
+            to: 'rahnidemeis@gmail.com',
+            from: 'rahnidemeis@gmail.com',
+            subject: 'New order received',
+            html: `
+                <p>Customer: ${profile?.name || 'Unknown'}</p>
                 <p>Total products: ${order.products.length}</p>
                 <p>Total cost: £${order.amount}</p>
-                <p>Login to dashboard to view the order in detail.</p>
             `
-            };
-            sgMail
-            .send(emailData)
-            .then(sent => console.log('SENT >>>', sent))
-            .catch(err => console.log('ERR >>>', err));
+        };
 
-        // email to buyer
-            const profile = (req as any).profile;
-            const emailData2 = {
-                to: (profile && profile.email) ? profile.email : (order.user as any).email,
-                from: 'rahnidemeis@gmail.com',
-                subject: `You order is in process`,
-                html: `
-                <h1>Hey ${profile ? profile.name : ''}, Thank you for shopping with us.</h1>
-                <h2>Total products: ${order.products.length}</h2>
-                <h2>Transaction ID: ${order.transaction_id}</h2>
-                <h2>Order status: ${order.status}</h2>
-                <h2>Product details:</h2>
-                <hr />
-                ${order.products
-                    .map(p => {
-                        return `<div>
-                            <h3>Product Name: ${p.name}</h3>
-                            <h3>Product Price: £${p.price}</h3>
-                            <h3>Product Quantity: ${p.quantity}</h3>
-                    </div>`;
-                    })
-                    .join('--------------------')}
-                <h2>Total order cost: ${order.amount}<h2>
-                <p>Thank your for shopping with us.</p>
+        const customerEmail = {
+            to: profile?.email,
+            from: 'rahnidemeis@gmail.com',
+            subject: 'Your order is being processed',
+            html: `
+                <h1>Hi ${profile?.name}, thank you for your order!</h1>
+                <p>Total products: ${order.products.length}</p>
+                <p>Order total: £${order.amount}</p>
+                <p>Status: ${order.status}</p>
+
+                <h2>Order Details:</h2>
+
+                ${order.products.map((p) => {
+                    const prod: any = p.product || {};
+                    return `
+                        <div style="margin-bottom:12px;">
+                            <strong>Product:</strong> ${prod.name ?? p.name}<br>
+                            <strong>Price:</strong> £${prod.price ?? p.price}<br>
+                            <strong>Quantity:</strong> ${p.count}
+                        </div>
+                    `;
+                }).join('')}
             `
-            };
-        sgMail
-            .send(emailData2)
-            .then(sent => console.log('SENT 2 >>>', sent))
-            .catch(err => console.log('ERR 2 >>>', err));
+        };
 
-        res.json(data);
-        })
-        .catch(error => {
-            return res.status(400).json({
-                error: errorHandler(error)
-            });
-        });
+        await Promise.allSettled([
+            sgMail.send(adminEmail),
+            sgMail.send(customerEmail)
+        ]);
+
+        return res.json(savedOrder);
+
+    } catch (err) {
+        return res.status(400).json({ error: errorHandler(err) });
+    }
 };
 
-export const listOrders = (req: Request, res: Response) => {
-    Order.find()
-        .populate('user', '_id name address')
-        .sort('-created')
-        .then(orders => {
-            res.json(orders);
-        })
-        .catch(err => {
-            return res.status(400).json({
-                error: errorHandler(err)
-            });
-        });
+export const listOrders = async (req: Request, res: Response) => {
+    try {
+        const orders = await Order.find()
+            .populate("user", "_id name address")
+            .sort("-createdAt")
+            .lean();
+
+        return res.json(orders);
+    } catch (err) {
+        return res.status(400).json({ error: errorHandler(err) });
+    }
 };
 
 export const getStatusValues = (req: Request, res: Response) => {
-    const schemaPath: any = Order.schema.path('status');
-    const enumValues = (schemaPath && (schemaPath.enumValues || (schemaPath.options && schemaPath.options.enum)))
-        ? (schemaPath.enumValues || schemaPath.options.enum)
-        : [];
-    res.json(enumValues);
+    const enumValues = Order.schema.path("status")?.options?.enum ?? [];
+    return res.json(enumValues);
 };
 
-export const updateOrderStatus = (req: Request, res: Response) => {
-    Order.findByIdAndUpdate({ _id: req.body.orderId }, { $set: { status: req.body.status } }, (err, order) => {
-        if (err) {
-            return res.status(400).json({
-                error: errorHandler(err)
-            });
-        }
-        res.json(order);
-    });
+export const updateOrderStatus = async (req: Request, res: Response) => {
+    try {
+        const updated = await Order.findByIdAndUpdate(
+            req.body.orderId,
+            { $set: { status: req.body.status } },
+            { new: true }
+        );
+
+        return res.json(updated);
+    } catch (err) {
+        return res.status(400).json({ error: errorHandler(err) });
+    }
 };
