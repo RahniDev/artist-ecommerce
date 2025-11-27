@@ -34,6 +34,7 @@ export interface ICartItem extends IProduct {
   count: number;
 }
 
+
 export interface IOrder {
   _id?: string;
   products: ICartItem[];
@@ -51,6 +52,24 @@ export interface IBraintreePaymentData {
   paymentMethodNonce: string;
   amount: string | number;
 }
+
+export interface BraintreeToken {
+  clientToken: string;
+}
+
+export interface BraintreeTransaction {
+  transaction: {
+    id: string;
+    amount: number | string;
+    [key: string]: any;
+  };
+  [key: string]: any;
+}
+export interface BraintreeError {
+  error: string;
+}
+
+export type BraintreeResponse = BraintreeToken | BraintreeError;
 
 export interface ApiResponse<T = any> {
   error?: string;

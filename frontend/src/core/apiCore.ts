@@ -1,10 +1,9 @@
 import type { IProduct, ICategory, IFilterParams, IOrder } from "../types";
 import { API } from "../config";
 import queryString from "query-string";
+import type { BraintreeResponse, BraintreeTransaction, IBraintreePaymentData } from "../types";
 
-/**
- * Helper to wrap fetch + JSON parsing with proper typing.
- */
+// Helper to wrap fetch + JSON parsing with proper typing.
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
   const res = await fetch(url, options);
 
@@ -61,16 +60,24 @@ export interface BraintreeToken {
   clientToken: string;
 }
 
-export async function getBraintreeClientToken(
+export const getBraintreeClientToken = async (
   userId: string,
   token: string
-): Promise<BraintreeToken> {
-  return fetchJSON<BraintreeToken>(`${API}/braintree/getToken/${userId}`, {
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-}
+): Promise<BraintreeResponse> => {
+  try {
+    const response = await fetch(`${API}/braintree/getToken/${userId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.json();
+  } catch (err: any) {
+    return { error: err.message || "Error fetching token" };
+  }
+};
 
 export interface PaymentResult {
   success: boolean;
@@ -78,20 +85,23 @@ export interface PaymentResult {
   error?: string;
 }
 
-export async function processPayment(
+export const processPayment = async (
   userId: string,
   token: string,
-  paymentData: Record<string, unknown>
-): Promise<PaymentResult> {
-  return fetchJSON<PaymentResult>(`${API}/braintree/payment/${userId}`, {
+  paymentData: IBraintreePaymentData
+): Promise<BraintreeTransaction> => {
+  const response = await fetch(`${API}/braintree/payment/${userId}`, {
     method: "POST",
     headers: {
+      Accept: "application/json",
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify(paymentData),
   });
-}
+  return response.json();
+};
+
 
 export interface OrderResponse {
   success: boolean;

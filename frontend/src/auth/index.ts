@@ -1,78 +1,65 @@
 import { API } from "../config";
+import type { IAuthData } from "../types";
 
-export interface IUser {
-  name?: string;
-  email: string;
-  password: string;
-}
-
-export interface IAuthData {
-  token: string;
-  user: {
-    _id: string;
-    name: string;
-    email: string;
-    role: number;
-  };
-}
-
-export const signup = async (user: IUser): Promise<any> => {
-  try {
-    const response = await fetch(`${API}/signup`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-    });
-    return await response.json();
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
-export const signin = async (user: IUser): Promise<any> => {
-  try {
-    const response = await fetch(`${API}/signin`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(user),
-    });
-    return await response.json();
-  } catch (err) {
-    console.error(err);
-    throw err;
-  }
-};
-
-export const authenticate = (data: IAuthData, next: () => void): void => {
-  if (typeof window !== "undefined") {
-    localStorage.setItem("jwt", JSON.stringify(data));
-    next();
-  }
-};
-
-export const signout = async (next: () => void): Promise<void> => {
-  if (typeof window !== "undefined") {
-    localStorage.removeItem("jwt");
-    next();
-
+export const signup = async (user: any): Promise<IAuthData | { error: string }> => {
     try {
-      const response = await fetch(`${API}/signout`, { method: "GET" });
-      console.log("signout", await response.json());
+        const response = await fetch(`${API}/signup`, {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(user)
+        });
+        return response.json();
     } catch (err) {
-      console.error(err);
+        console.log(err);
+        return { error: "Signup failed" };
     }
-  }
 };
 
-export const isAuthenticated = (): IAuthData | false => {
-  if (typeof window === "undefined") return false;
-  const jwt = localStorage.getItem("jwt");
-  return jwt ? JSON.parse(jwt) : false;
+export const signin = async (user: any): Promise<IAuthData | { error: string }> => {
+    try {
+        const response = await fetch(`${API}/signin`, {
+            method: "POST",
+            headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(user)
+        });
+        return response.json();
+    } catch (err) {
+        console.log(err);
+        return { error: "Signin failed" };
+    }
+};
+
+// Save auth data to localStorage
+export const authenticate = (data: IAuthData, next: () => void) => {
+    if (typeof window !== "undefined") {
+        localStorage.setItem("jwt", JSON.stringify(data));
+        next();
+    }
+};
+
+// Remove auth data from localStorage
+export const signout = (next: () => void) => {
+    if (typeof window !== "undefined") {
+        localStorage.removeItem("jwt");
+        next();
+        fetch(`${API}/signout`, { method: "GET" })
+            .then((response) => console.log("signout", response))
+            .catch((err) => console.log(err));
+    }
+};
+
+// Get auth data from localStorage
+export const isAuthenticated = (): IAuthData | null => {
+    if (typeof window === "undefined") return null;
+
+    const jwt = localStorage.getItem("jwt");
+    if (jwt) return JSON.parse(jwt) as IAuthData;
+
+    return null;
 };
