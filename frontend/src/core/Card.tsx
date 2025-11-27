@@ -23,7 +23,7 @@ const Card: React.FC<CardProps> = ({
     run = false,
 }) => {
     const navigate = useNavigate();
-    const [count, setCount] = useState<number>(product.count ?? 1);
+    const [count, setCount] = useState(product.count ?? 1);
 
 
     const addToCart = () => {

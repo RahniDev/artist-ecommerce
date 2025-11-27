@@ -59,7 +59,7 @@ const Checkout: React.FC<CheckoutProps> = ({
     }, [userId, token]);
 
     const getTotal = (): number =>
-        products.reduce((sum, p) => sum + p.count * p.price, 0);
+        products.reduce((sum, p) => sum + (p.count ?? 1) * p.price, 0);
 
     const handleAddress = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         setData({ ...data, address: e.target.value });
