@@ -1,53 +1,53 @@
+import type { IProduct } from "../types";
 
-export interface CartItem {
-    _id: string;
-    name: string;
-    price: number;
-    count: number;
-    [key: string]: any; // Allows additional fields (category, description, etc.)
+export interface CartItem extends IProduct {
+  count: number;
 }
 
 const CART_KEY = "cart";
 
-// read from localStorage
+// Read from localStorage
 const getLocalCart = (): CartItem[] => {
     if (typeof window === "undefined") return [];
     const stored = localStorage.getItem(CART_KEY);
     return stored ? JSON.parse(stored) : [];
 };
 
+// Save to localStorage
 const saveLocalCart = (cart: CartItem[]): void => {
     if (typeof window === "undefined") return;
     localStorage.setItem(CART_KEY, JSON.stringify(cart));
 };
 
+// Add item to cart
 export const addItem = (
-    item: Omit<CartItem, "count">,
-    count: number = 1,
-    next: () => void = () => { }
+    product: IProduct,
+    next?: () => void
 ): void => {
-    const cart = getLocalCart();
+    let cart = getLocalCart();
 
-    const existing = cart.find((p) => p._id === item._id);
-
-    if (existing) {
-        existing.count += count;
-    } else {
-        cart.push({ ...item, count });
+    // Prevent duplicates — optional, but recommended
+    const existing = cart.find((item) => item._id === product._id);
+    if (!existing) {
+        cart.push({ ...product, count: 1 });
     }
 
     saveLocalCart(cart);
-    next();
+
+    if (next) next();
 };
 
+// Total items count
 export const itemTotal = (): number => {
-    return getLocalCart().length;
+    return getLocalCart().reduce((sum, item) => sum + item.count, 0);
 };
 
+// Get whole cart
 export const getCart = (): CartItem[] => {
     return getLocalCart();
 };
 
+// Update quantity
 export const updateItem = (productId: string, count: number): void => {
     const cart = getLocalCart();
 
@@ -59,16 +59,17 @@ export const updateItem = (productId: string, count: number): void => {
     saveLocalCart(cart);
 };
 
+// Remove item
 export const removeItem = (productId: string): CartItem[] => {
     const cart = getLocalCart();
-
     const filtered = cart.filter((p) => p._id !== productId);
 
     saveLocalCart(filtered);
     return filtered;
 };
 
-export const emptyCart = (next: () => void = () => { }): void => {
+// Clear cart
+export const emptyCart = (next: () => void = () => {}): void => {
     if (typeof window === "undefined") return;
     localStorage.removeItem(CART_KEY);
     next();

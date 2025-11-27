@@ -1,14 +1,14 @@
 export interface IProduct {
   _id: string;
   name: string;
-  description?: string;
+  description: string;
   price: number;
+  quantity: number;
   category?: string | ICategory;
-  quantity?: number;
-  count?: number;
-  createdAt?: string;
-  updatedAt?: string;
+  photo?: any;
+  sold?: number;
 }
+
 
 export interface ICategory {
   _id?: string;
@@ -30,12 +30,8 @@ export interface IAuthData {
   user: IUser;
 }
 
-export interface ICartItem {
-  _id: string;
-  name: string;
-  price: number;
+export interface ICartItem extends IProduct {
   count: number;
-  product?: IProduct;
 }
 
 export interface IOrder {
@@ -63,7 +59,7 @@ export interface ApiResponse<T = any> {
 }
 
 export interface IFilterParams {
-  category?: string[]; 
+  category?: string[];
   price?: number[];
-  [key: string]: any;     
+  [key: string]: any;
 }
