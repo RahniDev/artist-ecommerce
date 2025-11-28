@@ -1,14 +1,17 @@
+export interface ApiError {
+  error: string;
+}
+
 export interface IProduct {
   _id: string;
   name: string;
   description: string;
   price: number;
+  category: any;
   quantity: number;
-  category?: string | ICategory;
+  sold: number;
   photo?: any;
-  sold?: number;
 }
-
 
 export interface ICategory {
   _id?: string;
@@ -34,6 +37,10 @@ export interface ICartItem extends IProduct {
   count?: number;
 }
 
+export interface ApiResponse<T = any> {
+  error?: string;
+  data?: T;
+}
 
 export interface IOrder {
   _id?: string;

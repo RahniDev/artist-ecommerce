@@ -1,4 +1,4 @@
-import type { IProduct, ICategory, IFilterParams, IOrder } from "../types";
+import type { IProduct, ApiError, ICategory, IFilterParams, IOrder } from "../types";
 import { API } from "../config";
 import queryString from "query-string";
 import type { BraintreeResponse, BraintreeTransaction, IBraintreePaymentData } from "../types";
@@ -48,13 +48,17 @@ export async function list(params: Record<string, unknown>): Promise<IProduct[]>
   return fetchJSON<IProduct[]>(`${API}/products/search?${query}`);
 }
 
-export async function read(productId: string): Promise<IProduct> {
-  return fetchJSON<IProduct>(`${API}/product/${productId}`);
-}
+export const read = async (productId: string): 
+  Promise<IProduct | ApiError> => {
+  const res = await fetch(`${API}/product/${productId}`);
+  return res.json();
+};
 
-export async function listRelated(productId: string): Promise<IProduct[]> {
-  return fetchJSON<IProduct[]>(`${API}/products/related/${productId}`);
-}
+export const listRelated = async (productId: string): 
+  Promise<IProduct[]> => {
+  const res = await fetch(`${API}/products/related/${productId}`);
+  return res.json();
+};
 
 export interface BraintreeToken {
   clientToken: string;
