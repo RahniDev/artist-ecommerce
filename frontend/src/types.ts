@@ -13,6 +13,12 @@ export interface IProduct {
   photo?: any;
 }
 
+export interface IPriceRange {
+  _id: number;
+  name: string;
+  array: number[];
+}
+
 export interface ICategory {
   _id?: string;
   name: string;
