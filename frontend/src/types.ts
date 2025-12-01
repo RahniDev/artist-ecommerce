@@ -32,6 +32,7 @@ export interface IUser {
   email: string;
   role: number;
   history?: any[];
+  password?: string;
 }
 
 export interface IAuthData {
