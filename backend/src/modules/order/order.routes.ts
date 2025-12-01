@@ -1,15 +1,15 @@
 import {Router} from "express";
 
-import { requireSignin, isAuth, isAdmin } from "../auth/auth.controller";
-import { userById, addOrderToUserHistory } from "../user/user.controller";
+import { requireSignin, isAuth, isAdmin } from "../auth/auth.controller.js";
+import { userById, addOrderToUserHistory } from "../user/user.controller.js";
 import {
     create,
     listOrders,
     getStatusValues,
     orderById,
     updateOrderStatus
-} from "./order.controller";
-import { decreaseQuantity } from "../product/product.controller";
+} from "./order.controller.js";
+import { decreaseQuantity } from "../product/product.controller.js";
 
 const router: Router = Router();
 

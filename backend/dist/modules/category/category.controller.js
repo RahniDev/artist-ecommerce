@@ -1,13 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
-import { Category, ICategory } from '../category/category.model.js';
+import { Category } from '../category/category.model.js';
 import { Product } from '../product/product.model.js';
 import { errorHandler } from '../../helpers/errorHandler.js';
-
-interface CustomRequest extends Request {
-    category?: ICategory;
-}
-
-export const categoryById = async (req: CustomRequest, res: Response, next: NextFunction, id: string) => {
+export const categoryById = async (req, res, next, id) => {
     try {
         const category = await Category.findById(id);
         if (!category) {
@@ -15,26 +9,25 @@ export const categoryById = async (req: CustomRequest, res: Response, next: Next
         }
         req.category = category;
         next();
-    } catch (err) {
+    }
+    catch (err) {
         return res.status(400).json({ error: errorHandler(err) });
     }
 };
-
-export const create = async (req: Request, res: Response) => {
+export const create = async (req, res) => {
     try {
         const category = new Category(req.body);
         const savedCategory = await category.save();
         res.json(savedCategory);
-    } catch (err) {
+    }
+    catch (err) {
         return res.status(400).json({ error: errorHandler(err) });
     }
 };
-
-export const read = (req: CustomRequest, res: Response) => {
+export const read = (req, res) => {
     res.json(req.category);
 };
-
-export const update = async (req: CustomRequest, res: Response) => {
+export const update = async (req, res) => {
     try {
         if (!req.category) {
             return res.status(404).json({ error: 'Category not found' });
@@ -42,12 +35,12 @@ export const update = async (req: CustomRequest, res: Response) => {
         req.category.name = req.body.name || req.category.name;
         const updatedCategory = await req.category.save();
         res.json(updatedCategory);
-    } catch (err) {
+    }
+    catch (err) {
         return res.status(400).json({ error: errorHandler(err) });
     }
 };
-
-export const remove = async (req: CustomRequest, res: Response) => {
+export const remove = async (req, res) => {
     try {
         if (!req.category) {
             return res.status(404).json({ error: 'Category not found' });
@@ -60,16 +53,17 @@ export const remove = async (req: CustomRequest, res: Response) => {
         }
         await req.category.deleteOne();
         res.json({ message: 'Category deleted successfully' });
-    } catch (err) {
+    }
+    catch (err) {
         return res.status(400).json({ error: errorHandler(err) });
     }
 };
-
-export const list = async (req: Request, res: Response) => {
+export const list = async (req, res) => {
     try {
         const categories = await Category.find().sort('name').exec();
         res.json(categories);
-    } catch (err) {
+    }
+    catch (err) {
         return res.status(400).json({ error: errorHandler(err) });
     }
 };

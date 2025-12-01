@@ -4,12 +4,12 @@ import morgan from 'morgan'
 import 'dotenv/config'
 import cookieParser from 'cookie-parser'
 
-import authRoutes from './src/modules/auth/auth.routes'
-import userRoutes from './src/modules/user/user.routes'
-import categoryRoutes from './src/modules/category/category.routes'
-import productRoutes from './src/modules/product/product.routes'
-import orderRoutes from './src/modules/order/order.routes'
-import braintreeRoutes from './src/modules/braintree/braintree.routes'
+import authRoutes from './modules/auth/auth.routes.js'
+import userRoutes from './modules/user/user.routes.js'
+import categoryRoutes from './modules/category/category.routes.js'
+import productRoutes from './modules/product/product.routes.js'
+import orderRoutes from './modules/order/order.routes.js'
+import braintreeRoutes from './modules/braintree/braintree.routes.js'
 
 const app = express()
 

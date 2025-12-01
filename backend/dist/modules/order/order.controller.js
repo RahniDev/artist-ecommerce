@@ -1,38 +1,26 @@
-import { NextFunction, Request, Response } from "express";
-import { Order, IOrder } from './order.model.js';
+import { Order } from './order.model.js';
 import { errorHandler } from '../../helpers/errorHandler.js';
-import sgMail from '@sendgrid/mail'
-
-interface CustomRequest extends Request {
-  profile?: any;
-  order?: IOrder;
-}
-
-export const orderById = async (req: CustomRequest, res: Response, next: NextFunction, id: string) => {
+import sgMail from '@sendgrid/mail';
+export const orderById = async (req, res, next, id) => {
     try {
         const order = await Order.findById(id)
             .populate("products.product", "name price");
-
         if (!order) {
             return res.status(404).json({ error: errorHandler(new Error('Order not found')) });
         }
-
         req.order = order;
         next();
-    } catch (err) {
+    }
+    catch (err) {
         return res.status(400).json({ error: errorHandler(err) });
     }
 };
-
-export const create = async (req: CustomRequest, res: Response) => {
+export const create = async (req, res) => {
     try {
         const profile = req.profile;
-
         req.body.order.user = profile._id;
-
         const order = new Order(req.body.order);
         const savedOrder = await order.save();
-
         const adminEmail = {
             to: 'rahnidemeis@gmail.com',
             from: 'rahnidemeis@gmail.com',
@@ -43,7 +31,6 @@ export const create = async (req: CustomRequest, res: Response) => {
                 <p>Total cost: £${order.amount}</p>
             `
         };
-
         const customerEmail = {
             to: profile?.email,
             from: 'rahnidemeis@gmail.com',
@@ -57,58 +44,49 @@ export const create = async (req: CustomRequest, res: Response) => {
                 <h2>Order Details:</h2>
 
                 ${order.products.map((p) => {
-                    const prod: any = p.product || {};
-                    return `
+                const prod = p.product || {};
+                return `
                         <div style="margin-bottom:12px;">
                             <strong>Product:</strong> ${prod.name ?? p.name}<br>
                             <strong>Price:</strong> £${prod.price ?? p.price}<br>
                             <strong>Quantity:</strong> ${p.count}
                         </div>
                     `;
-                }).join('')}
+            }).join('')}
             `
         };
-
         await Promise.allSettled([
             sgMail.send(adminEmail),
             sgMail.send(customerEmail)
         ]);
-
         return res.json(savedOrder);
-
-    } catch (err) {
+    }
+    catch (err) {
         return res.status(400).json({ error: errorHandler(err) });
     }
 };
-
-export const listOrders = async (req: Request, res: Response) => {
+export const listOrders = async (req, res) => {
     try {
         const orders = await Order.find()
             .populate("user", "_id name address")
             .sort("-createdAt")
             .lean();
-
         return res.json(orders);
-    } catch (err) {
+    }
+    catch (err) {
         return res.status(400).json({ error: errorHandler(err) });
     }
 };
-
-export const getStatusValues = (req: Request, res: Response) => {
+export const getStatusValues = (req, res) => {
     const enumValues = Order.schema.path("status")?.options?.enum ?? [];
     return res.json(enumValues);
 };
-
-export const updateOrderStatus = async (req: Request, res: Response) => {
+export const updateOrderStatus = async (req, res) => {
     try {
-        const updated = await Order.findByIdAndUpdate(
-            req.body.orderId,
-            { $set: { status: req.body.status } },
-            { new: true }
-        );
-
+        const updated = await Order.findByIdAndUpdate(req.body.orderId, { $set: { status: req.body.status } }, { new: true });
         return res.json(updated);
-    } catch (err) {
+    }
+    catch (err) {
         return res.status(400).json({ error: errorHandler(err) });
     }
 };

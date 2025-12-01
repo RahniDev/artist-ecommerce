@@ -2,13 +2,15 @@
   "name": "backend",
   "version": "1.0.0",
   "main": "server.ts",
+  "type": "module",
   "scripts": {
-    "start": "nodemon"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "ts-node-dev src/server.ts"
   },
   "author": "",
   "license": "ISC",
   "description": "",
-  "type": "module",
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
