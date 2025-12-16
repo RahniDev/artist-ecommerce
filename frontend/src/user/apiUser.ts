@@ -5,7 +5,6 @@ export type ApiResponse<T> =
     | { error: string }
     | (T & { error?: undefined });
 
-
 export const read = async (
     userId: string,
     token?: string | null
@@ -90,7 +89,6 @@ export const getPurchaseHistory = async (
             },
         });
 
-        // your backend returns either { error } or an array of orders
         const parsed = await res.json();
         return parsed;
     } catch (err: any) {
