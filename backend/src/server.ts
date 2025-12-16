@@ -3,6 +3,7 @@ import cors from 'cors'
 import morgan from 'morgan'
 import 'dotenv/config'
 import cookieParser from 'cookie-parser'
+import { connectDB } from './config/database.js';
 
 import authRoutes from './modules/auth/auth.routes.js'
 import userRoutes from './modules/user/user.routes.js'
@@ -13,12 +14,15 @@ import braintreeRoutes from './modules/braintree/braintree.routes.js'
 
 const app = express()
 
+await connectDB();
 app.use(morgan('dev'))
 
 app.use(cookieParser())
 app.use(express.json())
 app.use(cors())
-
+app.get('/ping', (req, res) => {
+  res.json({ ok: true });
+});
 
 app.use('/api', authRoutes)
 app.use('/api', userRoutes)

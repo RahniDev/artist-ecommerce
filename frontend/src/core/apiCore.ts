@@ -21,7 +21,7 @@ export async function getProducts(sortBy: string): Promise<IProduct[]> {
 }
 
 export async function getCategories(): Promise<ICategory[]> {
-  return fetchJSON<ICategory[]>(`${API}/categories`);
+  return fetchJSON<ICategory[]>(`${API}/products/categories`);
 }
 
 export interface FilterResponse {
@@ -48,13 +48,13 @@ export async function list(params: Record<string, unknown>): Promise<IProduct[]>
   return fetchJSON<IProduct[]>(`${API}/products/search?${query}`);
 }
 
-export const read = async (productId: string): 
+export const read = async (productId: string):
   Promise<IProduct | ApiError> => {
   const res = await fetch(`${API}/product/${productId}`);
   return res.json();
 };
 
-export const listRelated = async (productId: string): 
+export const listRelated = async (productId: string):
   Promise<IProduct[]> => {
   const res = await fetch(`${API}/products/related/${productId}`);
   return res.json();

@@ -1,12 +1,11 @@
 import './App.css'
-import Navbar from './core/Navbar'
-import Hero from './core/Hero'
+import Home from './core/Home'
+
 const App = () => {
 
   return (
     <>
-      <Navbar />
-      <Hero />
+      <Home />
     </>
   )
 }

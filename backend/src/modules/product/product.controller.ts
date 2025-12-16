@@ -42,11 +42,11 @@ export const list = async (req: Request, res: Response) => {
     try {
         const products = await Product.find()
             .select("-photo")
-            .populate('category')
+            // .populate('category')
             .sort({ [sortBy]: order })
             .limit(limit)
             .lean()
-        return res.json(products)
+      return res.json({ data: products });
     } catch (err) {
         return res.status(400).json({ error: 'Products not found' })
     }

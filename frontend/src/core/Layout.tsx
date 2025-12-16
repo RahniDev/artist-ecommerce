@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import Navbar from "./Navbar";
-import "../styles.css";
 
 interface LayoutProps {
     title?: string;

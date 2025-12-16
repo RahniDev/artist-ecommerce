@@ -1,12 +1,15 @@
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
-import Person2OutlinedIcon from '@mui/icons-material/Person2Outlined';
-import { useNavigate, NavLink } from 'react-router-dom'
+import React from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import { signout, isAuthenticated } from "../auth";
 import { itemTotal } from "./cartHelpers";
-import React from 'react';
+import logo from "../assets/react.svg";
 
 const Navbar: React.FC = () => {
     const navigate = useNavigate();
+
+    const auth = isAuthenticated();
 
     const activeStyle = { color: "#ff7315" };
     const defaultStyle = { color: "#3a3535" };
@@ -14,14 +17,15 @@ const Navbar: React.FC = () => {
     const handleSignout = () => {
         signout(() => navigate("/"));
     };
-    const auth = isAuthenticated();
 
     return (
-        <div>
+        <nav>
             <ul className="nav nav-items">
-                <a className="navbar-brand" href="#">
-                    <img src={logo} width="50px" height="50px" alt="Logo" />
-                </a>
+                <li className="nav-item">
+                    <NavLink to="/">
+                        <img src={logo} width="50px" height="50px" alt="Logo" />
+                    </NavLink>
+                </li>
 
                 <li className="nav-item">
                     <NavLink
@@ -88,19 +92,16 @@ const Navbar: React.FC = () => {
                 )}
 
                 <li className="nav-item cart-icon">
-                    <NavLink
-                        to="/cart"
-                        style={{ color: "#ff7315" }}
-                    >
-                        <ShoppingCartOutlinedIcon name="shopping cart" />{" "}
+                    <NavLink to="/cart" style={{ color: "#ff7315" }}>
+                        <ShoppingCartOutlinedIcon />{" "}
                         <sup>
                             <small className="cart-badge">{itemTotal()}</small>
                         </sup>
                     </NavLink>
                 </li>
             </ul>
-        </div>
+        </nav>
     );
 };
 
-export default Navbar
+export default Navbar;
