@@ -50,14 +50,14 @@ export interface ApiResponse<T = any> {
 }
 
 export interface IOrder {
-  _id?: string;
+  _id: string;
   products: ICartItem[];
   transaction_id: string;
   amount: number;
   address: string;
   status: string;
   updated?: Date;
-  user: string | IUser;
+  user: IUser;
   createdAt?: string;
   updatedAt?: string;
 }

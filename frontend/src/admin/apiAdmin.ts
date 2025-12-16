@@ -1,4 +1,5 @@
 import { API } from '../config';
+import type { IOrder } from '../types';
 
 export interface Category {
     _id: string;
@@ -20,20 +21,20 @@ export interface CategoryInput {
 }
 
 export const createCategory = async (
-  userId: string,
-  token: string,
-  category: CategoryInput
+    userId: string,
+    token: string,
+    category: CategoryInput
 ): Promise<ApiResponse<Category>> => {
-  const res = await fetch(`${API}/category/create/${userId}`, {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(category),
-  });
-  return await res.json();
+    const res = await fetch(`${API}/category/create/${userId}`, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(category),
+    });
+    return await res.json();
 };
 
 export const updateCategory = async (
@@ -101,19 +102,23 @@ export const getCategories = async (): Promise<ApiResponse<Category[]>> => {
     }
 };
 
-export const listOrders = async (userId: string, token: string): Promise<ApiResponse[]> => {
+export const listOrders = async (
+    userId: string,
+    token: string
+): Promise<ApiResponse<IOrder[]>> => {
     try {
         const res = await fetch(`${API}/order/list/${userId}`, {
-            method: 'GET',
+            method: "GET",
             headers: {
-                Accept: 'application/json',
+                Accept: "application/json",
                 Authorization: `Bearer ${token}`,
             },
         });
-        return await res.json();
+        const data = await res.json();
+        return data;
     } catch (err) {
         console.error(err);
-        throw err;
+        return { error: "Failed to fetch orders" };
     }
 };
 
@@ -156,13 +161,14 @@ export const updateOrderStatus = async (
     }
 };
 
-export const getProducts = async (): Promise<ApiResponse[]> => {
+export const getProducts = async (): Promise<ApiResponse<Product[]>> => {
     try {
         const res = await fetch(`${API}/products?limit=undefined`);
-        return await res.json();
+        const data = await res.json();
+        return data;
     } catch (err) {
         console.error(err);
-        throw err;
+        return { error: "Failed to fetch products" };
     }
 };
 
