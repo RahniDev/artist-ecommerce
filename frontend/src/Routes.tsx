@@ -16,7 +16,7 @@ import Cart from "./core/Cart";
 import Orders from './admin/Orders';
 import Profile from "./user/Profile";
 import ManageProducts from './admin/ManageProducts';
-import UpdateProduct from "./admin/UpdateProduct";
+import UpdateProduct from './admin/UpdateProduct'
 
 const AppRoutes: React.FC = () => {
   return (

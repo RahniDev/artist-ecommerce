@@ -12,14 +12,13 @@ import orderRoutes from './modules/order/order.routes.js';
 import braintreeRoutes from './modules/braintree/braintree.routes.js';
 const app = express();
 await connectDB();
-console.log('DATABASE:', process.env.DATABASE);
 app.use(morgan('dev'));
 app.use(cookieParser());
 app.use(express.json());
-app.use(cors());
-app.get('/ping', (req, res) => {
-    res.json({ ok: true });
-});
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+}));
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api', categoryRoutes);

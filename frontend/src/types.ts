@@ -9,6 +9,7 @@ export interface IProduct {
   price: number;
   category: any;
   quantity: number;
+  shipping: boolean;
   sold: number;
   photo?: any;
 }

@@ -1,24 +1,19 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { isAuthenticated } from "./index";
+import { Navigate, useLocation } from "react-router-dom";
+import { isAuthenticated } from "../auth";
 
-interface AuthUser {
-  role: number;
+interface PrivateRouteProps {
+  children: React.ReactElement;
 }
 
-interface AuthResponse {
-  user: AuthUser;
-  token: string;
-}
-
-export default function PrivateRoute() {
+const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const location = useLocation();
-  const auth = isAuthenticated() as AuthResponse | false;
+  const auth = isAuthenticated();
 
-  if (auth) {
-    // User is authenticated, allow route
-    return <Outlet />;
+  if (!auth) {
+    return <Navigate to="/signin" state={{ from: location }} replace />;
   }
 
-  // Not authenticated, redirect to signin
-  return <Navigate to="/signin" replace state={{ from: location }} />;
-}
+  return children;
+};
+
+export default PrivateRoute;

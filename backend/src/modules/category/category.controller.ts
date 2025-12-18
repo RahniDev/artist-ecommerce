@@ -65,11 +65,15 @@ export const remove = async (req: CustomRequest, res: Response) => {
     }
 };
 
+// export const list = async (req: Request, res: Response) => {
+//     try {
+//         const categories = await Category.find().sort('name').exec();
+//         res.json(categories);
+//     } catch (err) {
+//         return res.status(400).json({ error: errorHandler(err) });
+//     }
+// };
 export const list = async (req: Request, res: Response) => {
-    try {
-        const categories = await Category.find().sort('name').exec();
-        res.json(categories);
-    } catch (err) {
-        return res.status(400).json({ error: errorHandler(err) });
-    }
-};
+  console.log("🔥 list categories hit");
+  return res.json({ ok: true });
+}

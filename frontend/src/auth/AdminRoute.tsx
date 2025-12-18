@@ -1,30 +1,19 @@
-import { Navigate, Outlet, useLocation } from "react-router-dom";
-import { isAuthenticated } from "./index";
+import { Navigate, useLocation } from "react-router-dom";
+import { isAuthenticated } from "../auth";
 
-interface AuthUser {
-  role: number;
+interface AdminRouteProps {
+  children: React.ReactElement;
 }
 
-interface AuthResponse {
-  user: AuthUser;
-  token: string;
-}
-
-const AdminRoute: React.FC = () => {
+const AdminRoute = ({ children }: AdminRouteProps) => {
   const location = useLocation();
-  const auth = isAuthenticated() as AuthResponse | false;
+  const auth = isAuthenticated();
 
-  if (auth && auth.user.role === 1) {
-    return <Outlet />;
+  if (!auth || auth.user.role !== 1) {
+    return <Navigate to="/signin" state={{ from: location }} replace />;
   }
 
-  return (
-    <Navigate
-      to="/signin"
-      replace
-      state={{ from: location }}
-    />
-  );
+  return children;
 };
 
 export default AdminRoute;

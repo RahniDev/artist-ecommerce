@@ -1,5 +1,5 @@
 import { API } from '../config';
-import type { IOrder } from '../types';
+import type { IOrder, IProduct } from '../types';
 
 export interface Category {
     _id: string;
@@ -94,11 +94,17 @@ export const getCategory = async (categoryId: string): Promise<ApiResponse> => {
 export const getCategories = async (): Promise<ApiResponse<Category[]>> => {
     try {
         const res = await fetch(`${API}/categories`);
-        const data = await res.json();
-        return data; // { error?: string, data?: Category[] }
+
+        if (!res.ok) {
+            return { error: "Failed to fetch categories" };
+        }
+
+        const categories: Category[] = await res.json();
+
+        return { data: categories };
     } catch (err) {
         console.error(err);
-        return { error: "Failed to fetch categories" };
+        return { error: "Network error while fetching categories" };
     }
 };
 
@@ -203,22 +209,24 @@ export const getProduct = async (productId: string): Promise<ApiResponse> => {
     }
 };
 
+// apiAdmin.ts
 export const updateProduct = async (
-    productId: string,
-    userId: string,
-    product: FormData
-): Promise<ApiResponse> => {
-    try {
-        const res = await fetch(`${API}/product/${productId}/${userId}`, {
-            method: 'PUT',
-            headers: {
-                Accept: 'application/json',
-            },
-            body: product,
-        });
-        return await res.json();
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
+  productId: string,
+  userId: string,
+  token: string,
+  productData: FormData
+): Promise<ApiResponse<IProduct>> => {
+  try {
+    const res = await fetch(`${API}/product/${productId}/${userId}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: productData,
+    });
+    const data: ApiResponse<IProduct> = await res.json();
+    return data;
+  } catch (err) {
+    return { error: "Update failed" };
+  }
 };

@@ -56,15 +56,15 @@ export const signout = (next: () => void) => {
 
 // Get auth data from localStorage
 export const isAuthenticated = (): IAuthData | null => {
-  if (typeof window === "undefined") return null;
+    if (typeof window === "undefined") return null;
 
-  const stored = localStorage.getItem("jwt");
-  if (!stored) return null;
+    const stored = localStorage.getItem("jwt");
+    if (!stored) return null;
 
-  try {
-    return JSON.parse(stored) as IAuthData;
-  } catch {
-    return null;
-  }
+    try {
+        return JSON.parse(stored) as IAuthData;
+    } catch {
+        return null;
+    }
 };
 
