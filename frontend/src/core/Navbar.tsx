@@ -1,106 +1,117 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import {
+    AppBar,
+    Toolbar,
+    Box,
+    IconButton,
+    Button,
+    Badge
+} from "@mui/material";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
+
 import { signout, isAuthenticated } from "../auth";
 import { itemTotal } from "./cartHelpers";
 import logo from "../assets/react.svg";
 
+const linkStyle = {
+    textDecoration: "none",
+    color: "#3a3535",
+    "&.active": {
+        color: "#ff7315",
+    },
+};
+
 const Navbar: React.FC = () => {
     const navigate = useNavigate();
-
     const auth = isAuthenticated();
-
-    const activeStyle = { color: "#ff7315" };
-    const defaultStyle = { color: "#3a3535" };
 
     const handleSignout = () => {
         signout(() => navigate("/"));
     };
 
     return (
-        <nav>
-            <ul className="nav nav-items">
-                <li className="nav-item">
+        <AppBar position="static" elevation={1} sx={{ backgroundColor: "#fff" }}>
+            <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
+                {/* Logo */}
+                <Box display="flex" alignItems="center">
                     <NavLink to="/">
-                        <img src={logo} width="50px" height="50px" alt="Logo" />
+                        <img src={logo} width="40" height="40" alt="Logo" />
                     </NavLink>
-                </li>
+                </Box>
 
-                <li className="nav-item">
-                    <NavLink
+                {/* Navigation Links */}
+                <Box display="flex" alignItems="center" gap={2}>
+                    <Button
+                        component={NavLink}
                         to="/"
-                        style={({ isActive }) => (isActive ? activeStyle : defaultStyle)}
+                        sx={linkStyle}
                     >
                         Home
-                    </NavLink>
-                </li>
+                    </Button>
 
-                {auth && auth.user.role === 0 && (
-                    <li className="nav-item">
-                        <NavLink
+                    {auth && auth.user.role === 0 && (
+                        <IconButton
+                            component={NavLink}
                             to="/user/dashboard"
-                            style={({ isActive }) => (isActive ? activeStyle : defaultStyle)}
+                            sx={linkStyle}
                         >
                             <Person2OutlinedIcon />
-                        </NavLink>
-                    </li>
-                )}
+                        </IconButton>
+                    )}
 
-                {auth && auth.user.role === 1 && (
-                    <li className="nav-item">
-                        <NavLink
+                    {auth && auth.user.role === 1 && (
+                        <Button
+                            component={NavLink}
                             to="/admin/dashboard"
-                            style={({ isActive }) => (isActive ? activeStyle : defaultStyle)}
+                            sx={linkStyle}
                         >
                             Dashboard
-                        </NavLink>
-                    </li>
-                )}
+                        </Button>
+                    )}
 
-                {!auth && (
-                    <>
-                        <li className="nav-item">
-                            <NavLink
+                    {!auth && (
+                        <>
+                            <Button
+                                component={NavLink}
                                 to="/signin"
-                                style={({ isActive }) => (isActive ? activeStyle : defaultStyle)}
+                                sx={linkStyle}
                             >
                                 Signin
-                            </NavLink>
-                        </li>
-                        <li className="nav-item">
-                            <NavLink
+                            </Button>
+                            <Button
+                                component={NavLink}
                                 to="/signup"
-                                style={({ isActive }) => (isActive ? activeStyle : defaultStyle)}
+                                sx={linkStyle}
                             >
                                 Signup
-                            </NavLink>
-                        </li>
-                    </>
-                )}
+                            </Button>
+                        </>
+                    )}
 
-                {auth && (
-                    <li className="nav-item">
-                        <span
-                            className="nav-link"
-                            style={{ cursor: "pointer", color: "#3a3535" }}
+                    {auth && (
+                        <Button
                             onClick={handleSignout}
+                            sx={{ color: "#3a3535" }}
                         >
                             Signout
-                        </span>
-                    </li>
-                )}
+                        </Button>
+                    )}
 
-                <li className="nav-item cart-icon">
-                    <NavLink to="/cart" style={{ color: "#ff7315" }}>
-                        <ShoppingCartOutlinedIcon />{" "}
-                        <sup>
-                            <small className="cart-badge">{itemTotal()}</small>
-                        </sup>
-                    </NavLink>
-                </li>
-            </ul>
-        </nav>
+                    {/* Cart */}
+                    <IconButton
+                        component={NavLink}
+                        to="/cart"
+                        sx={{ color: "#ff7315" }}
+                    >
+                        <Badge badgeContent={itemTotal()} color="error">
+                            <ShoppingCartOutlinedIcon />
+                        </Badge>
+                    </IconButton>
+                </Box>
+            </Toolbar>
+        </AppBar>
     );
 };
 

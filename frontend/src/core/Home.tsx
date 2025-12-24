@@ -5,6 +5,7 @@ import Card from "./Card";
 import Search from "./Search";
 import Hero from "./Hero";
 import type { IProduct, ApiResponse } from "../types";
+import Grid from "@mui/material/Grid";
 
 const Home: React.FC = () => {
   const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
@@ -47,8 +48,8 @@ const Home: React.FC = () => {
 
   return (
     <Layout
-      title="Home Page"
-      description="Shop"
+      title=""
+      description=""
       className="container-fluid"
     >
       <Hero />
@@ -73,12 +74,13 @@ const Home: React.FC = () => {
             No new arrivals yet.
           </p>
         )}
-
-        {productsByArrival.map((product) => (
-          <div key={product._id} className="col-4 mb-3">
-            <Card product={{ ...product, count: 1 }} />
-          </div>
-        ))}
+        <Grid container spacing={2}>
+          {productsByArrival.map((product) => (
+            <Grid size={4} key={product._id} className="mb-3">
+              <Card product={product} />
+            </Grid>
+          ))}
+        </Grid>
       </div>
 
       <h2 className="text-center">Best Sellers</h2>
@@ -88,12 +90,13 @@ const Home: React.FC = () => {
             No best sellers yet.
           </p>
         )}
-
-        {productsBySell.map((product) => (
-          <div key={product._id} className="col-4 mb-3">
-            <Card product={{ ...product, count: 1 }} />
-          </div>
-        ))}
+        <Grid container spacing={2}>
+          {productsBySell.map((product) => (
+            <Grid size={4} key={product._id} className="mb-3">
+              <Card product={{ ...product, count: 1 }} />
+            </Grid>
+          ))}
+        </Grid>
       </div>
     </Layout>
   );
