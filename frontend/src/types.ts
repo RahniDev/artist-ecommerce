@@ -45,9 +45,9 @@ export interface ICartItem extends IProduct {
   count?: number;
 }
 
-export interface ApiResponse<T = any> {
-  error?: string;
+export interface ApiResponse<T> {
   data?: T;
+  error?: string;
 }
 
 export interface IOrder {

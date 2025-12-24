@@ -1,27 +1,55 @@
-import type { IProduct, ApiError, ICategory, IFilterParams, IOrder } from "../types";
+import type {
+  IProduct,
+  ICategory,
+  IFilterParams,
+  IOrder,
+  IBraintreePaymentData,
+  BraintreeTransaction,
+} from "../types";
 import { API } from "../config";
 import queryString from "query-string";
-import type { BraintreeResponse, BraintreeTransaction, IBraintreePaymentData } from "../types";
+import type { ApiResponse } from "../types";
 
-// Helper to wrap fetch + JSON parsing with proper typing.
-async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(url, options);
-
-  if (!res.ok) {
-    throw new Error(`API error: ${res.status} ${res.statusText}`);
+async function fetchJSON<T>(url: string, options?: RequestInit): Promise<ApiResponse<T>> {
+  try {
+    const res = await fetch(url, { ...options, credentials: "include" });
+    if (!res.ok) {
+      const text = await res.text();
+      return { error: `API error: ${res.status} ${res.statusText} - ${text}` };
+    }
+    const data = await res.json();
+    return { data };
+  } catch (err: any) {
+    return { error: err.message || "Network error" };
   }
-
-  return res.json() as Promise<T>;
 }
 
-export async function getProducts(sortBy: string): Promise<IProduct[]> {
-  return fetchJSON<IProduct[]>(
+export async function getProducts(
+  sortBy: string
+): Promise<ApiResponse<{ data: IProduct[] }>> {
+  return fetchJSON<{ data: IProduct[] }>(
     `${API}/products?sortBy=${sortBy}&order=desc&limit=6`
   );
 }
 
-export async function getCategories(): Promise<ICategory[]> {
-  return fetchJSON<ICategory[]>(`${API}/products/categories`);
+export async function read(
+  productId: string
+): Promise<ApiResponse<IProduct>> {
+  return fetchJSON<IProduct>(`${API}/product/${productId}`);
+}
+
+export const listRelated = async (productId: string): Promise<ApiResponse<IProduct[]>> => {
+  try {
+    const res = await fetch(`${API}/products/related/${productId}`);
+    const data = await res.json();
+    return { data };
+  } catch (err: any) {
+    return { data: [], error: err.message || "Failed to fetch related products" };
+  }
+};
+
+export async function getCategories(): Promise<ApiResponse<ICategory[]>> {
+  return fetchJSON<ICategory[]>(`${API}/categories`);
 }
 
 export interface FilterResponse {
@@ -33,43 +61,69 @@ export async function getFilteredProducts(
   skip: number,
   limit: number,
   filters: IFilterParams = {}
-): Promise<FilterResponse> {
+): Promise<ApiResponse<FilterResponse>> {
   return fetchJSON<FilterResponse>(`${API}/products/by/search`, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ skip, limit, filters }),
   });
 }
 
-export async function list(params: Record<string, unknown>): Promise<IProduct[]> {
+export async function list(
+  params: Record<string, unknown>
+): Promise<ApiResponse<IProduct[]>> {
   const query = queryString.stringify(params);
   return fetchJSON<IProduct[]>(`${API}/products/search?${query}`);
 }
 
-export const read = async (productId: string):
-  Promise<IProduct | ApiError> => {
-  const res = await fetch(`${API}/product/${productId}`);
-  return res.json();
-};
-
-export const listRelated = async (productId: string):
-  Promise<IProduct[]> => {
-  const res = await fetch(`${API}/products/related/${productId}`);
-  return res.json();
-};
-
-export interface BraintreeToken {
-  clientToken: string;
+export async function createOrder(
+  userId: string,
+  token: string,
+  createOrderData: IOrder
+): Promise<ApiResponse<{ success: boolean; order?: unknown }>> {
+  return fetchJSON<{ success: boolean; order?: unknown }>(
+    `${API}/order/create/${userId}`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ order: createOrderData }),
+    }
+  );
 }
 
-export const getBraintreeClientToken = async (
+export async function processPayment(
+  userId: string,
+  token: string,
+  paymentData: IBraintreePaymentData
+): Promise<ApiResponse<BraintreeTransaction>> {
+  return fetchJSON<BraintreeTransaction>(
+    `${API}/braintree/payment/${userId}`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(paymentData),
+    }
+  );
+}
+
+export interface BraintreeTokenResponse {
+  clientToken?: string;
+  error?: string;
+}
+
+export async function getBraintreeClientToken(
   userId: string,
   token: string
-): Promise<BraintreeResponse> => {
+): Promise<BraintreeTokenResponse> {
   try {
-    const response = await fetch(`${API}/braintree/getToken/${userId}`, {
+    const res = await fetch(`${API}/braintree/getToken/${userId}`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -77,52 +131,17 @@ export const getBraintreeClientToken = async (
         Authorization: `Bearer ${token}`,
       },
     });
-    return response.json();
+
+    if (!res.ok) {
+      const text = await res.text();
+      return {
+        error: `API error: ${res.status} ${res.statusText} - ${text}`,
+      };
+    }
+
+    const data = await res.json();
+    return { clientToken: data.clientToken };
   } catch (err: any) {
-    return { error: err.message || "Error fetching token" };
+    return { error: err.message || "Failed to get Braintree token" };
   }
-};
-
-export interface PaymentResult {
-  success: boolean;
-  transaction?: unknown;
-  error?: string;
-}
-
-export const processPayment = async (
-  userId: string,
-  token: string,
-  paymentData: IBraintreePaymentData
-): Promise<BraintreeTransaction> => {
-  const response = await fetch(`${API}/braintree/payment/${userId}`, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify(paymentData),
-  });
-  return response.json();
-};
-
-
-export interface OrderResponse {
-  success: boolean;
-  order?: unknown;
-}
-
-export async function createOrder(
-  userId: string,
-  token: string,
-  createOrderData: IOrder
-): Promise<OrderResponse> {
-  return fetchJSON<OrderResponse>(`${API}/order/create/${userId}`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({ order: createOrderData }),
-  });
 }

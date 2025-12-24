@@ -65,15 +65,11 @@ export const remove = async (req: CustomRequest, res: Response) => {
     }
 };
 
-// export const list = async (req: Request, res: Response) => {
-//     try {
-//         const categories = await Category.find().sort('name').exec();
-//         res.json(categories);
-//     } catch (err) {
-//         return res.status(400).json({ error: errorHandler(err) });
-//     }
-// };
-export const list = async (req: Request, res: Response) => {
-  console.log("🔥 list categories hit");
-  return res.json({ ok: true });
-}
+export const list = async (req, res) => {
+  try {
+    const categories = await Category.find().select("_id name");
+    return res.json(categories);
+  } catch (err) {
+    return res.status(400).json({ error: "Categories not found" });
+  }
+};

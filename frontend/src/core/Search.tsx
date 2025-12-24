@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getCategories, list } from "./apiCore";
 import Card from "./Card";
-import type { ICategory, IProduct } from "../types";
+import type { ICategory, IProduct, ApiResponse } from "../types";
 
 interface SearchState {
   categories: ICategory[];
@@ -22,15 +22,24 @@ const Search: React.FC = () => {
 
   const { categories, category, search, results, searched } = data;
 
-  const loadCategories = async () => {
-    const result = await getCategories();
+const loadCategories = async () => {
+  const result = await getCategories();
 
-    if ("error" in result) {
-      console.error(result.error);
-    } else {
-      setData((prev) => ({ ...prev, categories: result }));
-    }
-  };
+  if (result.error) {
+    console.error(result.error);
+    setData((prev) => ({
+      ...prev,
+      categories: [], // always array
+    }));
+    return;
+  }
+
+  // ✅ Ensure categories is ALWAYS an array
+  setData((prev) => ({
+    ...prev,
+    categories: Array.isArray(result.data) ? result.data : [],
+  }));
+};
 
   useEffect(() => {
     loadCategories();
@@ -39,19 +48,25 @@ const Search: React.FC = () => {
   const searchData = async () => {
     if (!search) return;
 
-    const response = await list({
-      search: search || undefined,
-      category,
-    });
+    try {
+      const res: ApiResponse<IProduct[]> = await list({
+        search,
+        category,
+      });
 
-    if ("error" in response) {
-      console.error(response.error);
-    } else {
-      setData((prev) => ({
-        ...prev,
-        results: response,
-        searched: true,
-      }));
+      if (res.error) {
+        console.error("Search failed:", res.error);
+        setData((prev) => ({ ...prev, results: [], searched: true }));
+      } else {
+        setData((prev) => ({
+          ...prev,
+          results: res.data || [],
+          searched: true,
+        }));
+      }
+    } catch (err: any) {
+      console.error("Search error:", err.message || err);
+      setData((prev) => ({ ...prev, results: [], searched: true }));
     }
   };
 
@@ -62,18 +77,19 @@ const Search: React.FC = () => {
 
   const handleChange =
     (name: "category" | "search") =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-      setData((prev) => ({
-        ...prev,
-        [name]: e.target.value,
-        searched: false,
-      }));
-    };
+      (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        setData((prev) => ({
+          ...prev,
+          [name]: e.target.value,
+          searched: false,
+        }));
+      };
 
   const searchMessage = (searched: boolean, results: IProduct[]) => {
-    if (searched && results.length > 0) return `Found ${results.length} products`;
-    if (searched && results.length < 1) return "No products found";
-    return "";
+    if (!searched) return "";
+    return results.length > 0
+      ? `Found ${results.length} products`
+      : "No products found";
   };
 
   const searchedProducts = (results: IProduct[]) => (
@@ -81,7 +97,9 @@ const Search: React.FC = () => {
       <h2 className="mt-4 mb-4">{searchMessage(searched, results)}</h2>
       <div className="row">
         {results.map((product) => (
-          <Card key={product._id} product={product} />
+          <div key={product._id} className="col-4 mb-3">
+            <Card product={product} />
+          </div>
         ))}
       </div>
     </div>
@@ -92,7 +110,11 @@ const Search: React.FC = () => {
       <span className="input-group-text">
         <div className="input-group input-group-lg">
           <div className="input-group-prepend">
-            <select className="btn mr-2" onChange={handleChange("category")}>
+            <select
+              className="btn mr-2"
+              value={category}
+              onChange={handleChange("category")}
+            >
               <option value="">All</option>
               {categories.map((c) => (
                 <option key={c._id} value={c._id}>
@@ -105,6 +127,7 @@ const Search: React.FC = () => {
           <input
             type="search"
             className="form-control"
+            value={search}
             onChange={handleChange("search")}
             placeholder="Search by name"
           />

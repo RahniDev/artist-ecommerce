@@ -7,92 +7,96 @@ import Hero from "./Hero";
 import type { IProduct, ApiResponse } from "../types";
 
 const Home: React.FC = () => {
-    const [productsBySell, setProductsBySell] = useState<IProduct[]>([]);
-    const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
-    const [error, setError] = useState<string | null>(null);
-    const [loading, setLoading] = useState<boolean>(false);
+  const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
+  const [productsBySell, setProductsBySell] = useState<IProduct[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
-    // Generic loader to reduce duplication
-    const loadProducts = async (
-        sortBy: string,
-        setter: React.Dispatch<React.SetStateAction<IProduct[]>>
-    ) => {
-        try {
-            setLoading(true);
-            const response: ApiResponse<IProduct[]> = await getProducts(sortBy);
+  const loadProducts = async () => {
+    setLoading(true);
+    setError(null);
 
-            if (response.error) {
-                setError(response.error);
-                setter([]);
-            } else {
-                setError(null);
-                setter(response.data || []);
-            }
-        } catch (err: any) {
-            setError(err.message || "Failed to load products");
-            setter([]);
-        } finally {
-            setLoading(false);
-        }
-    };
+    try {
+      const arrivalRes: ApiResponse<{ data: IProduct[] }> =
+        await getProducts("createdAt");
 
-    useEffect(() => {
-        loadProducts("createdAt", setProductsByArrival);
-        loadProducts("sold", setProductsBySell);
-    }, []);
+      if (arrivalRes.error) {
+        setError(arrivalRes.error);
+      } else {
+        setProductsByArrival(arrivalRes.data?.data ?? []);
+      }
 
-    return (
-        <Layout
-            title="Home Page"
-            description="Shop"
-            className="container-fluid"
-        >
-            <Hero />
-            <Search />
+      const sellRes: ApiResponse<{ data: IProduct[] }> =
+        await getProducts("sold");
 
-            {error && (
-                <div className="alert alert-danger text-center my-3">
-                    {error}
-                </div>
-            )}
+      if (sellRes.error) {
+        setError(sellRes.error);
+      } else {
+        setProductsBySell(sellRes.data?.data ?? []);
+      }
+    } catch (err: any) {
+      setError(err.message || "Failed to load products");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            {loading && (
-                <div className="alert alert-info text-center my-3">
-                    Loading products...
-                </div>
-            )}
+  useEffect(() => {
+    loadProducts();
+  }, []);
 
-            <h2 className="text-center">New Arrivals</h2>
-            <div className="row">
-                {productsByArrival.length === 0 && !loading && !error && (
-                    <p className="text-center text-muted w-100">
-                        No new arrivals yet.
-                    </p>
-                )}
+  return (
+    <Layout
+      title="Home Page"
+      description="Shop"
+      className="container-fluid"
+    >
+      <Hero />
+      <Search />
 
-                {productsByArrival.map((product) => (
-                    <div key={product._id} className="col-4 mb-3">
-                        <Card product={{ ...product, count: 1 }} />
-                    </div>
-                ))}
-            </div>
+      {error && (
+        <div className="alert alert-danger text-center my-3">
+          {error}
+        </div>
+      )}
 
-            <h2 className="text-center">Best Sellers</h2>
-            <div className="row">
-                {productsBySell.length === 0 && !loading && !error && (
-                    <p className="text-center text-muted w-100">
-                        No best sellers yet.
-                    </p>
-                )}
+      {loading && (
+        <div className="alert alert-info text-center my-3">
+          Loading products...
+        </div>
+      )}
 
-                {productsBySell.map((product) => (
-                    <div key={product._id} className="col-4 mb-3">
-                        <Card product={{ ...product, count: 1 }} />
-                    </div>
-                ))}
-            </div>
-        </Layout>
-    );
+      <h2 className="text-center">New Arrivals</h2>
+      <div className="row">
+        {productsByArrival.length === 0 && !loading && !error && (
+          <p className="text-center text-muted w-100">
+            No new arrivals yet.
+          </p>
+        )}
+
+        {productsByArrival.map((product) => (
+          <div key={product._id} className="col-4 mb-3">
+            <Card product={{ ...product, count: 1 }} />
+          </div>
+        ))}
+      </div>
+
+      <h2 className="text-center">Best Sellers</h2>
+      <div className="row">
+        {productsBySell.length === 0 && !loading && !error && (
+          <p className="text-center text-muted w-100">
+            No best sellers yet.
+          </p>
+        )}
+
+        {productsBySell.map((product) => (
+          <div key={product._id} className="col-4 mb-3">
+            <Card product={{ ...product, count: 1 }} />
+          </div>
+        ))}
+      </div>
+    </Layout>
+  );
 };
 
 export default Home;

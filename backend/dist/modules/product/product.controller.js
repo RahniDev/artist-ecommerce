@@ -28,20 +28,16 @@ export const read = (req, res) => {
     return res.json(req.product);
 };
 export const list = async (req, res) => {
-    const order = req.query.order === "desc" ? "desc" : "asc";
-    const sortBy = req.query.sortBy ? String(req.query.sortBy) : "_id";
-    const limit = req.query.limit ? Number(req.query.limit) : 6;
     try {
         const products = await Product.find()
             .select("-photo")
-            // .populate('category')
-            .sort({ [sortBy]: order })
-            .limit(limit)
+            .sort({ createdAt: -1 })
+            .limit(6)
             .lean();
-        return res.json({ data: products });
+        return res.status(200).json({ data: products });
     }
     catch (err) {
-        return res.status(400).json({ error: 'Products not found' });
+        return res.status(400).json({ error: "Products not found" });
     }
 };
 // returns products in same category 
@@ -55,7 +51,7 @@ export const listRelated = async (req, res) => {
             .limit(limit)
             .populate('category', '_id name')
             .lean();
-        return res.json(products);
+        return res.json({ data: products });
     }
     catch (err) {
         return res.status(400).json({ error: 'Products not found' });
@@ -175,7 +171,7 @@ export const listSearch = async (req, res) => {
         const products = await Product.find(query)
             .select("-photo")
             .lean();
-        return res.json(products);
+        return res.json({ data: products });
     }
     catch (err) {
         res.status(400).json({ error: errorHandler(err) });

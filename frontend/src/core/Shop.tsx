@@ -32,33 +32,22 @@ const Shop: React.FC = () => {
   const [size, setSize] = useState<number>(0);
   const [filteredResults, setFilteredResults] = useState<IProduct[]>([]);
 
-  // Load categories
   const init = async () => {
-    try {
-      const data = await getCategories();
-      if ("error" in data) setError(error);
-      else setCategories(data);
-    } catch (err: any) {
-      setError(err.message || "Failed to load categories");
-    }
+    const res = await getCategories();
+    if (res.error) setError(res.error);
+    else setCategories(res.data || []);
   };
 
-  // Load filtered products
   const loadFilteredResults = async (filters: FilterState["filters"]) => {
-    try {
-      const data: FilterResponse = await getFilteredProducts(skip, limit, filters);
-      if (data.error) setError(data.error);
-      else {
-        setFilteredResults(data.data);
-        setSize(data.size);
-        setSkip(0);
-      }
-    } catch (err: any) {
-      setError(err.message || "Failed to load products");
+    const res = await getFilteredProducts(skip, limit, filters);
+    if (res.error) setError(res.error);
+    else {
+      setFilteredResults(res.data || []);
+      setSize(res.size);
+      setSkip(0);
     }
   };
 
-  // Load more products for pagination
   const loadMore = async () => {
     const toSkip = skip + limit;
     try {
@@ -112,8 +101,13 @@ const Shop: React.FC = () => {
       description="Browse through our selection of eco-friendly, high quality products."
       className="container-fluid"
     >
+      {error && (
+        <div className="alert alert-danger">
+          {error}
+        </div>
+      )}
+
       <div className="row">
-        {/* Filters column */}
         <div className="col-4">
           <h4>Filter by categories</h4>
           <ul>
@@ -130,7 +124,6 @@ const Shop: React.FC = () => {
           />
         </div>
 
-        {/* Products column */}
         <div className="col-8">
           <h2 className="mb-4">Products</h2>
           <div className="row">
