@@ -38,18 +38,16 @@ export async function read(
   return fetchJSON<IProduct>(`${API}/product/${productId}`);
 }
 
-export const listRelated = async (productId: string): Promise<ApiResponse<IProduct[]>> => {
-  try {
-    const res = await fetch(`${API}/products/related/${productId}`);
-    const data = await res.json();
-    return { data };
-  } catch (err: any) {
-    return { data: [], error: err.message || "Failed to fetch related products" };
-  }
-};
+export async function listRelated(
+  productId: string
+): Promise<ApiResponse<{ data: IProduct[] }>> {
+  return fetchJSON<{ data: IProduct[] }>(
+    `${API}/products/related/${productId}`
+  );
+}
 
 export async function getCategories(): Promise<ApiResponse<ICategory[]>> {
-  return fetchJSON<ICategory[]>(`${API}/categories`);
+  return fetchJSON<ICategory[]>(`${API}/products/categories`);
 }
 
 export interface FilterResponse {

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import Layout from "./Layout";
-import Card from "./Card";
+import ProductCard from "./Card";
 import Checkbox from "./Checkbox";
 import RadioBox from "./RadioBox";
 import { getCategories, getFilteredProducts } from "./apiCore";
 import { prices } from "./fixedPrices";
-
+import Grid from "@mui/material/Grid";
 import type { ICategory, IProduct } from "../types";
 
 interface FilterState {
@@ -110,18 +110,16 @@ const Shop: React.FC = () => {
         <div className="alert alert-danger">{error}</div>
       )}
 
-      <div className="row">
+      <Grid container spacing={2}>
         {/* FILTERS */}
-        <div className="col-4">
+        <Grid size={3} className="mb-3">
           <h4>Filter by categories</h4>
-          <ul>
             <Checkbox
               categories={categories}
               handleFilters={(filters) =>
                 handleFilters(filters, "category")
               }
             />
-          </ul>
 
           <h4>Filter by price range</h4>
           <RadioBox
@@ -130,24 +128,22 @@ const Shop: React.FC = () => {
               handleFilters(selectedPrice, "price")
             }
           />
-        </div>
-
+        </Grid>
         {/* PRODUCTS */}
-        <div className="col-8">
+        <Grid size={9}>
+
           <h2 className="mb-4">Products</h2>
 
-          <div className="row">
+          <Grid container spacing={2}>
             {filteredResults.map((product) => (
-              <div key={product._id} className="col-4 mb-3">
-                <Card product={product} />
-              </div>
+              <Grid size={3} key={product._id}>
+                <ProductCard product={product} />
+              </Grid>
             ))}
-          </div>
-
-          <hr />
+          </Grid>
           {loadMoreButton()}
-        </div>
-      </div>
+        </Grid>
+      </Grid>
     </Layout>
   );
 };

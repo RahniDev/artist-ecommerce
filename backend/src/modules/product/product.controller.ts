@@ -13,20 +13,33 @@ declare global {
     }
 }
 
-export const productById = async (req: Request, res: Response, next: NextFunction, id: string) => {
+export const productById = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+  id: string
+) => {
+  try {
     if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'Invalid product ID' })
-    } try {
-        const product = await Product.findById(id)
-            .populate('category')
-            .select("-photo")
-        if (!product) {
-            return res.status(404).json({ error: 'Product not found' })
-        }
-        req.product = product
-        next()
-    } catch (err) { return res.status(400).json({ error: errorHandler(err) }) }
-}
+      return res.status(400).json({ error: "Invalid product ID" });
+    }
+
+    const product = await Product.findById(id)
+      .populate("category")
+      .select("-photo")
+      .lean();
+
+    if (!product) {
+      return res.status(404).json({ error: "Product not found" });
+    }
+
+    req.product = product as any;
+    return next();
+  } catch (err) {
+    console.error("productById error:", err);
+    return res.status(500).json({ error: "Failed to load product" });
+  }
+};
 
 export const read = (req: Request, res: Response): Response => {
     if (!req.product) {

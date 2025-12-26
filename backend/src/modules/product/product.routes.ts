@@ -18,6 +18,9 @@ import { userById } from '../user/user.controller.js'
 
 const router: Router = Router();
 
+router.param('userId', userById)
+router.param('productId', productById)
+
 router.get('/product/photo/:productId', photo)
 router.get('/product/:productId', read)
 router.post("/product/create/:userId", requireSignin, isAuth, isAdmin, create);
@@ -29,8 +32,5 @@ router.get('/products/search', listSearch)
 router.get('/products/related/:productId', listRelated)
 router.get('/products/categories', listCategories)
 router.post('/products/by/search', listBySearch)
-
-router.param('userId', userById)
-router.param('productId', productById)
 
 export default router

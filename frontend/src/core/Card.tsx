@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import ShowImage from "./ShowImage";
 import { addItem, updateItem, removeItem } from "./cartHelpers";
 import type { ICartItem } from "../types";
+import Badge from "@mui/material/Badge";
+import Card from "@mui/material/Card";
 
 interface CardProps {
     product: ICartItem;
@@ -14,7 +16,7 @@ interface CardProps {
     run?: boolean;
 }
 
-const Card: React.FC<CardProps> = ({
+const ProductCard: React.FC<CardProps> = ({
     product,
     showAddToCartButton = true,
     cartUpdate = false,
@@ -44,13 +46,11 @@ const Card: React.FC<CardProps> = ({
 
     const showStock = (quantity: number) => {
         return quantity > 0 ? (
-            <span className="badge badge-primary badge-pill in-stock">
-                In Stock
-            </span>
+          <Badge badgeContent={'In Stock'} color="secondary">
+          </Badge>
         ) : (
-            <span className="badge badge-primary badge-pill out-of-stock">
-                Out of Stock
-            </span>
+              <Badge badgeContent={'Out of Stock'} color="secondary">
+          </Badge>
         );
     };
 
@@ -94,7 +94,7 @@ const Card: React.FC<CardProps> = ({
         );
 
     return (
-        <div className="card-body mx-auto">
+        <Card variant="outlined">
             <Link to={`/product/${product._id}`}>
                 <ShowImage item={product} url="product" />
 
@@ -116,8 +116,8 @@ const Card: React.FC<CardProps> = ({
 
                 {showCartUpdateOptions(cartUpdate)}
             </Link>
-        </div>
+        </Card>
     );
 };
 
-export default Card;
+export default ProductCard;

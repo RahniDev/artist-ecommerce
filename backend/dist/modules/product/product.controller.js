@@ -4,21 +4,23 @@ import { Product } from './product.model.js';
 import { errorHandler } from '../../helpers/errorHandler.js';
 import mongoose from 'mongoose';
 export const productById = async (req, res, next, id) => {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        return res.status(400).json({ error: 'Invalid product ID' });
-    }
     try {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: "Invalid product ID" });
+        }
         const product = await Product.findById(id)
-            .populate('category')
-            .select("-photo");
+            .populate("category")
+            .select("-photo")
+            .lean();
         if (!product) {
-            return res.status(404).json({ error: 'Product not found' });
+            return res.status(404).json({ error: "Product not found" });
         }
         req.product = product;
-        next();
+        return next();
     }
     catch (err) {
-        return res.status(400).json({ error: errorHandler(err) });
+        console.error("productById error:", err);
+        return res.status(500).json({ error: "Failed to load product" });
     }
 };
 export const read = (req, res) => {

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Layout from "./Layout";
 import { getProducts } from "./apiCore";
-import Card from "./Card";
+import ProductCard from "./Card";
 import Search from "./Search";
 import Hero from "./Hero";
 import type { IProduct, ApiResponse } from "../types";
@@ -56,13 +56,13 @@ const Home: React.FC = () => {
       <Search />
 
       {error && (
-        <div className="alert alert-danger text-center my-3">
+        <div>
           {error}
         </div>
       )}
 
       {loading && (
-        <div className="alert alert-info text-center my-3">
+        <div>
           Loading products...
         </div>
       )}
@@ -77,7 +77,7 @@ const Home: React.FC = () => {
         <Grid container spacing={2}>
           {productsByArrival.map((product) => (
             <Grid size={4} key={product._id} className="mb-3">
-              <Card product={product} />
+              <ProductCard product={product} />
             </Grid>
           ))}
         </Grid>
@@ -93,7 +93,7 @@ const Home: React.FC = () => {
         <Grid container spacing={2}>
           {productsBySell.map((product) => (
             <Grid size={4} key={product._id} className="mb-3">
-              <Card product={{ ...product, count: 1 }} />
+              <ProductCard product={{ ...product, count: 1 }} />
             </Grid>
           ))}
         </Grid>
