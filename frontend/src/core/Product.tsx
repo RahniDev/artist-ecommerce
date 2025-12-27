@@ -4,6 +4,7 @@ import Layout from "./Layout";
 import ProductCard from "./Card";
 import { read, listRelated } from "./apiCore";
 import type { IProduct } from "../types";
+import StockBadge from "./StockBadge";
 
 const Product: React.FC = () => {
 
@@ -43,7 +44,32 @@ const Product: React.FC = () => {
       {/* single product */}
       <div className="row">
         <div className="col-8">
-          {product && <ProductCard product={{ ...product, count: 1 }} showViewProductButton={false} />}
+          {product && (
+            <div className="card">
+              <div className="card-body">
+                <p className="text-muted">
+                  Category: {product.category?.name ?? "Uncategorized"}
+                </p>
+
+                <h4 className="text-success">
+                  € {product.price}
+                </h4>
+                <StockBadge quantity={product.quantity} />
+
+                {/* Add to cart button */}
+                <button
+                  className="btn btn-primary"
+                  disabled={product.quantity <= 0}
+                  onClick={() => {
+                    console.log("Add to cart", product._id);
+                  }}
+                >
+                  Add to Cart
+                </button>
+
+              </div>
+            </div>
+          )}
         </div>
         <div className="col-4">
           <h4>Related Products</h4>

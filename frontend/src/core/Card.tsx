@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import ShowImage from "./ShowImage";
 import { addItem, updateItem, removeItem } from "./cartHelpers";
 import type { ICartItem } from "../types";
-import Badge from "@mui/material/Badge";
 import Card from "@mui/material/Card";
+import StockBadge from "./StockBadge";
 
 interface CardProps {
     product: ICartItem;
@@ -43,16 +43,6 @@ const ProductCard: React.FC<CardProps> = ({
                 Add to cart
             </button>
         );
-
-    const showStock = (quantity: number) => {
-        return quantity > 0 ? (
-          <Badge badgeContent={'In Stock'} color="secondary">
-          </Badge>
-        ) : (
-              <Badge badgeContent={'Out of Stock'} color="secondary">
-          </Badge>
-        );
-    };
 
     const handleChange =
         (productId: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,14 +96,11 @@ const ProductCard: React.FC<CardProps> = ({
 
                 <p className="p-info">£ {product.price}</p>
 
-                {showStock(product.quantity)}
+               <StockBadge quantity={product.quantity} />
 
                 <br />
-
                 {showAddToCartBtn(showAddToCartButton)}
-
                 {showRemoveButton(showRemoveProductButton)}
-
                 {showCartUpdateOptions(cartUpdate)}
             </Link>
         </Card>
