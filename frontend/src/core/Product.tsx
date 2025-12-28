@@ -5,6 +5,12 @@ import ProductCard from "./Card";
 import { read, listRelated } from "./apiCore";
 import type { IProduct } from "../types";
 import StockBadge from "./StockBadge";
+import AddToCartButton from "./AddToCartButton";
+import {
+  Box,
+  Typography,
+  Grid,
+} from "@mui/material";
 
 const Product: React.FC = () => {
 
@@ -39,47 +45,46 @@ const Product: React.FC = () => {
     <Layout
       title={product?.name}
       description={product?.description?.substring(0, 100)}
-      className="container-fluid"
     >
-      {/* single product */}
-      <div className="row">
-        <div className="col-8">
+      <Grid container spacing={2}>
+        <Grid size={12}>
           {product && (
-            <div className="card">
-              <div className="card-body">
-                <p className="text-muted">
-                  Category: {product.category?.name ?? "Uncategorized"}
-                </p>
-
-                <h4 className="text-success">
-                  € {product.price}
-                </h4>
+            <Box>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                gutterBottom
+              >
+                {product.category?.name ?? "Uncategorized"}
+              </Typography>
+              <Typography
+                variant="h5"
+                color="success.main"
+                fontWeight="bold"
+                gutterBottom
+              >
+                € {product.price}
+              </Typography>
+              <Grid my={2}>
                 <StockBadge quantity={product.quantity} />
+              </Grid>
 
-                {/* Add to cart button */}
-                <button
-                  className="btn btn-primary"
-                  disabled={product.quantity <= 0}
-                  onClick={() => {
-                    console.log("Add to cart", product._id);
-                  }}
-                >
-                  Add to Cart
-                </button>
+              <AddToCartButton
+                product={{ ...product, count: 1 }}
+                redirect={false}
+              />
 
-              </div>
-            </div>
+            </Box>
           )}
-        </div>
-        <div className="col-4">
-          <h4>Related Products</h4>
-          {related.map((p) => (
-            <div key={p._id} className="mb-3">
+        </Grid>
+        <Grid container spacing={3}>
+          {related.slice(0, 4).map((p) => (
+            <Grid size={12} key={p._id}>
               <ProductCard product={{ ...p, count: 1 }} />
-            </div>
+            </Grid>
           ))}
-        </div>
-      </div>
+        </Grid>
+        </Grid>
     </Layout>
   );
 };

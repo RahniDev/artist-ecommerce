@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ShowImage from "./ShowImage";
-import { addItem, updateItem, removeItem } from "./cartHelpers";
+import { updateItem, removeItem } from "./cartHelpers";
 import type { ICartItem } from "../types";
 import Card from "@mui/material/Card";
 import StockBadge from "./StockBadge";
+import AddToCartButton from "./AddToCartButton";
 
 interface CardProps {
     product: ICartItem;
@@ -24,25 +25,7 @@ const ProductCard: React.FC<CardProps> = ({
     setRun = () => { },
     run = false,
 }) => {
-    const navigate = useNavigate();
     const [count, setCount] = useState(product.count ?? 1);
-
-
-    const addToCart = () => {
-        addItem(product, () => {
-            navigate("/cart");
-        });
-    };
-
-    const showAddToCartBtn = (show: boolean) =>
-        show && (
-            <button
-                onClick={addToCart}
-                className="btn btn-outline-warning mt-2 mb-2 card-btn-1"
-            >
-                Add to cart
-            </button>
-        );
 
     const handleChange =
         (productId: string) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,12 +77,15 @@ const ProductCard: React.FC<CardProps> = ({
                     {product.description.substring(0, 100)}
                 </p>
 
-                <p className="p-info">£ {product.price}</p>
+                <p className="p-info">€ {product.price}</p>
 
-               <StockBadge quantity={product.quantity} />
+                <StockBadge quantity={product.quantity} />
 
                 <br />
-                {showAddToCartBtn(showAddToCartButton)}
+                {showAddToCartButton && (
+                    <AddToCartButton product={product} />
+                )}
+
                 {showRemoveButton(showRemoveProductButton)}
                 {showCartUpdateOptions(cartUpdate)}
             </Link>
