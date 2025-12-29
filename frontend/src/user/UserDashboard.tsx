@@ -30,16 +30,10 @@ interface AuthResponse {
     token: string;
 }
 
-interface ApiResponse<T> {
-    data?: T;
-    error?: string;
-}
-
 const UserDashboard = () => {
     const [history, setHistory] = useState<Order[]>([]);
 
     const auth = isAuthenticated() as AuthResponse | false;
-
     if (!auth) {
         // Safety guard — should never happen due to PrivateRoute
         return <></>;
@@ -50,19 +44,16 @@ const UserDashboard = () => {
         token,
     } = auth;
 
-    const loadPurchaseHistory = async (): Promise<void> => {
-        try {
-            const res: ApiResponse<Order[]> = await getPurchaseHistory(_id, token);
+    const loadPurchaseHistory = async () => {
+        const res = await getPurchaseHistory(_id, token);
 
-            if (res.error) {
-                console.error(res.error);
-                return;
-            }
-
-            setHistory(res.data ?? []);
-        } catch (err) {
-            console.error("Failed to load purchase history");
+        if (res.error) {
+            console.error(res.error);
+            return;
         }
+
+
+        setHistory(res.data ?? []);
     };
 
     useEffect(() => {
@@ -100,8 +91,15 @@ const UserDashboard = () => {
         </div>
     );
 
-    const purchaseHistory = () => (
-        <div className="card mb-5">
+    const purchaseHistory = () => {
+        if (history.length === 0) {
+            return (
+                <div className="alert alert-info">
+                    You haven’t placed any orders yet.
+                </div>
+            );
+        }
+        return (<div className="card mb-5">
             <h3 className="card-header">Purchase History</h3>
             <ul className="list-group">
                 <li className="list-group-item">
@@ -111,7 +109,7 @@ const UserDashboard = () => {
                             {order.products.map((product) => (
                                 <div key={product._id}>
                                     <h6>Product name: {product.name}</h6>
-                                    <h6>Product price: ${product.price}</h6>
+                                    <h6>Product price: €{product.price}</h6>
                                     {product.createdAt && (
                                         <h6>
                                             Purchased date:{" "}
@@ -125,7 +123,8 @@ const UserDashboard = () => {
                 </li>
             </ul>
         </div>
-    );
+        )
+    };
 
     return (
         <Layout

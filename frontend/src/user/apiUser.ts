@@ -1,56 +1,50 @@
 import { API } from "../config";
-import type { IUser, IAuthData, IOrder } from "../types";
-
-export type ApiResponse<T> =
-    | { error: string }
-    | (T & { error?: undefined });
+import type { IUser, IAuthData, IOrder, ApiResponse } from "../types";
 
 export const read = async (
-    userId: string,
-    token?: string | null
+  userId: string,
+  token?: string | null
 ): Promise<ApiResponse<IUser>> => {
-    try {
-        const res = await fetch(`${API}/user/${userId}`, {
-            method: "GET",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-        });
+  try {
+    const res = await fetch(`${API}/user/${userId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
 
-        return (await res.json()) as ApiResponse<IUser>;
-    } catch (err: any) {
-        console.error("read user error:", err);
-        return { error: err?.message || "Failed to read user" };
-    }
+    const user: IUser = await res.json();
+    return { data: user };
+  } catch (err: any) {
+    return { error: err?.message || "Failed to read user" };
+  }
 };
 
-/**
- * Update user profile on server
- */
 export const update = async (
-    userId: string,
-    token: string | null | undefined,
-    user: Partial<IUser>
+  userId: string,
+  token: string | null | undefined,
+  user: Partial<IUser>
 ): Promise<ApiResponse<IUser>> => {
-    try {
-        const res = await fetch(`${API}/user/${userId}`, {
-            method: "PUT",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-            body: JSON.stringify(user),
-        });
+  try {
+    const res = await fetch(`${API}/user/${userId}`, {
+      method: "PUT",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+      body: JSON.stringify(user),
+    });
 
-        return (await res.json()) as ApiResponse<IUser>;
-    } catch (err: any) {
-        console.error("update user error:", err);
-        return { error: err?.message || "Failed to update user" };
-    }
+    const updatedUser: IUser = await res.json();
+    return { data: updatedUser };
+  } catch (err: any) {
+    return { error: err?.message || "Failed to update user" };
+  }
 };
+
 
 /* Update user stored in localStorage (jwt) */
 export const updateUser = (
@@ -67,7 +61,6 @@ export const updateUser = (
 
         // merge updated fields into auth.user (do not overwrite token)
         auth.user = { ...auth.user, ...user } as IUser;
-
         localStorage.setItem("jwt", JSON.stringify(auth));
         if (typeof next === "function") next();
     } catch (err) {
@@ -76,23 +69,27 @@ export const updateUser = (
 };
 
 export const getPurchaseHistory = async (
-    userId: string,
-    token?: string | null
-): Promise<ApiResponse<{ orders: IOrder[] } | IOrder[]>> => {
-    try {
-        const res = await fetch(`${API}/orders/by/user/${userId}`, {
-            method: "GET",
-            headers: {
-                Accept: "application/json",
-                "Content-Type": "application/json",
-                ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            },
-        });
+  userId: string,
+  token?: string | null
+): Promise<ApiResponse<IOrder[]>> => {
+  try {
+    const res = await fetch(`${API}/orders/by/user/${userId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
+    });
 
-        const parsed = await res.json();
-        return parsed;
-    } catch (err: any) {
-        console.error("getPurchaseHistory error:", err);
-        return { error: err?.message || "Failed to load purchase history" };
+    if (!res.ok) {
+      const text = await res.text();
+      return { error: `API error: ${res.status} - ${text}` };
     }
+
+    const orders: IOrder[] = await res.json();
+    return { data: orders };
+  } catch (err: any) {
+    return { error: err?.message || "Failed to load purchase history" };
+  }
 };

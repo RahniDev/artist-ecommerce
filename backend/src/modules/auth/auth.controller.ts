@@ -94,11 +94,9 @@ export const requireSignin = (req: AuthRequest, res: Response, next: NextFunctio
 
 export const isAuth = (req: AuthRequest, res: Response, next: NextFunction) => {
     const sameUser = req.profile && req.auth && req.profile._id.toString() === req.auth._id;
-
     if (!sameUser) {
         return res.status(403).json({ error: "Access denied" });
     }
-
     next();
 };
 

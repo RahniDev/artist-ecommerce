@@ -1,6 +1,10 @@
 export interface ApiError {
   error: string;
 }
+export interface ApiResponse<T> {
+  data?: T;
+  error?: string;
+}
 
 export interface IProduct {
   _id: string;
@@ -45,11 +49,6 @@ export interface ICartItem extends IProduct {
   count?: number;
 }
 
-export interface ApiResponse<T> {
-  data?: T;
-  error?: string;
-}
-
 export interface IOrder {
   _id: string;
   products: ICartItem[];
@@ -85,12 +84,6 @@ export interface BraintreeError {
 }
 
 export type BraintreeResponse = BraintreeToken | BraintreeError;
-
-export interface ApiResponse<T = any> {
-  error?: string;
-  data?: T;
-  [key: string]: any;
-}
 
 export interface IFilterParams {
   category?: string[];

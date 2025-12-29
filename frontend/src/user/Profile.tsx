@@ -4,6 +4,7 @@ import { isAuthenticated } from "../auth";
 import { useParams, Navigate } from "react-router-dom";
 import { read, update, updateUser } from "./apiUser";
 
+
 interface ProfileState {
   name: string;
   email: string;
@@ -21,7 +22,7 @@ const Profile: React.FC = () => {
     return <Navigate to="/signin" replace />;
   }
 
-  const { token } = auth;
+  const { token, user } = auth;
 
 
   const [values, setValues] = useState<ProfileState>({
@@ -35,17 +36,21 @@ const Profile: React.FC = () => {
   const { name, email, password, error, success } = values;
 
   const init = async (id: string) => {
-    const data = await read(id, token);
+    const res = await read(id, token);
 
-    if ("error" in data) {
-      setValues((prev) => ({ ...prev, error: true }));
-    } else {
-      setValues((prev) => ({
-        ...prev,
-        name: data.name,
-        email: data.email,
-      }));
+    if (res.error) {
+      setValues(prev => ({ ...prev, error: true }));
+      return;
     }
+
+    const user = res.data;
+    if (!user) return;
+
+    setValues(prev => ({
+      ...prev,
+      name: user.name,
+      email: user.email,
+    }));
   };
 
   useEffect(() => {
@@ -64,24 +69,27 @@ const Profile: React.FC = () => {
 
   const clickSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-
     if (!userId) return;
 
-    const data = await update(userId, token, { name, email, password });
+    const res = await update(userId, token, { name, email, password });
 
-    if ("error" in data) {
-      console.log(data.error);
-    } else {
-      updateUser(data, () => {
-        setValues((prev) => ({
-          ...prev,
-          name: data.name,
-          email: data.email,
-          success: true,
-        }));
-      });
+    if (res.error) {
+      console.log(res.error);
+      return;
     }
+
+    if (!res.data) return;
+
+    updateUser(res.data, () => {
+      setValues((prev) => ({
+        ...prev,
+        name: res.data!.name,
+        email: res.data!.email,
+        success: true,
+      }));
+    });
   };
+
 
   const profileUpdateForm = () => (
     <form>
@@ -92,6 +100,7 @@ const Profile: React.FC = () => {
           onChange={handleChange("name")}
           className="form-control"
           value={name}
+          placeholder={user.name}
         />
       </div>
 
@@ -102,6 +111,7 @@ const Profile: React.FC = () => {
           onChange={handleChange("email")}
           className="form-control"
           value={email}
+          placeholder={user.email}
         />
       </div>
 
