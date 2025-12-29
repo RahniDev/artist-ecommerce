@@ -6,6 +6,22 @@ import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { getPurchaseHistory } from "./apiUser";
 
+import {
+    Box,
+    Card,
+    CardHeader,
+    CardContent,
+    List,
+    ListItem,
+    ListItemText,
+    Typography,
+    Alert,
+    Grid,
+    Divider,
+    Link as MuiLink,
+} from "@mui/material";
+
+
 interface Product {
     _id: string;
     name: string;
@@ -61,84 +77,92 @@ const UserDashboard = () => {
     }, []);
 
     const userLinks = () => (
-        <div className="card">
-            <h4 className="card-header">User Links</h4>
-            <ul className="list-group">
-                <li className="list-group-item">
-                    <Link className="nav-link" to="/cart">
+        <Card>
+            <CardHeader title="User Links" />
+            <List>
+                <ListItem>
+                    <MuiLink component={Link} to="/cart" underline="none">
                         My Cart
-                    </Link>
-                </li>
-                <li className="list-group-item">
-                    <Link className="nav-link" to={`/profile/${_id}`}>
+                    </MuiLink>
+                </ListItem>
+                <ListItem>
+                    <MuiLink component={Link} to={`/profile/${_id}`} underline="none">
                         Update Profile
-                    </Link>
-                </li>
-            </ul>
-        </div>
+                    </MuiLink>
+                </ListItem>
+            </List>
+        </Card>
     );
 
     const userInfo = () => (
-        <div className="card mb-5">
-            <h3 className="card-header">User Information</h3>
-            <ul className="list-group">
-                <li className="list-group-item">{name}</li>
-                <li className="list-group-item">{email}</li>
-                <li className="list-group-item">
-                    {role === 1 ? "Admin" : "Registered User"}
-                </li>
-            </ul>
-        </div>
+        <Card sx={{ mb: 4 }}>
+            <CardHeader title="User Information" />
+            <List>
+                <ListItem>
+                    <ListItemText primary={name} />
+                </ListItem>
+                <ListItem>
+                    <ListItemText primary={email} />
+                </ListItem>
+                <ListItem>
+                    <ListItemText
+                        primary={role === 1 && "Admin"}
+                    />
+                </ListItem>
+            </List>
+        </Card>
     );
 
     const purchaseHistory = () => {
         if (history.length === 0) {
             return (
-                <div className="alert alert-info">
+                <Alert severity="info">
                     You haven’t placed any orders yet.
-                </div>
+                </Alert>
             );
         }
-        return (<div className="card mb-5">
-            <h3 className="card-header">Purchase History</h3>
-            <ul className="list-group">
-                <li className="list-group-item">
-                    {history.map((order) => (
-                        <div key={order._id}>
-                            <hr />
-                            {order.products.map((product) => (
-                                <div key={product._id}>
-                                    <h6>Product name: {product.name}</h6>
-                                    <h6>Product price: €{product.price}</h6>
+
+        return (
+            <Card sx={{ mb: 4 }}>
+                <CardHeader title="Purchase History" />
+                <CardContent>
+                    {history.map(order => (
+                        <Box key={order._id} sx={{ mb: 3 }}>
+                            <Divider sx={{ mb: 2 }} />
+                            {order.products.map(product => (
+                                <Box key={product._id} sx={{ mb: 2 }}>
+                                    <Typography variant="subtitle2">
+                                        Product name: {product.name}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        Product price: €{product.price}
+                                    </Typography>
                                     {product.createdAt && (
-                                        <h6>
-                                            Purchased date:{" "}
-                                            {moment(product.createdAt).fromNow()}
-                                        </h6>
+                                        <Typography variant="body2" color="text.secondary">
+                                            Purchased: {moment(product.createdAt).fromNow()}
+                                        </Typography>
                                     )}
-                                </div>
+                                </Box>
                             ))}
-                        </div>
+                        </Box>
                     ))}
-                </li>
-            </ul>
-        </div>
-        )
+                </CardContent>
+            </Card>
+        );
     };
 
     return (
-        <Layout
-            title={`${name}'s Account`}
-            description=""
-            className="container-fluid"
-        >
-            <div className="row">
-                <div className="col-3">{userLinks()}</div>
-                <div className="col-9">
+        <Layout title={`${name}'s Account`} description="">
+            <Grid container spacing={3}>
+                <Box>
+                    {userLinks()}
+                </Box>
+
+                <Box>
                     {userInfo()}
                     {purchaseHistory()}
-                </div>
-            </div>
+                </Box>
+            </Grid>
         </Layout>
     );
 }
