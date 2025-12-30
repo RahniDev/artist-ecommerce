@@ -173,7 +173,7 @@ export const listSearch = async (req, res) => {
         const products = await Product.find(query)
             .select("-photo")
             .lean();
-        return res.json({ data: products });
+        return res.json(products);
     }
     catch (err) {
         res.status(400).json({ error: errorHandler(err) });

@@ -196,12 +196,11 @@ export const listSearch = async (req: Request, res: Response) => {
             .select("-photo")
             .lean();
 
-        return res.json({ data: products });
+       return res.json(products);
     } catch (err) {
         res.status(400).json({ error: errorHandler(err) });
     }
 };
-
 
 export const decreaseQuantity = async (req: Request, res: Response, next: NextFunction) => {
     const bulkOps = req.body.order.products.map(

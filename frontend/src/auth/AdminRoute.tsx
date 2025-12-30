@@ -8,8 +8,7 @@ interface AdminRouteProps {
 const AdminRoute = ({ children }: AdminRouteProps) => {
   const location = useLocation();
   const auth = isAuthenticated();
-
-  if (!auth || auth.user.role !== 1) {
+  if (!auth || Number(auth.user.role) !== 1) {
     return <Navigate to="/signin" state={{ from: location }} replace />;
   }
 

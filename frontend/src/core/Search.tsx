@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getCategories, list } from "./apiCore";
 import Card from "./Card";
-import type { ICategory, IProduct, ApiResponse } from "../types";
+import type { ICategory, IProduct } from "../types";
 
 interface SearchState {
   categories: ICategory[];
@@ -45,30 +45,19 @@ const loadCategories = async () => {
     loadCategories();
   }, []);
 
-  const searchData = async () => {
-    if (!search) return;
+const searchData = async () => {
+  if (!search) return;
 
-    try {
-      const res: ApiResponse<IProduct[]> = await list({
-        search,
-        category,
-      });
+  const res = await list({ search, category });
 
-      if (res.error) {
-        console.error("Search failed:", res.error);
-        setData((prev) => ({ ...prev, results: [], searched: true }));
-      } else {
-        setData((prev) => ({
-          ...prev,
-          results: res.data || [],
-          searched: true,
-        }));
-      }
-    } catch (err: any) {
-      console.error("Search error:", err.message || err);
-      setData((prev) => ({ ...prev, results: [], searched: true }));
-    }
-  };
+  if (res.error) {
+    setData(prev => ({ ...prev, results: [], searched: true }));
+    return;
+  }
+
+  const products = Array.isArray(res.data) ? res.data : [];
+  setData(prev => ({ ...prev, results: products, searched: true }));
+};
 
   const searchSubmit = (e: React.FormEvent) => {
     e.preventDefault();

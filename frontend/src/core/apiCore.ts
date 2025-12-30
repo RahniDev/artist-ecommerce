@@ -7,7 +7,6 @@ import type {
   BraintreeTransaction,
 } from "../types";
 import { API } from "../config";
-import queryString from "query-string";
 import type { ApiResponse } from "../types";
 
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<ApiResponse<T>> {
@@ -67,12 +66,18 @@ export async function getFilteredProducts(
   });
 }
 
-export async function list(
-  params: Record<string, unknown>
-): Promise<ApiResponse<IProduct[]>> {
-  const query = queryString.stringify(params);
-  return fetchJSON<IProduct[]>(`${API}/products/search?${query}`);
-}
+export const list = async (
+  params: { search?: string; category?: string }
+): Promise<ApiResponse<IProduct[]>> => {
+  try {
+    const query = new URLSearchParams(params as any).toString();
+    const res = await fetch(`${API}/products/search?${query}`);
+    const data = await res.json();
+    return { data: Array.isArray(data) ? data : [] };
+  } catch (err) {
+    return { error: "Search failed" };
+  }
+};
 
 export async function createOrder(
   userId: string,
