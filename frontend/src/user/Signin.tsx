@@ -3,15 +3,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import Layout from "../core/Layout";
 import { useNavigate } from "react-router-dom";
 import { signin, authenticate, isAuthenticated } from "../auth";
-import type { IUser } from "../types";
-
-interface SigninState {
-    email: string;
-    password: string;
-    error: string;
-    loading: boolean;
-    redirectToReferrer: boolean;
-}
+import type { IUser, SigninState } from "../types";
 
 const Signin: React.FC = () => {
     const navigate = useNavigate();

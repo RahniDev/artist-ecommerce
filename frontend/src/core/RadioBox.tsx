@@ -1,11 +1,5 @@
-// RadioBox.tsx
 import React, { useState } from "react";
-import type { IPriceRange } from "../types";
-
-interface RadioBoxProps {
-  prices: IPriceRange[];
-  handleFilters: (value: number) => void;
-}
+import type { RadioBoxProps } from "../types";
 
 const RadioBox: React.FC<RadioBoxProps> = ({ prices, handleFilters }) => {
   const [value, setValue] = useState<number>(0);

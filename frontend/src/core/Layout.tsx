@@ -1,12 +1,6 @@
-import type { ReactNode } from "react";
-import Navbar from "./Navbar";
 
-interface LayoutProps {
-    title?: string;
-    description?: string;
-    className?: string;
-    children: ReactNode;
-}
+import Navbar from "./Navbar";
+import type { LayoutProps } from '../types'
 
 const Layout: React.FC<LayoutProps> = ({
     title = "Title",

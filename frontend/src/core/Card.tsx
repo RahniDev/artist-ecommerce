@@ -2,20 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import ShowImage from "./ShowImage";
 import { updateItem, removeItem } from "./cartHelpers";
-import type { ICartItem } from "../types";
+import type { CardProps } from "../types";
 import Card from "@mui/material/Card";
 import StockBadge from "./StockBadge";
 import AddToCartButton from "./AddToCartButton";
-
-interface CardProps {
-    product: ICartItem;
-    showViewProductButton?: boolean;
-    showAddToCartButton?: boolean;
-    cartUpdate?: boolean;
-    showRemoveProductButton?: boolean;
-    setRun?: (value: boolean) => void;
-    run?: boolean;
-}
 
 const ProductCard: React.FC<CardProps> = ({
     product,

@@ -9,22 +9,7 @@ import {
 } from "./apiCore";
 import { emptyCart } from "./cartHelpers";
 import { isAuthenticated } from "../auth";
-import type { ICartItem, IOrder, BraintreeTransaction } from "../types";
-
-interface CheckoutProps {
-    products: ICartItem[];
-    setRun?: React.Dispatch<React.SetStateAction<boolean>>;
-    run?: boolean;
-}
-
-interface CheckoutData {
-    loading: boolean;
-    success: boolean;
-    clientToken: string | null;
-    error: string;
-    instance: any;
-    address: string;
-}
+import type { CheckoutProps, CheckoutData, IOrder, BraintreeTransaction } from "../types";
 
 const Checkout: React.FC<CheckoutProps> = ({
     products,

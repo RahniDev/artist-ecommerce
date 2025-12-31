@@ -1,8 +1,5 @@
 import Badge from "@mui/material/Badge";
-
-interface StockBadgeProps {
-    quantity: number;
-}
+import type { StockBadgeProps } from "../types";
 
 const StockBadge: React.FC<StockBadgeProps> = ({ quantity }) => {
     return quantity > 0 ? (

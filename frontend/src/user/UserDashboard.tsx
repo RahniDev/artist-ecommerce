@@ -5,7 +5,7 @@ import moment from "moment";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { getPurchaseHistory } from "./apiUser";
-
+import type { Order, AuthResponse } from '../types'
 import {
     Box,
     Card,
@@ -20,31 +20,6 @@ import {
     Divider,
     Link as MuiLink,
 } from "@mui/material";
-
-
-interface Product {
-    _id: string;
-    name: string;
-    price: number;
-    createdAt?: string;
-}
-
-interface Order {
-    _id: string;
-    products: Product[];
-}
-
-interface User {
-    _id: string;
-    name: string;
-    email: string;
-    role: number;
-}
-
-interface AuthResponse {
-    user: User;
-    token: string;
-}
 
 const UserDashboard = () => {
     const [history, setHistory] = useState<Order[]>([]);

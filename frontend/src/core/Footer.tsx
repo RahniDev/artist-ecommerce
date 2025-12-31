@@ -2,13 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import InstagramIcon from '@mui/icons-material/Instagram';
 import { getCategories } from "./apiCore";
-import type { ICategory } from "../types";
+import type { FooterData } from "../types";
 import "../styles.css";
 
-interface FooterData {
-    categories: ICategory[];
-    category?: string;
-}
 
 const Footer: React.FC = () => {
     const [data, setData] = useState<FooterData>({ categories: [], category: "" });

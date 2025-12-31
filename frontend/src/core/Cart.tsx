@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Layout from "./Layout";
 import { getCart } from "./cartHelpers";
-import type { CartItem } from "./cartHelpers";
+import type { CartItem } from "../types";
 import Card from "./Card";
 import Checkout from "./Checkout";
 

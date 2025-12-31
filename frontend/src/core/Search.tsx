@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getCategories, list } from "./apiCore";
 import Card from "./Card";
-import type { ICategory, IProduct } from "../types";
+import type { SearchState, IProduct } from "../types";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
@@ -14,14 +14,6 @@ import {
   Grid
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
-
-interface SearchState {
-  categories: ICategory[];
-  category: string;
-  search: string;
-  results: IProduct[];
-  searched: boolean;
-}
 
 const Search: React.FC = () => {
   const [data, setData] = useState<SearchState>({

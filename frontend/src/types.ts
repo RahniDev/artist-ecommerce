@@ -1,3 +1,5 @@
+import type { ReactNode } from "react";
+
 export interface ApiError {
   error: string;
 }
@@ -89,4 +91,142 @@ export interface IFilterParams {
   category?: string[];
   price?: number[];
   [key: string]: any;
+}
+
+export interface SearchState {
+  categories: ICategory[];
+  category: string;
+  search: string;
+  results: IProduct[];
+  searched: boolean;
+}
+
+export interface FilterState {
+  filters: {
+    category: string[];
+    price: number[];
+  };
+}
+
+export interface SigninState {
+    email: string;
+    password: string;
+    error: string;
+    loading: boolean;
+    redirectToReferrer: boolean;
+}
+
+export interface SignupFormState {
+    name: string;
+    email: string;
+    password: string;
+    error: string;
+    success: boolean;
+}
+
+
+export interface Product {
+    _id: string;
+    name: string;
+    price: number;
+    createdAt?: string;
+}
+
+export interface Order {
+    _id: string;
+    products: Product[];
+}
+
+export interface User {
+    _id: string;
+    name: string;
+    email: string;
+    role: number;
+}
+
+export interface AuthResponse {
+    user: User;
+    token: string;
+}
+
+export interface ProfileState {
+  name: string;
+  email: string;
+  password: string;
+  error: boolean;
+  success: boolean;
+}
+
+export interface StockBadgeProps {
+    quantity: number;
+}
+
+export interface ShowImageProps {
+  item: IProduct | { _id: string; name?: string };
+  url: string;
+}
+
+export interface RadioBoxProps {
+  prices: IPriceRange[];
+  handleFilters: (value: number) => void;
+}
+
+export interface LayoutProps {
+    title?: string;
+    description?: string;
+    className?: string;
+    children: ReactNode;
+}
+
+export interface FooterData {
+    categories: ICategory[];
+    category?: string;
+}
+
+export interface CheckoutProps {
+    products: ICartItem[];
+    setRun?: React.Dispatch<React.SetStateAction<boolean>>;
+    run?: boolean;
+}
+
+export interface CheckoutData {
+    loading: boolean;
+    success: boolean;
+    clientToken: string | null;
+    error: string;
+    instance: any;
+    address: string;
+}
+
+export interface CheckboxProps {
+    categories: ICategory[];
+    handleFilters: (selected: string[]) => void;
+}
+
+export interface CartItem extends IProduct {
+  count: number;
+}
+
+export interface CardProps {
+    product: ICartItem;
+    showViewProductButton?: boolean;
+    showAddToCartButton?: boolean;
+    cartUpdate?: boolean;
+    showRemoveProductButton?: boolean;
+    setRun?: (value: boolean) => void;
+    run?: boolean;
+}
+
+export interface AddToCartButtonProps {
+  product: ICartItem;
+  redirect?: boolean;
+  className?: string;
+}
+
+export interface PrivateRouteProps {
+  children: React.ReactElement;
+}
+
+export interface AdminRouteProps {
+  children: React.ReactElement;
 }

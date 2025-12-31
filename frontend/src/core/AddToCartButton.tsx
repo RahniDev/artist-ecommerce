@@ -1,12 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { addItem } from "./cartHelpers";
-import type { ICartItem } from "../types";
-
-interface AddToCartButtonProps {
-  product: ICartItem;
-  redirect?: boolean;
-  className?: string;
-}
+import type { AddToCartButtonProps } from "../types";
 
 const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   product,

@@ -6,14 +6,7 @@ import RadioBox from "./RadioBox";
 import { getCategories, getFilteredProducts } from "./apiCore";
 import { prices } from "./fixedPrices";
 import Grid from "@mui/material/Grid";
-import type { ICategory, IProduct } from "../types";
-
-interface FilterState {
-  filters: {
-    category: string[];
-    price: number[];
-  };
-}
+import type { ICategory, IProduct, FilterState } from "../types";
 
 const Shop: React.FC = () => {
   const [myFilters, setMyFilters] = useState<FilterState>({

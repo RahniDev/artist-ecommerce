@@ -1,8 +1,4 @@
-import type { IProduct } from "../types";
-
-export interface CartItem extends IProduct {
-  count: number;
-}
+import type { IProduct, CartItem } from "../types";
 
 const CART_KEY = "cart";
 

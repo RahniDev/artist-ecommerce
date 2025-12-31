@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import type { ICategory } from "../types";
-
-interface CheckboxProps {
-    categories: ICategory[];
-    handleFilters: (selected: string[]) => void;
-}
+import type { CheckboxProps } from "../types";
 
 const Checkbox: React.FC<CheckboxProps> = ({ categories, handleFilters }) => {
     const [checked, setChecked] = useState<string[]>([]);

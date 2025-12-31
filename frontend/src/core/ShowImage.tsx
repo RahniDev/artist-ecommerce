@@ -1,11 +1,6 @@
 import React from "react";
-import type { IProduct } from "../types";
+import type { ShowImageProps } from "../types";
 import { API } from "../config";
-
-interface ShowImageProps {
-  item: IProduct | { _id: string; name?: string };
-  url: string;
-}
 
 const ShowImage: React.FC<ShowImageProps> = ({ item, url }) => {
   return (

@@ -3,15 +3,7 @@ import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { useParams, Navigate } from "react-router-dom";
 import { read, update, updateUser } from "./apiUser";
-
-
-interface ProfileState {
-  name: string;
-  email: string;
-  password: string;
-  error: boolean;
-  success: boolean;
-}
+import type { ProfileState } from "../types";
 
 const Profile: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();

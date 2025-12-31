@@ -3,15 +3,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import Layout from "../core/Layout";
 import { signup } from "../auth";
-import type { ApiResponse, IUser } from "../types";
-
-interface SignupFormState {
-    name: string;
-    email: string;
-    password: string;
-    error: string;
-    success: boolean;
-}
+import type { ApiResponse, IUser, SignupFormState } from "../types";
 
 const Signup: React.FC = () => {
     const [values, setValues] = useState<SignupFormState>({

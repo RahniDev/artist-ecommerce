@@ -1,9 +1,6 @@
 import { Navigate, useLocation } from "react-router-dom";
 import { isAuthenticated } from "../auth";
-
-interface PrivateRouteProps {
-  children: React.ReactElement;
-}
+import type { PrivateRouteProps } from "../types";
 
 const PrivateRoute = ({ children }: PrivateRouteProps) => {
   const location = useLocation();
