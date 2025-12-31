@@ -52,6 +52,7 @@ export interface ICartItem extends IProduct {
 }
 
 export interface IOrder {
+  _id?: string;
   products: ICartItem[];
   transaction_id: string;
   amount: number;
@@ -59,7 +60,6 @@ export interface IOrder {
   status: string;
   user: string;
 }
-
 
 export interface IBraintreePaymentData {
   paymentMethodNonce: string;

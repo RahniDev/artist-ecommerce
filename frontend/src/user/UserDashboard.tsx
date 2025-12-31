@@ -44,7 +44,13 @@ const UserDashboard = () => {
         }
 
 
-        setHistory(res.data ?? []);
+        setHistory(
+            (res.data ?? []).map(order => ({
+                ...order,
+                _id: order._id ?? "temp-id",
+            }))
+        );
+
     };
 
     useEffect(() => {

@@ -3,7 +3,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import { Link } from "react-router-dom";
 import Layout from "../core/Layout";
 import { signup } from "../auth";
-import type { ApiResponse, IUser, SignupFormState } from "../types";
+import type { SignupFormState } from "../types";
 
 const Signup: React.FC = () => {
     const [values, setValues] = useState<SignupFormState>({
@@ -27,13 +27,13 @@ const Signup: React.FC = () => {
         setValues({ ...values, error: "" });
 
         try {
-            const data: ApiResponse<IUser> = await signup({
+            const data = await signup({
                 name,
                 email,
                 password,
             });
 
-            if (data.error) {
+            if ("error" in data) {
                 setValues({ ...values, error: data.error, success: false });
             } else {
                 setValues({

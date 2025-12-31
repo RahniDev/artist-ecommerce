@@ -9,18 +9,18 @@ import "../styles.css";
 const Footer: React.FC = () => {
     const [data, setData] = useState<FooterData>({ categories: [], category: "" });
 
-    const loadCategories = async () => {
-        try {
-            const categories = await getCategories();
-            if ("error" in categories) {
-                console.error(categories.error);
-            } else {
-                setData((prev) => ({ ...prev, categories }));
-            }
-        } catch (err) {
-            console.error(err);
+ const loadCategories = async () => {
+    try {
+        const res = await getCategories();
+        if ("error" in res) {
+            console.error(res.error);
+        } else {
+            setData((prev) => ({ ...prev, categories: res.data ?? [] }));
         }
-    };
+    } catch (err) {
+        console.error(err);
+    }
+};
 
     useEffect(() => {
         loadCategories();
