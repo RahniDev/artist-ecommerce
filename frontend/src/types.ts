@@ -27,7 +27,7 @@ export interface IPriceRange {
 }
 
 export interface ICategory {
-  _id?: string;
+  _id: string;
   name: string;
   createdAt?: string;
   updatedAt?: string;
@@ -106,44 +106,44 @@ export interface FilterState {
 }
 
 export interface SigninState {
-    email: string;
-    password: string;
-    error: string;
-    loading: boolean;
-    redirectToReferrer: boolean;
+  email: string;
+  password: string;
+  error: string;
+  loading: boolean;
+  redirectToReferrer: boolean;
 }
 
 export interface SignupFormState {
-    name: string;
-    email: string;
-    password: string;
-    error: string;
-    success: boolean;
+  name: string;
+  email: string;
+  password: string;
+  error: string;
+  success: boolean;
 }
 
 
 export interface Product {
-    _id: string;
-    name: string;
-    price: number;
-    createdAt?: string;
+  _id: string;
+  name: string;
+  price: number;
+  createdAt?: string;
 }
 
 export interface Order {
-    _id: string;
-    products: Product[];
+  _id: string;
+  products: Product[];
 }
 
 export interface User {
-    _id: string;
-    name: string;
-    email: string;
-    role: number;
+  _id: string;
+  name: string;
+  email: string;
+  role: number;
 }
 
 export interface AuthResponse {
-    user: User;
-    token: string;
+  user: User;
+  token: string;
 }
 
 export interface ProfileState {
@@ -155,7 +155,7 @@ export interface ProfileState {
 }
 
 export interface StockBadgeProps {
-    quantity: number;
+  quantity: number;
 }
 
 export interface ShowImageProps {
@@ -169,35 +169,35 @@ export interface RadioBoxProps {
 }
 
 export interface LayoutProps {
-    title?: string;
-    description?: string;
-    className?: string;
-    children: ReactNode;
+  title?: string;
+  description?: string;
+  className?: string;
+  children: ReactNode;
 }
 
 export interface FooterData {
-    categories: ICategory[];
-    category?: string;
+  categories: ICategory[];
+  category?: string;
 }
 
 export interface CheckoutProps {
-    products: ICartItem[];
-    setRun?: React.Dispatch<React.SetStateAction<boolean>>;
-    run?: boolean;
+  products: ICartItem[];
+  setRun?: React.Dispatch<React.SetStateAction<boolean>>;
+  run?: boolean;
 }
 
 export interface CheckoutData {
-    loading: boolean;
-    success: boolean;
-    clientToken: string | null;
-    error: string;
-    instance: any;
-    address: string;
+  loading: boolean;
+  success: boolean;
+  clientToken: string | null;
+  error: string;
+  instance: any;
+  address: string;
 }
 
 export interface CheckboxProps {
-    categories: ICategory[];
-    handleFilters: (selected: string[]) => void;
+  categories: ICategory[];
+  handleFilters: (selected: string[]) => void;
 }
 
 export interface CartItem extends IProduct {
@@ -205,13 +205,13 @@ export interface CartItem extends IProduct {
 }
 
 export interface CardProps {
-    product: ICartItem;
-    showViewProductButton?: boolean;
-    showAddToCartButton?: boolean;
-    cartUpdate?: boolean;
-    showRemoveProductButton?: boolean;
-    setRun?: (value: boolean) => void;
-    run?: boolean;
+  product: ICartItem;
+  showViewProductButton?: boolean;
+  showAddToCartButton?: boolean;
+  cartUpdate?: boolean;
+  showRemoveProductButton?: boolean;
+  setRun?: (value: boolean) => void;
+  run?: boolean;
 }
 
 export interface AddToCartButtonProps {

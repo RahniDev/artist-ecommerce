@@ -31,19 +31,12 @@ const Search: React.FC = () => {
 
     if (result.error) {
       console.error(result.error);
-      setData((prev) => ({
-        ...prev,
-        categories: [], // always array
-      }));
+      setData(prev => ({ ...prev, categories: [] }));
       return;
     }
-
-    // ✅ Ensure categories is ALWAYS an array
-    setData((prev) => ({
-      ...prev,
-      categories: Array.isArray(result.data) ? result.data : [],
-    }));
+    setData(prev => ({ ...prev, categories: result.data ?? [] }));
   };
+
 
   useEffect(() => {
     loadCategories();
@@ -125,13 +118,16 @@ const Search: React.FC = () => {
           onChange={handleCategoryChange}
         >
           <MenuItem value="">All</MenuItem>
-          {categories.map((c) => (
-            <MenuItem key={c._id} value={c._id}>
-              {c.name}
-            </MenuItem>
-          ))}
+          {categories
+            .filter(c => c._id)
+            .map(c => (
+              <MenuItem key={c._id} value={c._id}>
+                {c.name}
+              </MenuItem>
+            ))}
         </Select>
       </FormControl>
+
 
       {/* Search Input */}
       <TextField
