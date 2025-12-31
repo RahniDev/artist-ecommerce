@@ -9,7 +9,7 @@ import {
 } from "./apiCore";
 import { emptyCart } from "./cartHelpers";
 import { isAuthenticated } from "../auth";
-import type { CheckoutProps, CheckoutData, IOrder, BraintreeTransaction } from "../types";
+import type { CheckoutProps, CheckoutData, IOrder } from "../types";
 
 const Checkout: React.FC<CheckoutProps> = ({
     products,
@@ -30,12 +30,19 @@ const Checkout: React.FC<CheckoutProps> = ({
     const token = auth?.token;
 
     const getToken = async () => {
-        const data = await getBraintreeClientToken(userId!, token!);
+        const res = await getBraintreeClientToken(userId!, token!);
 
-        if ('error' in data) {
-            setData(prev => ({ ...prev, error: data.error }));
+        if (res.error) {
+            setData(prev => ({
+                ...prev,
+                error: res.error ?? "",
+            }));
         } else {
-            setData(prev => ({ ...prev, clientToken: data.clientToken }));
+            setData(prev => ({
+                ...prev,
+                clientToken: res.clientToken ?? null,
+                error: "",
+            }));
         }
     };
 
@@ -52,46 +59,42 @@ const Checkout: React.FC<CheckoutProps> = ({
 
     const buy = async () => {
         if (!data.instance) return;
+
         setData({ ...data, loading: true });
 
         try {
             const { nonce } = await data.instance.requestPaymentMethod();
-            const paymentData = { paymentMethodNonce: nonce, amount: getTotal() };
 
-            const paymentResult: BraintreeTransaction = await processPayment(
-                userId!,
-                token!,
-                paymentData
-            );
+            const paymentResponse = await processPayment(userId!, token!, {
+                paymentMethodNonce: nonce,
+                amount: getTotal(),
+            });
 
-            let orderData: IOrder | null = null;
-
-            if ('transaction' in paymentResult) {
-                const amount = Number(paymentResult.transaction.amount);
-                if (isNaN(amount)) throw new Error("Invalid transaction amount");
-
-                orderData = {
-                    products,
-                    transaction_id: paymentResult.transaction.id,
-                    amount,
-                    address: data.address,
-                    status: "Received",
-                    user: userId!,
-                };
-
+            if (paymentResponse.error || !paymentResponse.data) {
+                throw new Error(paymentResponse.error || "Payment failed");
             }
 
-            if (orderData) {
-                await createOrder(userId!, token!, orderData);
-            }
+            const transaction = paymentResponse.data.transaction;
+
+            const orderData: IOrder = {
+                products,
+                transaction_id: transaction.id,
+                amount: Number(transaction.amount),
+                address: data.address,
+                status: "Received",
+                user: userId!,
+            };
+
+            await createOrder(userId!, token!, orderData);
 
             emptyCart(() => setRun(!run));
-
             setData({ ...data, success: true, loading: false });
+
         } catch (err: any) {
             setData({ ...data, error: err.message, loading: false });
         }
     };
+
 
 
 
