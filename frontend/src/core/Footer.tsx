@@ -1,80 +1,97 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import InstagramIcon from '@mui/icons-material/Instagram';
+import React, { useEffect, useState } from "react";
+import { Link as RouterLink } from "react-router-dom";
+import { Box, Grid, Typography, Link, Divider, IconButton } from "@mui/material";
+import InstagramIcon from "@mui/icons-material/Instagram";
 import { getCategories } from "./apiCore";
-import type { FooterData } from "../types";
-import "../styles.css";
-
+import type { ICategory } from "../types";
 
 const Footer: React.FC = () => {
-    const [data, setData] = useState<FooterData>({ categories: [], category: "" });
+    const [categories, setCategories] = useState<ICategory[]>([]);
 
- const loadCategories = async () => {
-    try {
+    const loadCategories = async () => {
         const res = await getCategories();
-        if ("error" in res) {
+        if (res.error) {
             console.error(res.error);
         } else {
-            setData((prev) => ({ ...prev, categories: res.data ?? [] }));
+            setCategories(res.data ?? []);
         }
-    } catch (err) {
-        console.error(err);
-    }
-};
+    };
 
     useEffect(() => {
         loadCategories();
     }, []);
 
-    const { categories } = data;
-
     return (
-        <footer id="footer">
-            <div className="hrow row">
-                <div className="col-sm-5 follow">
-                        <span className="twitter-icon">
-                            <a href="" target="_blank" rel="noopener noreferrer">
-                                <InstagramIcon />
-                            </a>
-                        </span>
-                </div>
-                <div className="col-sm-7">
-                    <div className="links">
-                        <div className="col">
-                            <h5>Shop</h5>
-                            <ul>
-                                {categories.map((c) => (
-                                    <li key={c._id}>
-                                        <Link to={`/shop/category/${c._id}`} className="c-link">
-                                            {c.name}
-                                        </Link>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+        <Box component="footer" sx={{ bgcolor: "#f5f5f5", mt: 4, p: 4 }}>
+            <Grid container size={24} spacing={8} alignItems="flex-start">
+                <Grid size={4}>
+                    <Typography variant="h6" gutterBottom>
+                        Follow Us
+                    </Typography>
+                    <IconButton
+                        component="a"
+                        href="https://instagram.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        color="primary"
+                    >
+                        <InstagramIcon />
+                    </IconButton>
+                </Grid>
 
-                        <div className="col">
-                            <h5>Help</h5>
-                            <ul>
+                <Grid container>
+                    <Grid size={6}>
+                        <Typography variant="h6" gutterBottom>
+                            Shop
+                        </Typography>
+                        <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
+                            {categories.map((c) => (
+                                <li key={c._id}>
+                                    <Link
+                                        component={RouterLink}
+                                        to={`/shop/category/${c._id}`}
+                                        underline="hover"
+                                        color="textPrimary"
+                                    >
+                                        {c.name}
+                                    </Link>
+                                </li>
+                            ))}
+                        </Box>
+                        </Grid>
+                        <Grid size={6}>
+                            <Typography variant="h6" gutterBottom>
+                                Help
+                            </Typography>
+                            <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
                                 <li>
-                                    <Link to="/" className="link">Contact</Link>
+                                    <Link component={RouterLink} to="/" underline="hover">
+                                        Contact
+                                    </Link>
                                 </li>
                                 <li>
-                                    <Link to="/" className="link">Shipping & Returns</Link>
+                                    <Link component={RouterLink} to="/" underline="hover">
+                                        Shipping & Returns
+                                    </Link>
                                 </li>
-                            </ul>
-                            <ul className="contact">
+                            </Box>
+                            <Box component="ul" sx={{ listStyle: "none", p: 0, mt: 1 }}>
                                 <li>
-                                    <strong>T.&nbsp;</strong>+33 1 23 45 67 89
+                                    <Typography variant="body2">
+                                        <strong>T.&nbsp;</strong>+33 1 23 45 67 89
+                                    </Typography>
                                 </li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <hr className="hr" />
-            <small>&copy; {new Date().getFullYear()} . All rights reserved.</small>
-        </footer>
+                            </Box>
+                        </Grid>
+                    </Grid>
+            </Grid>
+
+            <Divider sx={{ my: 3 }} />
+
+            <Typography variant="body2" color="textSecondary" align="center">
+                &copy; {new Date().getFullYear()} . All rights reserved.
+            </Typography>
+        </Box>
     );
 };
 

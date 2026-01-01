@@ -227,3 +227,8 @@ export interface PrivateRouteProps {
 export interface AdminRouteProps {
   children: React.ReactElement;
 }
+
+export interface FilterResponse {
+  size: number;
+  data: IProduct[];
+}

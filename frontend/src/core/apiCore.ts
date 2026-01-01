@@ -5,6 +5,7 @@ import type {
   IOrder,
   IBraintreePaymentData,
   BraintreeTransaction,
+  FilterResponse
 } from "../types";
 import { API } from "../config";
 import type { ApiResponse } from "../types";
@@ -57,12 +58,6 @@ export async function getCategories(): Promise<ApiResponse<ICategory[]>> {
   } catch (err: any) {
     return { error: err.message || "Network error" };
   }
-}
-
-
-export interface FilterResponse {
-  size: number;
-  data: IProduct[];
 }
 
 export async function getFilteredProducts(

@@ -49,9 +49,7 @@ const Home: React.FC = () => {
   return (
     <Layout
       title=""
-      description=""
-      className="container-fluid"
-    >
+      description="">
       <Hero />
       <Search />
 

@@ -1,5 +1,6 @@
 
 import Navbar from "./Navbar";
+import Footer from "./Footer";
 import type { LayoutProps } from '../types'
 
 const Layout: React.FC<LayoutProps> = ({
@@ -16,6 +17,7 @@ const Layout: React.FC<LayoutProps> = ({
                 <p className="lead">{description}</p>
             </div>
             <div className={className}>{children}</div>
+            <Footer />
         </div>
     );
 };
