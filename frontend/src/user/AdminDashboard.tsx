@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
-import type { IUser } from "../types";
-import { Card, CardHeader, List, ListItem, ListItemButton, ListItemText, Grid } from "@mui/material";
+import type { IUser, IAuthData } from "../types";
+import { Card, CardHeader, List, ListItem, ListItemButton, ListItemText, Grid, CardContent, Stack } from "@mui/material";
+import { listOrders } from "../admin/apiAdmin";
 
 const AdminDashboard: React.FC = () => {
+    const [totalOrders, setTotalOrders] = useState<number>(0);
     const auth = isAuthenticated();
     if (!auth) {
         return (
@@ -18,6 +20,22 @@ const AdminDashboard: React.FC = () => {
     const { user } = auth as { user: IUser };
 
     const { name, email, role } = user;
+
+    useEffect(() => {
+        const loadTotalOrders = async () => {
+            try {
+                const { user, token } = isAuthenticated() as IAuthData;
+                const data = await listOrders(user._id, token);
+
+                if (!data.error && data.data) {
+                    setTotalOrders(data.data.length);
+                }
+            } catch (err) {
+                console.error("Failed to load total orders", err);
+            }
+        };
+        loadTotalOrders();
+    }, []);
 
     const adminLinks = () => (
         <Card sx={{ width: 360 }}>
@@ -59,12 +77,28 @@ const AdminDashboard: React.FC = () => {
         </Card>
     );
 
+    const adminStats = () => (
+        <Card sx={{ width: 360 }}>
+            <CardHeader title="Total Orders" />
+            <CardContent>
+                <h2>{totalOrders}</h2>
+            </CardContent>
+        </Card>
+    )
+
     return (
         <Layout title=""
             description={`Hi ${name}!`}>
-            <Grid>
-                {adminLinks()}
-                {adminInfo()}
+            <Grid container spacing={3}>
+                <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+                    <Stack spacing={2}>
+                    {adminLinks()}
+                    {adminInfo()}
+                    </Stack>
+                </Grid>
+                <Grid size={{ xs: 12, md: 6, lg: 4 }}>
+                    {adminStats()}
+                </Grid>
             </Grid>
         </Layout>
     );
