@@ -22,7 +22,7 @@ const RadioBox: React.FC<RadioBoxProps> = ({ prices, handleFilters }) => {
             onChange={handleChange}
             className="mr-2 ml-4"
           />
-          <label className="form-check-label">{p.name}</label>
+          <label>{p.name}</label>
         </div>
       ))}
     </>

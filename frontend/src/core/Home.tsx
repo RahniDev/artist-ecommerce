@@ -9,7 +9,6 @@ import Grid from "@mui/material/Grid";
 
 const Home: React.FC = () => {
   const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
-  const [productsBySell, setProductsBySell] = useState<IProduct[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -25,15 +24,6 @@ const Home: React.FC = () => {
         setError(arrivalRes.error);
       } else {
         setProductsByArrival(arrivalRes.data?.data ?? []);
-      }
-
-      const sellRes: ApiResponse<{ data: IProduct[] }> =
-        await getProducts("sold");
-
-      if (sellRes.error) {
-        setError(sellRes.error);
-      } else {
-        setProductsBySell(sellRes.data?.data ?? []);
       }
     } catch (err: any) {
       setError(err.message || "Failed to load products");
@@ -72,26 +62,10 @@ const Home: React.FC = () => {
             No new arrivals yet.
           </p>
         )}
-        <Grid container spacing={2}>
+        <Grid container>
           {productsByArrival.map((product) => (
             <Grid size={4} key={product._id} className="mb-3">
               <ProductCard product={product} />
-            </Grid>
-          ))}
-        </Grid>
-      </div>
-
-      <h2 className="text-center">Best Sellers</h2>
-      <div className="row">
-        {productsBySell.length === 0 && !loading && !error && (
-          <p className="text-center text-muted w-100">
-            No best sellers yet.
-          </p>
-        )}
-        <Grid container spacing={2}>
-          {productsBySell.map((product) => (
-            <Grid size={4} key={product._id} className="mb-3">
-              <ProductCard product={{ ...product, count: 1 }} />
             </Grid>
           ))}
         </Grid>

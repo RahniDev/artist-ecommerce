@@ -11,7 +11,8 @@ import {
   Button,
   InputLabel,
   FormControl,
-  Grid
+  Grid,
+  Typography
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 
@@ -28,7 +29,6 @@ const Search: React.FC = () => {
 
   const loadCategories = async () => {
     const result = await getCategories();
-
     if (result.error) {
       console.error(result.error);
       setData(prev => ({ ...prev, categories: [] }));
@@ -36,7 +36,6 @@ const Search: React.FC = () => {
     }
     setData(prev => ({ ...prev, categories: result.data ?? [] }));
   };
-
 
   useEffect(() => {
     loadCategories();
@@ -77,7 +76,6 @@ const Search: React.FC = () => {
     }));
   };
 
-
   const searchMessage = (searched: boolean, results: IProduct[]) => {
     if (!searched) return "";
     return results.length > 0
@@ -86,17 +84,21 @@ const Search: React.FC = () => {
   };
 
   const searchedProducts = (results: IProduct[]) => (
-    <Grid container spacing={2}>
-      <Grid size={12}>
-        <h2>{searchMessage(searched, results)}</h2>
-      </Grid>
-      {results.map((product) => (
+    <Grid container spacing={2} sx={{ mt: 2 }}>
+      {results.length > 0 && (
+        <Grid size={12}>
+          <Typography variant="h6" align="center">
+            {searchMessage(searched, results)}
+          </Typography>
+        </Grid>
+      )}
+      {results.map(product => (
         <Grid size={4} key={product._id}>
           <Card product={product} />
         </Grid>
       ))}
     </Grid>
-  )
+  );
 
   const searchForm = () => (
     <Box
@@ -104,11 +106,14 @@ const Search: React.FC = () => {
       onSubmit={searchSubmit}
       sx={{
         display: "flex",
-        gap: 2,
+        justifyContent: "center",
         alignItems: "center",
-        width: "100%",
+        gap: 1,
+        mt: 4,
+        flexWrap: "wrap",
       }}
     >
+      {/* Category dropdown */}
       <FormControl sx={{ minWidth: 160 }}>
         <InputLabel id="category-label">Category</InputLabel>
         <Select
@@ -116,33 +121,35 @@ const Search: React.FC = () => {
           value={category}
           label="Category"
           onChange={handleCategoryChange}
+          size="medium"
         >
           <MenuItem value="">All</MenuItem>
-          {categories
-            .filter(c => c._id)
-            .map(c => (
-              <MenuItem key={c._id} value={c._id}>
-                {c.name}
-              </MenuItem>
-            ))}
+          {categories.filter(c => c._id).map(c => (
+            <MenuItem key={c._id} value={c._id}>
+              {c.name}
+            </MenuItem>
+          ))}
         </Select>
       </FormControl>
 
-
-      {/* Search Input */}
+      {/* Search input */}
       <TextField
-        fullWidth
         type="search"
         label="Search products"
         value={search}
         onChange={handleSearchChange}
+        sx={{
+          minWidth: 250,
+          flexGrow: 1,
+        }}
+        size="medium"
       />
 
-      {/* Search Button */}
+      {/* Search button */}
       <Button
         type="submit"
         variant="contained"
-        size="large"
+        sx={{ height: 56, minWidth: 56 }}
       >
         <SearchIcon />
       </Button>
@@ -151,7 +158,15 @@ const Search: React.FC = () => {
 
   return (
     <Grid container spacing={2}>
-      <Grid size={4}>{searchForm()}</Grid>
+      {/* Search form */}
+      <Grid
+        size={12}
+        sx={{ display: "flex", justifyContent: "center" }}
+      >
+        {searchForm()}
+      </Grid>
+
+      {/* Search results */}
       <Grid size={12}>{searchedProducts(results)}</Grid>
     </Grid>
   );

@@ -24,21 +24,6 @@ const Footer: React.FC = () => {
     return (
         <Box component="footer" sx={{ bgcolor: "#f5f5f5", mt: 4, p: 4 }}>
             <Grid container size={24} spacing={8} alignItems="flex-start">
-                <Grid size={4}>
-                    <Typography variant="h6" gutterBottom>
-                        Follow Us
-                    </Typography>
-                    <IconButton
-                        component="a"
-                        href="https://instagram.com"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        color="primary"
-                    >
-                        <InstagramIcon />
-                    </IconButton>
-                </Grid>
-
                 <Grid container>
                     <Grid size={6}>
                         <Typography variant="h6" gutterBottom>
@@ -83,11 +68,21 @@ const Footer: React.FC = () => {
                                 </li>
                             </Box>
                         </Grid>
+                        
                     </Grid>
+                    <Grid size={4}>
+                    <IconButton
+                        component="a"
+                        href="https://instagram.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        color="primary"
+                    >
+                        <InstagramIcon />
+                    </IconButton>
+                </Grid>
             </Grid>
-
             <Divider sx={{ my: 3 }} />
-
             <Typography variant="body2" color="textSecondary" align="center">
                 &copy; {new Date().getFullYear()} . All rights reserved.
             </Typography>

@@ -12,9 +12,9 @@ const Layout: React.FC<LayoutProps> = ({
     return (
         <div>
             <Navbar />
-            <div className="jumbotron">
+            <div>
                 <h2>{title}</h2>
-                <p className="lead">{description}</p>
+                <p>{description}</p>
             </div>
             <div className={className}>{children}</div>
             <Footer />

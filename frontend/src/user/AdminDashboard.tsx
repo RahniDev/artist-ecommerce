@@ -89,7 +89,7 @@ const AdminDashboard: React.FC = () => {
     return (
         <Layout title=""
             description={`Hi ${name}!`}>
-            <Grid container spacing={3}>
+            <Grid container spacing={3} sx={{ pl: { xs: 2, md: 4 } }}>
                 <Grid size={{ xs: 12, md: 6, lg: 4 }}>
                     <Stack spacing={2}>
                     {adminLinks()}

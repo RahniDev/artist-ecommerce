@@ -34,14 +34,12 @@ const Navbar: React.FC = () => {
     return (
         <AppBar position="static" elevation={1} sx={{ backgroundColor: "#fff" }}>
             <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-                {/* Logo */}
                 <Box display="flex" alignItems="center">
                     <NavLink to="/">
                         <img src={logo} width="40" height="40" alt="Logo" />
                     </NavLink>
                 </Box>
 
-                {/* Navigation Links */}
                 <Box display="flex" alignItems="center" gap={2}>
                     <Button
                         component={NavLink}
@@ -67,7 +65,7 @@ const Navbar: React.FC = () => {
                             to="/admin/dashboard"
                             sx={linkStyle}
                         >
-                            Dashboard
+                            <Person2OutlinedIcon />
                         </Button>
                     )}
 
