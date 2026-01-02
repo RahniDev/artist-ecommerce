@@ -1,0 +1,7 @@
+{
+  "search": "Search",
+  "add_to_cart": "Add to cart",
+  "checkout": "Checkout",
+  "no_products": "No products found",
+  "found_products": "Found {{count}} products"
+}
