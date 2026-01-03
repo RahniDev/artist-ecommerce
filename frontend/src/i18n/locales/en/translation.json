@@ -1,0 +1,14 @@
+{
+  "add_to_cart": "Add to cart",
+  "cart_items_count": "Your cart has {items.length} items",
+  "no_products": "No products found",
+  "found_products": "Found {{count}} products",
+  "signin_checkout": "Sign in to checkout",
+  "in_stock": "In Stock",
+  "out_of_stock": "Out of Stock",
+  "search": "Search products",
+  "category": "Category",
+  "signin": "Sign In",
+  "signup": "Sign Up",
+  "signout": "Sign Out"
+}

@@ -39,15 +39,7 @@ const Navbar: React.FC = () => {
                         <img src={logo} width="40" height="40" alt="Logo" />
                     </NavLink>
                 </Box>
-
                 <Box display="flex" alignItems="center" gap={2}>
-                    <Button
-                        component={NavLink}
-                        to="/"
-                        sx={linkStyle}
-                    >
-                        Home
-                    </Button>
 
                     {auth && auth.user.role === 0 && (
                         <IconButton

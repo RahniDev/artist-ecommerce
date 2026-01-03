@@ -5,10 +5,13 @@ import { getCart } from "./cartHelpers";
 import type { CartItem } from "../types";
 import Card from "./Card";
 import Checkout from "./Checkout";
+import { useTranslation } from "react-i18next";
 
 const Cart: React.FC = () => {
     const [items, setItems] = useState<CartItem[]>([]);
     const [run, setRun] = useState<boolean>(false);
+
+  const { t } = useTranslation();
 
     useEffect(() => {
         setItems(getCart());
@@ -16,7 +19,7 @@ const Cart: React.FC = () => {
 
     const showItems = (items: CartItem[]) => (
         <div>
-            <h2>Your cart has {items.length} items</h2>
+            <h2>{t("Your cart has {items.length} items")}</h2>
             <hr />
             {items.map((product) => (
                 <Card
@@ -43,7 +46,6 @@ const Cart: React.FC = () => {
         <Layout
             title="Shopping Cart"
             description="Checkout now!"
-            className="container-fluid"
         >
             <div className="row">
                 <div className="col-6">

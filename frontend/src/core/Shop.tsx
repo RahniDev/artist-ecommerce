@@ -96,15 +96,13 @@ const Shop: React.FC = () => {
   return (
     <Layout
       title="Shop Page"
-      description="Browse through our selection of eco-friendly, high quality products."
-      className="container-fluid"
+      description=""
     >
       {error && (
-        <div className="alert alert-danger">{error}</div>
+        <div>{error}</div>
       )}
 
       <Grid container spacing={2}>
-        {/* FILTERS */}
         <Grid size={3} className="mb-3">
           <h4>Filter by categories</h4>
             <Checkbox
@@ -122,11 +120,10 @@ const Shop: React.FC = () => {
             }
           />
         </Grid>
-        {/* PRODUCTS */}
+
         <Grid size={9}>
 
           <h2 className="mb-4">Products</h2>
-
           <Grid container spacing={2}>
             {filteredResults.map((product) => (
               <Grid size={3} key={product._id}>

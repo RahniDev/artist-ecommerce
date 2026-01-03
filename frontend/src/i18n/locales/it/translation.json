@@ -1,0 +1,14 @@
+{
+  "add_to_cart": "Aggiungi al carrello",
+  "cart_items_count": "Il tuo carrello contiene {items.length} articoli",
+  "no_products": "Nessun prodotto trovato",
+  "found_products": "Trovati {{count}} prodotti",
+  "signin_checkout": "Accedi per il pagamento",
+  "in_stock": "Disponibile",
+  "out_of_stock": "Non disponibile",
+  "search": "Cerca prodotti",
+  "category": "Categoria",
+  "signin": "Accedi",
+  "signup": "Registrati",
+  "signout": "Esci"
+}

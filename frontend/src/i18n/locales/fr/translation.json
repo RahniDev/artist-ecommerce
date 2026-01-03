@@ -1,0 +1,14 @@
+{
+  "add_to_cart": "Ajouter au panier",
+  "cart_items_count": "Votre panier contient {items.length} articles",
+  "no_products": "Aucun produit trouvé",
+  "found_products": "{{count}} produits trouvés",
+  "signin_checkout": "Connectez-vous pour payer",
+  "in_stock": "En stock",
+  "out_of_stock": "Rupture de stock",
+  "search": "Rechercher des produits",
+  "category": "Catégorie",
+  "signin": "Se connecter",
+  "signup": "S’inscrire",
+  "signout": "Se déconnecter"
+}

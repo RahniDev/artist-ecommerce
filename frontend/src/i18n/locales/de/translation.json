@@ -1,0 +1,14 @@
+{
+  "add_to_cart": "In den Warenkorb",
+  "cart_items_count": "Ihr Warenkorb enthält {items.length} Artikel",
+  "no_products": "Keine Produkte gefunden",
+  "found_products": "{{count}} Produkte gefunden",
+  "signin_checkout": "Zum Bezahlen anmelden",
+  "in_stock": "Auf Lager",
+  "out_of_stock": "Nicht auf Lager",
+  "search": "Produkte suchen",
+  "category": "Kategorie",
+  "signin": "Anmelden",
+  "signup": "Registrieren",
+  "signout": "Abmelden"
+}

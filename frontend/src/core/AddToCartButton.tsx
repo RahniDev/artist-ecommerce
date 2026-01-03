@@ -1,13 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { addItem } from "./cartHelpers";
 import type { AddToCartButtonProps } from "../types";
+import { useTranslation } from "react-i18next";
 
 const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   product,
   redirect = true,
-  className = "btn btn-outline-warning mt-2 mb-2 card-btn-1",
 }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleAddToCart = () => {
     addItem(product, () => {
@@ -18,8 +19,8 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   };
 
   return (
-    <button onClick={handleAddToCart} className={className}>
-      Add to cart
+    <button onClick={handleAddToCart}>
+      {t("Add to cart")}
     </button>
   );
 };
