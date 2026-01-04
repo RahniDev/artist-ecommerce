@@ -6,12 +6,13 @@ import type { CartItem } from "../types";
 import Checkout from "./Checkout";
 import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material";
+import CartItemControls from "./CartItemControls";
 
 const Cart: React.FC = () => {
     const [items, setItems] = useState<CartItem[]>([]);
     const [run, setRun] = useState<boolean>(false);
 
-  const { t } = useTranslation();
+    const { t } = useTranslation();
 
     useEffect(() => {
         setItems(getCart());
@@ -22,10 +23,16 @@ const Cart: React.FC = () => {
             <h2>{t("Your cart has {items.length} items")}</h2>
             <hr />
             {items.map((product) => (
-                <Box>
-                {product.name}
-                {product.price}
+                <Box key={product._id} sx={{ mb: 2 }}>
+                    <strong>{product.name}</strong>
+                    <div>€ {product.price}</div>
 
+                    <CartItemControls
+                        productId={product._id}
+                        initialCount={product.count ?? 1}
+                        run={run}
+                        setRun={setRun}
+                    />
                 </Box>
             ))}
         </div>
