@@ -14,6 +14,7 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import { signout, isAuthenticated } from "../auth";
 import { itemTotal } from "./cartHelpers";
 import logo from "../assets/react.svg";
+import LangSwitch from "../i18n/LangSwitch";
 
 const linkStyle = {
     textDecoration: "none",
@@ -50,7 +51,7 @@ const Navbar: React.FC = () => {
                             <Person2OutlinedIcon />
                         </IconButton>
                     )}
-
+                    <LangSwitch />
                     {auth && auth.user.role === 1 && (
                         <Button
                             component={NavLink}
