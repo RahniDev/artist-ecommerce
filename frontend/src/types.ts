@@ -7,6 +7,23 @@ export interface ApiResponse<T> {
   data?: T;
   error?: string;
 }
+export interface Category {
+  _id: string;
+  name: string;
+}
+
+export interface ApiResponse<T = any> {
+  error?: string;
+  data?: T;
+}
+
+export interface CategoryInput {
+  name: string;
+}
+
+export interface Product {
+  [key: string]: any;
+}
 
 export interface IProduct {
   _id: string;

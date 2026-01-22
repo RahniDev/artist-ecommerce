@@ -1,23 +1,5 @@
 import { API } from '../config';
-import type { IOrder, IProduct } from '../types';
-
-export interface Category {
-    _id: string;
-    name: string;
-}
-
-export interface Product {
-    [key: string]: any;
-}
-
-export interface ApiResponse<T = any> {
-    error?: string;
-    data?: T;
-}
-
- export interface CategoryInput {
-    name: string;
-}
+import type { IOrder, IProduct, CategoryInput, Category, ApiResponse, Product } from '../types';
 
 export const createCategory = async (
     userId: string,
@@ -205,7 +187,6 @@ export const getProduct = async (productId: string): Promise<ApiResponse> => {
     }
 };
 
-// apiAdmin.ts
 export const updateProduct = async (
     productId: string,
     userId: string,

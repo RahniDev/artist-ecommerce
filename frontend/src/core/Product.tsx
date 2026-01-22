@@ -6,11 +6,12 @@ import { read, listRelated } from "./apiCore";
 import type { IProduct } from "../types";
 import SoldBadge from "./SoldBadge";
 import AddToCartButton from "./AddToCartButton";
+import ProductBreadcrumbs from "./ProductBreadcrumbs";
 import ShowImage from "./ShowImage";
 import {
   Box,
   Typography,
-  Grid,
+  Grid
 } from "@mui/material";
 
 const Product: React.FC = () => {
@@ -44,10 +45,11 @@ const Product: React.FC = () => {
 
   return (
     <Layout title="" description="">
-      <Grid container spacing={2}>
+      <Grid container spacing={2} p={3}>
         <Grid size={12}>
           {product && (
             <Box>
+              <ProductBreadcrumbs product={product} />
               <Grid container
                 alignItems="center">
                 <Grid size={6}>
@@ -88,8 +90,8 @@ const Product: React.FC = () => {
             </Box>
           )}
         </Grid>
-        
-        <Grid container spacing={3} mt={6} p={3}>
+
+        <Grid container spacing={3} mt={6}>
           {related.slice(0, 4).map((p) => (
             <Grid size={12} key={p._id}>
               <ProductCard product={{ ...p, count: 1 }} />
