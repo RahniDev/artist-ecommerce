@@ -8,7 +8,6 @@ const ShowImage: React.FC<ShowImageProps> = ({ item, url }) => {
       <img
         src={`${API}/${url}/photo/${item._id}`}
         alt={item.name ?? "Product Image"}
-        className="mb-3"
         style={{
           height: "200px",
           width: "200px",

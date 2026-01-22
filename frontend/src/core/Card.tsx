@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import ShowImage from "./ShowImage";
 import type { CardProps } from "../types";
 import Card from "@mui/material/Card";
-import StockBadge from "./StockBadge";
+import SoldBadge from "./SoldBadge";
 import AddToCartButton from "./AddToCartButton";
 
 const ProductCard: React.FC<CardProps> = ({
@@ -17,13 +17,9 @@ const ProductCard: React.FC<CardProps> = ({
 
                 <div className="product-header">{product.name}</div>
 
-                <p className="p-info p-desc mt-2">
-                    {product.description.substring(0, 100)}
-                </p>
-
                 <p className="p-info">€ {product.price}</p>
 
-                <StockBadge quantity={product.quantity} />
+                <SoldBadge quantity={product.quantity} />
 
                 <br />
                 {showAddToCartButton && (

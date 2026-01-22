@@ -155,7 +155,7 @@ export interface ProfileState {
   success: boolean;
 }
 
-export interface StockBadgeProps {
+export interface SoldBadgeProps {
   quantity: number;
 }
 

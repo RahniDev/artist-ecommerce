@@ -4,7 +4,7 @@ import Layout from "./Layout";
 import ProductCard from "./Card";
 import { read, listRelated } from "./apiCore";
 import type { IProduct } from "../types";
-import StockBadge from "./StockBadge";
+import SoldBadge from "./SoldBadge";
 import AddToCartButton from "./AddToCartButton";
 import ShowImage from "./ShowImage";
 import {
@@ -43,43 +43,53 @@ const Product: React.FC = () => {
   }, [productId]);
 
   return (
-    <Layout
-      title={product?.name}
-      description={product?.description?.substring(0, 100)}
-    >
+    <Layout title="" description="">
       <Grid container spacing={2}>
         <Grid size={12}>
           {product && (
             <Box>
-              <ShowImage item={product} url="product" />
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                gutterBottom
-              >
-                {product.category?.name ?? "Uncategorized"}
-              </Typography>
-              <Typography
-                variant="h5"
-                color="success.main"
-                fontWeight="bold"
-                gutterBottom
-              >
-                € {product.price}
-              </Typography>
-              <Grid my={2}>
-                <StockBadge quantity={product.quantity} />
+              <Grid container
+                alignItems="center">
+                <Grid size={6}>
+                  <ShowImage item={product} url="product" />
+                </Grid>
+
+                <Grid size={6}>
+                  <Typography variant="h4" fontWeight="bold">
+                    {product.name}
+                  </Typography>
+
+                  <Typography variant="body1" color="text.secondary">
+                    {product.description}
+                  </Typography>
+
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    gutterBottom
+                  >
+                    {product.category?.name ?? "Uncategorized"}
+                  </Typography>
+                  <Typography
+                    variant="h5"
+                    color="success.main"
+                    fontWeight="bold"
+                    gutterBottom
+                  >
+                    € {product.price}
+                  </Typography>
+                  <SoldBadge quantity={product.quantity} />
+                  <AddToCartButton
+                    product={{ ...product, count: 1 }}
+                    redirect={false}
+                  />
+                </Grid>
               </Grid>
-
-              <AddToCartButton
-                product={{ ...product, count: 1 }}
-                redirect={false}
-              />
-
             </Box>
           )}
         </Grid>
-        <Grid container spacing={3}>
+        
+        <Grid container spacing={3} mt={6} p={3}>
           {related.slice(0, 4).map((p) => (
             <Grid size={12} key={p._id}>
               <ProductCard product={{ ...p, count: 1 }} />
