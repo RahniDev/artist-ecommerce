@@ -128,20 +128,17 @@ export const listOrders = async (
     }
 };
 
-export const getStatusValues = async (userId: string, token: string): Promise<string[]> => {
-    try {
-        const res = await fetch(`${API}/order/status-values/${userId}`, {
-            method: 'GET',
-            headers: {
-                Accept: 'application/json',
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        return await res.json();
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
+export const getStatusValues = async (
+    userId: string,
+    token: string
+): Promise<string[]> => {
+    const res = await fetch(`/api/order/status-values/${userId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    return res.json();
 };
 
 export const updateOrderStatus = async (
@@ -211,22 +208,22 @@ export const getProduct = async (productId: string): Promise<ApiResponse> => {
 
 // apiAdmin.ts
 export const updateProduct = async (
-  productId: string,
-  userId: string,
-  token: string,
-  productData: FormData
+    productId: string,
+    userId: string,
+    token: string,
+    productData: FormData
 ): Promise<ApiResponse<IProduct>> => {
-  try {
-    const res = await fetch(`${API}/product/${productId}/${userId}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-      body: productData,
-    });
-    const data: ApiResponse<IProduct> = await res.json();
-    return data;
-  } catch (err) {
-    return { error: "Update failed" };
-  }
+    try {
+        const res = await fetch(`${API}/product/${productId}/${userId}`, {
+            method: "PUT",
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            body: productData,
+        });
+        const data: ApiResponse<IProduct> = await res.json();
+        return data;
+    } catch (err) {
+        return { error: "Update failed" };
+    }
 };

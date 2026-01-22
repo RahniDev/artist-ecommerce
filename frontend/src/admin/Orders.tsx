@@ -32,16 +32,13 @@ const Orders: React.FC = () => {
 
     const loadStatusValues = async () => {
         try {
-            const data: ApiResponse<Status> = await getStatusValues(user._id, token);
-            if (data.error) {
-                console.error(data.error);
-            } else {
-                setStatusValues(data.data || []);
-            }
+            const data = await getStatusValues(user._id, token);
+            setStatusValues(data);
         } catch (err) {
             console.error("Failed to load status values", err);
         }
     };
+
 
     useEffect(() => {
         loadOrders();
@@ -68,7 +65,7 @@ const Orders: React.FC = () => {
             <h1 className="text-danger">No orders</h1>
         );
 
-    // Helper to show read-only input
+    // read-only input
     const showInput = (key: string, value: string | number) => (
         <div className="input-group mb-2 mr-sm-2">
             <div className="input-group-prepend">
@@ -114,12 +111,12 @@ const Orders: React.FC = () => {
                                 <span className="bg-primary">Order ID: {o._id}</span>
                             </h2>
                             <ul className="list-group mb-2">
-                                <li className="list-group-item">{showStatus(o)}</li>
-                                <li className="list-group-item">Transaction ID: {o.transaction_id}</li>
-                                <li className="list-group-item">Amount: £{o.amount}</li>
-                                <li className="list-group-item">Ordered by: {o.user.name}</li>
-                                <li className="list-group-item">Ordered on: {moment(o.createdAt).fromNow()}</li>
-                                <li className="list-group-item">Delivery Address: {o.address}</li>
+                                <li>{showStatus(o)}</li>
+                                <li>Transaction ID: {o.transaction_id}</li>
+                                <li>Amount: £{o.amount}</li>
+                                <li>Ordered by: {o.user.name}</li>
+                                <li>Ordered on: {moment(o.createdAt).fromNow()}</li>
+                                <li>Delivery Address: {o.address}</li>
                             </ul>
 
                             <h3 className="mt-4 mb-4 font-italic">

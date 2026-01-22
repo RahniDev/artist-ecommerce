@@ -52,13 +52,14 @@ export interface ICartItem extends IProduct {
 }
 
 export interface IOrder {
-  _id?: string;
+  _id: string;
   products: ICartItem[];
   transaction_id: string;
   amount: number;
   address: string;
   status: string;
-  user: string;
+  user: IUser;
+  createdAt: number;
 }
 
 export interface IBraintreePaymentData {

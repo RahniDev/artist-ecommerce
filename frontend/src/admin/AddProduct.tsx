@@ -1,4 +1,3 @@
-// AddProduct.tsx
 import React, { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import Layout from "../core/Layout";
@@ -106,7 +105,7 @@ const AddProduct: React.FC = () => {
                     quantity: "",
                     photo: "",
                     loading: false,
-                    createdProduct: data.data.name, // <-- note data.data.name
+                    createdProduct: data.data.name,
                     formData: new FormData(),
                 }));
             }
