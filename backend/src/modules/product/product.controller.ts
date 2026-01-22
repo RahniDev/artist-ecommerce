@@ -166,18 +166,21 @@ export const create = async (req: Request, res: Response) => {
 };
 
 export const deleteProduct = async (req: Request, res: Response) => {
-    const product = req.product
+  try {
+    const product = await Product.findById(req.params.productId);
     if (!product) {
-        return res.status(404).json({ error: "Product not found" });
+      return res.status(404).json({ error: "Product not found" });
     }
-    try {
-        await product.deleteOne()
-        return res.json({ message: "Product deleted successfully", productId: product._id });
-    } catch (err) {
-        return res.status(400).json({ error: errorHandler(err) });
-    }
-}
 
+    await product.deleteOne();
+    return res.json({
+      message: "Product deleted successfully",
+      productId: product._id
+    });
+  } catch (err) {
+    return res.status(400).json({ error: errorHandler(err) });
+  }
+};
 
 export const update = async (req: Request, res: Response) => {
     let form = new formidable.IncomingForm()

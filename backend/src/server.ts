@@ -37,7 +37,6 @@ app.use((req, res, next) => {
   next();
 });
 
-
 app.use('/api', authRoutes)
 app.use('/api', userRoutes)
 app.use('/api', categoryRoutes)

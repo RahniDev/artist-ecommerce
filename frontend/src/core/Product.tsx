@@ -6,6 +6,7 @@ import { read, listRelated } from "./apiCore";
 import type { IProduct } from "../types";
 import StockBadge from "./StockBadge";
 import AddToCartButton from "./AddToCartButton";
+import ShowImage from "./ShowImage";
 import {
   Box,
   Typography,
@@ -50,6 +51,7 @@ const Product: React.FC = () => {
         <Grid size={12}>
           {product && (
             <Box>
+              <ShowImage item={product} url="product" />
               <Typography
                 variant="body2"
                 color="text.secondary"
@@ -84,7 +86,7 @@ const Product: React.FC = () => {
             </Grid>
           ))}
         </Grid>
-        </Grid>
+      </Grid>
     </Layout>
   );
 };
