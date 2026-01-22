@@ -14,13 +14,24 @@ const app = express();
 await connectDB();
 app.use(morgan('dev'));
 app.use(cookieParser());
-app.use(express.json());
+app.use((req, res, next) => {
+    if (req.headers["content-type"]?.includes("multipart/form-data")) {
+        return next();
+    }
+    express.json()(req, res, next);
+});
 app.use(cors({
     origin: "http://localhost:5173",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
 }));
+app.use((req, res, next) => {
+    if (req.method === "OPTIONS") {
+        return res.sendStatus(204);
+    }
+    next();
+});
 app.use('/api', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api', categoryRoutes);

@@ -14,31 +14,31 @@ declare global {
 }
 
 export const productById = async (
-  req: Request,
-  res: Response,
-  next: NextFunction,
-  id: string
+    req: Request,
+    res: Response,
+    next: NextFunction,
+    id: string
 ) => {
-  try {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-      return res.status(400).json({ error: "Invalid product ID" });
+    try {
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ error: "Invalid product ID" });
+        }
+
+        const product = await Product.findById(id)
+            .populate("category")
+            .select("-photo")
+            .lean();
+
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
+
+        req.product = product as any;
+        return next();
+    } catch (err) {
+        console.error("productById error:", err);
+        return res.status(500).json({ error: "Failed to load product" });
     }
-
-    const product = await Product.findById(id)
-      .populate("category")
-      .select("-photo")
-      .lean();
-
-    if (!product) {
-      return res.status(404).json({ error: "Product not found" });
-    }
-
-    req.product = product as any;
-    return next();
-  } catch (err) {
-    console.error("productById error:", err);
-    return res.status(500).json({ error: "Failed to load product" });
-  }
 };
 
 export const read = (req: Request, res: Response): Response => {
@@ -49,17 +49,17 @@ export const read = (req: Request, res: Response): Response => {
 }
 
 export const list = async (req: Request, res: Response) => {
-  try {
-    const products = await Product.find()
-      .select("-photo")
-      .sort({ createdAt: -1 })
-      .limit(6)
-      .lean();
+    try {
+        const products = await Product.find()
+            .select("-photo")
+            .sort({ createdAt: -1 })
+            .limit(6)
+            .lean();
 
-    return res.status(200).json({ data: products });
-  } catch (err) {
-    return res.status(400).json({ error: "Products not found" });
-  }
+        return res.status(200).json({ data: products });
+    } catch (err) {
+        return res.status(400).json({ error: "Products not found" });
+    }
 };
 
 // returns products in same category 
@@ -95,36 +95,66 @@ export const photo = (req: Request, res: Response, next: NextFunction): Response
 }
 
 export const create = async (req: Request, res: Response) => {
-    let parsed; const form = formidable()
+    const form = formidable();
+
     try {
-        parsed = await new Promise<{ fields: Fields; files: Files }>((resolve, reject) => {
+        const { fields, files } = await new Promise<{ fields: Fields; files: Files }>((resolve, reject) => {
             form.parse(req, (err, fields, files) => {
-                if (err) return reject(err);
-                resolve({ fields, files });
+                if (err) reject(err);
+                else resolve({ fields, files });
             });
         });
-    } catch {
-        return res.status(400).json({ error: "Image could not be uploaded" });
-    }
-    const { fields, files } = parsed;
-    const { name, description, price, category, quantity, shipping } = fields;
-    if (!name || !description || !price || !category || !quantity || !shipping) {
-        return res.status(400).json({ error: "All fields are required" });
-    }
-    let product = new Product(fields);
-    const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
-    if (photo) {
-        if (photo.size > 1000000) {
-            return res.status(400).json({ error: "Image should be less than 1MB" });
+
+        let { name, description, price, category, quantity, shipping } = fields;
+
+        const normalize = (v: any) => Array.isArray(v) ? v[0] : v;
+
+        name = normalize(name);
+        description = normalize(description);
+        price = Number(normalize(price));
+        quantity = Number(normalize(quantity));
+        category = normalize(category);
+        shipping = normalize(shipping);
+
+        shipping = shipping === "1" || shipping === "true";
+
+        if (
+            name == null ||
+            description == null ||
+            isNaN(price) ||
+            category == null ||
+            isNaN(quantity) ||
+            shipping == null
+        ) {
+            return res.status(400).json({ error: "All fields are required" });
         }
-        const photoData = await fs.promises.readFile(photo.filepath)
-        product.photo = { data: photoData, contentType: photo.type };
-    }
-    try {
-        const result = await product.save(); return res.json(result);
-    }
-    catch (err) {
-        return res.status(400).json({ error: errorHandler(err) });
+
+        const product = new Product({
+            name,
+            description,
+            price,
+            category,
+            quantity,
+            shipping
+        });
+
+        const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
+        if (photo) {
+            if (photo.size > 1_000_000) {
+                return res.status(400).json({ error: "Image should be less than 1MB" });
+            }
+            product.photo = {
+                data: await fs.promises.readFile(photo.filepath),
+                contentType: photo.mimetype
+            };
+        }
+
+        const result = await product.save();
+        return res.json(result);
+
+    } catch (err) {
+        console.error(err);
+        return res.status(400).json({ error: "Product creation failed" });
     }
 };
 
@@ -196,7 +226,7 @@ export const listSearch = async (req: Request, res: Response) => {
             .select("-photo")
             .lean();
 
-       return res.json(products);
+        return res.json(products);
     } catch (err) {
         res.status(400).json({ error: errorHandler(err) });
     }

@@ -15,8 +15,7 @@ export interface ApiResponse<T = any> {
     data?: T;
 }
 
-// used when creating a category
-export interface CategoryInput {
+ export interface CategoryInput {
     name: string;
 }
 

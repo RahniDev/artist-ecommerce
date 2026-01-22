@@ -77,40 +77,57 @@ export const photo = (req, res, next) => {
     next();
 };
 export const create = async (req, res) => {
-    let parsed;
     const form = formidable();
     try {
-        parsed = await new Promise((resolve, reject) => {
+        const { fields, files } = await new Promise((resolve, reject) => {
             form.parse(req, (err, fields, files) => {
                 if (err)
-                    return reject(err);
-                resolve({ fields, files });
+                    reject(err);
+                else
+                    resolve({ fields, files });
             });
         });
-    }
-    catch {
-        return res.status(400).json({ error: "Image could not be uploaded" });
-    }
-    const { fields, files } = parsed;
-    const { name, description, price, category, quantity, shipping } = fields;
-    if (!name || !description || !price || !category || !quantity || !shipping) {
-        return res.status(400).json({ error: "All fields are required" });
-    }
-    let product = new Product(fields);
-    const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
-    if (photo) {
-        if (photo.size > 1000000) {
-            return res.status(400).json({ error: "Image should be less than 1MB" });
+        let { name, description, price, category, quantity, shipping } = fields;
+        const normalize = (v) => Array.isArray(v) ? v[0] : v;
+        name = normalize(name);
+        description = normalize(description);
+        price = Number(normalize(price));
+        quantity = Number(normalize(quantity));
+        category = normalize(category);
+        shipping = normalize(shipping);
+        shipping = shipping === "1" || shipping === "true";
+        if (name == null ||
+            description == null ||
+            isNaN(price) ||
+            category == null ||
+            isNaN(quantity) ||
+            shipping == null) {
+            return res.status(400).json({ error: "All fields are required" });
         }
-        const photoData = await fs.promises.readFile(photo.filepath);
-        product.photo = { data: photoData, contentType: photo.type };
-    }
-    try {
+        const product = new Product({
+            name,
+            description,
+            price,
+            category,
+            quantity,
+            shipping
+        });
+        const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
+        if (photo) {
+            if (photo.size > 1000000) {
+                return res.status(400).json({ error: "Image should be less than 1MB" });
+            }
+            product.photo = {
+                data: await fs.promises.readFile(photo.filepath),
+                contentType: photo.mimetype
+            };
+        }
         const result = await product.save();
         return res.json(result);
     }
     catch (err) {
-        return res.status(400).json({ error: errorHandler(err) });
+        console.error(err);
+        return res.status(400).json({ error: "Product creation failed" });
     }
 };
 export const deleteProduct = async (req, res) => {
