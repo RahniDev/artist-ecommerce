@@ -68,13 +68,19 @@ export const listCategories = async (req, res) => {
         return res.status(400).json({ error: 'Categories not found' });
     }
 };
-export const photo = (req, res, next) => {
-    const photo = req.product?.photo;
-    if (photo?.data) {
-        res.set('Content-Type', photo.contentType);
-        return res.send(photo.data);
+export const photo = async (req, res) => {
+    try {
+        const product = await Product.findById(req.params.productId)
+            .select("photo");
+        if (!product || !product.photo?.data) {
+            return res.status(404).send("No image");
+        }
+        res.set("Content-Type", product.photo.contentType);
+        return res.send(product.photo.data);
     }
-    next();
+    catch (err) {
+        return res.status(500).send("Image error");
+    }
 };
 export const create = async (req, res) => {
     const form = formidable();
