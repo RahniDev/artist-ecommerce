@@ -61,7 +61,7 @@ const Shop: React.FC = () => {
 
   const loadMoreButton = () =>
     size > 0 && size >= limit ? (
-      <button onClick={loadMore} className="btn btn-warning mb-5">
+      <button onClick={loadMore}>
         Load more
       </button>
     ) : null;

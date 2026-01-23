@@ -1,20 +1,22 @@
 import React from "react";
 import type { ShowImageProps } from "../types";
 import { API } from "../config";
+import Box from "@mui/material/Box";
 
-const ShowImage: React.FC<ShowImageProps> = ({ item, url }) => {
+const ShowImage: React.FC<ShowImageProps> = ({
+  item,
+  url,
+  width = 200,
+  height = 200,
+  objectFit = "cover",
+}) => {
   return (
-    <div className="product-img">
-      <img
-        src={`${API}/${url}/photo/${item._id}`}
-        alt={item.name ?? "Product Image"}
-        style={{
-          height: "200px",
-          width: "200px",
-          objectFit: "cover",
-        }}
-      />
-    </div>
+    <Box
+      component="img"
+      src={`${API}/${url}/photo/${item._id}`}
+      alt={item.name ?? "Product Image"}
+      sx={{ width, height, objectFit }}
+    />
   );
 };
 

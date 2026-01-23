@@ -53,7 +53,11 @@ const Product: React.FC = () => {
               <Grid container
                 alignItems="center">
                 <Grid size={6}>
-                  <ShowImage item={product} url="product" />
+                  <ShowImage
+                  item={product}
+                  url="product"
+                  width={380}
+                  height={380} />
                 </Grid>
 
                 <Grid size={6}>

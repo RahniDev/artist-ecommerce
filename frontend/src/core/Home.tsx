@@ -62,9 +62,9 @@ const Home: React.FC = () => {
             No new arrivals yet.
           </p>
         )}
-        <Grid container>
+        <Grid container p={3}>
           {productsByArrival.map((product) => (
-            <Grid size={4} key={product._id} className="mb-3">
+            <Grid size={{ xs: 12, sm: 6, md: 3 }} key={product._id}>
               <ProductCard product={product} />
             </Grid>
           ))}

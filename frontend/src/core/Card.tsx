@@ -11,16 +11,17 @@ const ProductCard: React.FC<CardProps> = ({
 }) => {
 
     return (
-        <Card variant="outlined">
+        <Card sx={{ width: '300px' }}>
             <Link to={`/product/${product._id}`}>
-                <ShowImage item={product} url="product" />
-
+                <ShowImage
+                    item={product}
+                    url="product"
+                    width={160}
+                    height={160}
+                />
                 <div className="product-header">{product.name}</div>
-
                 <p className="p-info">€ {product.price}</p>
-
                 <SoldBadge quantity={product.quantity} />
-
                 <br />
                 {showAddToCartButton && (
                     <AddToCartButton product={product} />

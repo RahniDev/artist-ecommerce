@@ -15,5 +15,6 @@ Backend: Node, Express, MongoDB
 - Emails to user and admin after every order placed
 - Filter products by category & price range
 - Search products
-- Related products on single product page
+- Related products section on product page
+- Product breadcrumbs
   

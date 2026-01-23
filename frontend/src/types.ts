@@ -177,8 +177,14 @@ export interface SoldBadgeProps {
 }
 
 export interface ShowImageProps {
-  item: IProduct | { _id: string; name?: string };
+ item: {
+    _id: string;
+    name?: string;
+  };
   url: string;
+  width?: number | string;
+  height?: number | string;
+  objectFit?: React.CSSProperties["objectFit"];
 }
 
 export interface RadioBoxProps {
