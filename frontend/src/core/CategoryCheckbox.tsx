@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import type { CheckboxProps } from "../types";
+import { Checkbox, FormControlLabel, Box } from "@mui/material";
 
-const Checkbox: React.FC<CheckboxProps> = ({ categories, handleFilters }) => {
+const CategoryCheckbox: React.FC<CheckboxProps> = ({ categories, handleFilters }) => {
     const [checked, setChecked] = useState<string[]>([]);
 
     const handleToggle = (categoryId: string) => () => {
@@ -19,20 +20,21 @@ const Checkbox: React.FC<CheckboxProps> = ({ categories, handleFilters }) => {
     };
 
     return (
-        <ul>
+        <Box>
             {categories.map((category) => (
-                <li key={category._id} className="list-unstyled">
-                    <input
-                        type="checkbox"
-                        className="form-check-input"
-                        onChange={handleToggle(category._id!)}
-                        checked={checked.includes(category._id!)}
-                    />
-                    <label className="form-check-label">{category.name}</label>
-                </li>
+                <FormControlLabel
+                    key={category._id}
+                    control={
+                        <Checkbox
+                            checked={checked.includes(category._id)}
+                            onChange={handleToggle(category._id)}
+                        />
+                    }
+                    label={category.name}
+                />
             ))}
-        </ul>
+        </Box>
     );
 };
 
-export default Checkbox;
+export default CategoryCheckbox;

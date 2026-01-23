@@ -16,8 +16,8 @@ const ProductCard: React.FC<CardProps> = ({
                 <ShowImage
                     item={product}
                     url="product"
-                    width={160}
-                    height={160}
+                    width={220}
+                    height={220}
                 />
                 <div className="product-header">{product.name}</div>
                 <p className="p-info">€ {product.price}</p>

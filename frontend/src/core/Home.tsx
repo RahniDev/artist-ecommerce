@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import Layout from "./Layout";
 import { getProducts } from "./apiCore";
-import ProductCard from "./Card";
 import Search from "./Search";
 import Hero from "./Hero";
 import type { IProduct, ApiResponse } from "../types";
-import Grid from "@mui/material/Grid";
+import ListProducts from './ListProducts'
 
 const Home: React.FC = () => {
   const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
@@ -62,13 +61,7 @@ const Home: React.FC = () => {
             No new arrivals yet.
           </p>
         )}
-        <Grid container p={3}>
-          {productsByArrival.map((product) => (
-            <Grid size={{ xs: 12, sm: 6, md: 3 }} key={product._id}>
-              <ProductCard product={product} />
-            </Grid>
-          ))}
-        </Grid>
+       <ListProducts />
       </div>
     </Layout>
   );

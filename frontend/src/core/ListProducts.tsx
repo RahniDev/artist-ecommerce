@@ -1,14 +1,13 @@
 import React, { useState, useEffect } from "react";
-import Layout from "./Layout";
 import ProductCard from "./Card";
-import Checkbox from "./Checkbox";
+import CategoryCheckbox from "./CategoryCheckbox";
 import RadioBox from "./RadioBox";
 import { getCategories, getFilteredProducts } from "./apiCore";
 import { prices } from "./fixedPrices";
 import Grid from "@mui/material/Grid";
 import type { ICategory, IProduct, FilterState } from "../types";
 
-const Shop: React.FC = () => {
+const ListProducts: React.FC = () => {
   const [myFilters, setMyFilters] = useState<FilterState>({
     filters: { category: [], price: [] },
   });
@@ -94,25 +93,22 @@ const Shop: React.FC = () => {
   };
 
   return (
-    <Layout
-      title="Shop Page"
-      description=""
-    >
+    <>
       {error && (
         <div>{error}</div>
       )}
 
       <Grid container spacing={2}>
-        <Grid size={3} className="mb-3">
-          <h4>Filter by categories</h4>
-            <Checkbox
+        <Grid size={3}>
+          <h4>Categories</h4>
+        <CategoryCheckbox
               categories={categories}
               handleFilters={(filters) =>
                 handleFilters(filters, "category")
               }
             />
 
-          <h4>Filter by price range</h4>
+          <h4>Prices</h4>
           <RadioBox
             prices={prices}
             handleFilters={(selectedPrice) =>
@@ -122,8 +118,6 @@ const Shop: React.FC = () => {
         </Grid>
 
         <Grid size={9}>
-
-          <h2 className="mb-4">Products</h2>
           <Grid container spacing={2}>
             {filteredResults.map((product) => (
               <Grid size={3} key={product._id}>
@@ -134,8 +128,8 @@ const Shop: React.FC = () => {
           {loadMoreButton()}
         </Grid>
       </Grid>
-    </Layout>
+    </>
   );
 };
 
-export default Shop;
+export default ListProducts;
