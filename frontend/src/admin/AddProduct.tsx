@@ -3,7 +3,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { createProduct, getCategories } from "./apiAdmin";
-import type { Category } from "./apiAdmin";
+import type { Category } from "../types";
 
 interface AuthUser {
     _id: string;

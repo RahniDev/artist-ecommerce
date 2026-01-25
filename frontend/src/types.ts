@@ -1,5 +1,18 @@
 import type { ReactNode } from "react";
 
+export interface AuthUser {
+    _id: string;
+    name: string;
+    email: string;
+    role: number;
+}
+
+export interface AuthData {
+    user: AuthUser;
+    token: string;
+}
+
+
 export interface ApiError {
   error: string;
 }
