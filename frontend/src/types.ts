@@ -1,33 +1,25 @@
 import type { ReactNode } from "react";
 
 export interface AuthUser {
-    _id: string;
-    name: string;
-    email: string;
-    role: number;
+  _id: string;
+  name: string;
+  email: string;
+  role: number;
 }
 
 export interface AuthData {
-    user: AuthUser;
-    token: string;
-}
-
-
-export interface ApiError {
-  error: string;
-}
-export interface ApiResponse<T> {
-  data?: T;
-  error?: string;
-}
-export interface Category {
-  _id: string;
-  name: string;
+  user: AuthUser;
+  token: string;
 }
 
 export interface ApiResponse<T = any> {
-  error?: string;
   data?: T;
+  error?: string;
+}
+
+export interface Category {
+  _id: string;
+  name: string;
 }
 
 export interface CategoryInput {
@@ -190,7 +182,7 @@ export interface SoldBadgeProps {
 }
 
 export interface ShowImageProps {
- item: {
+  item: {
     _id: string;
     name?: string;
   };
