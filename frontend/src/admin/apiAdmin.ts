@@ -113,7 +113,7 @@ export const getStatusValues = async (
     userId: string,
     token: string
 ): Promise<string[]> => {
-    const res = await fetch(`/api/order/status-values/${userId}`, {
+    const res = await fetch(`/${API}/order/status-values/${userId}`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },

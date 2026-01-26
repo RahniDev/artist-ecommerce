@@ -99,16 +99,21 @@ export const createOrder = async (
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ order: orderData }),
+      body: JSON.stringify({ order: orderData }), 
     });
 
-    return await res.json();
-  } catch (err) {
+    if (!res.ok) {
+      const text = await res.text();
+      return { error: `API error: ${res.status} ${res.statusText} - ${text}` };
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (err: any) {
     console.error(err);
-    throw err;
+    return { error: err.message || "Failed to create order" };
   }
 };
-
 
 
 export async function processPayment(

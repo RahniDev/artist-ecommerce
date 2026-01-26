@@ -42,7 +42,7 @@ const Cart: React.FC = () => {
     const noItemsMessage = () => (
         <h2>
             Your Cart is empty. <br />
-            <Link href="/shop">Continue shopping.</Link>
+            <Link href="/">Continue shopping.</Link>
         </h2>
     );
 

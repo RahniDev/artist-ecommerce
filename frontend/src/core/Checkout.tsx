@@ -14,9 +14,9 @@ const Checkout: React.FC<CheckoutProps> = ({ products, setRun = () => { }, run =
     error: "",
     address: "",
   });
-  const [dropInInstance, setDropInInstance] = useState<any>(null);
-
-  const dropinContainer = useRef<HTMLDivElement>(null);
+  const dropinContainer = useRef<HTMLDivElement | null>(null);
+  const dropInInstance = useRef<any>(null);
+  const dropInMounted = useRef(false);
 
   const auth = isAuthenticated();
   const userId = auth?.user._id;
@@ -37,29 +37,47 @@ const Checkout: React.FC<CheckoutProps> = ({ products, setRun = () => { }, run =
     getToken();
   }, [userId, token]);
 
-  // Initialize DropIn manually
   useEffect(() => {
-    if (!data.clientToken || !dropinContainer.current) return;
+    if (
+      !data.clientToken ||
+      !dropinContainer.current ||
+      dropInMounted.current
+    ) {
+      return;
+    }
 
-    let instance: any;
-    braintree.create({
-      authorization: data.clientToken,
-      container: dropinContainer.current,
-    }, (err: any, dropinInstance: any) => {
-      if (err) {
-        console.error("Braintree DropIn error:", err);
-        setData(prev => ({ ...prev, error: "Failed to load payment UI" }));
-        return;
+    dropInMounted.current = true;
+    dropinContainer.current.innerHTML = "";
+
+    braintree.create(
+      {
+        authorization: data.clientToken,
+        container: dropinContainer.current,
+        card: {
+          cardholderName: true,
+        },
+      },
+      (err: any, instance: any) => {
+        if (err) {
+          console.error("Braintree DropIn error:", err);
+          setData(prev => ({ ...prev, error: "Failed to load payment UI" }));
+          dropInMounted.current = false;
+          return;
+        }
+
+        dropInInstance.current = instance;
       }
-      instance = dropinInstance;
-      setDropInInstance(instance);
-    });
+    );
 
     return () => {
-      // Cleanup DropIn on unmount
-      if (instance) instance.teardown(() => console.log("Braintree DropIn torn down"));
+      if (dropInInstance.current) {
+        dropInInstance.current.teardown();
+        dropInInstance.current = null;
+        dropInMounted.current = false;
+      }
     };
   }, [data.clientToken]);
+
 
   const getTotal = () => products.reduce((sum, p) => sum + (p.count ?? 1) * p.price, 0);
 
@@ -68,34 +86,37 @@ const Checkout: React.FC<CheckoutProps> = ({ products, setRun = () => { }, run =
   };
 
   const buy = async () => {
-    if (!dropInInstance) return;
+    if (!dropInInstance.current) return;
 
     setData(prev => ({ ...prev, loading: true }));
+
     try {
-      const { nonce } = await dropInInstance.requestPaymentMethod();
+      const { nonce } =
+        await dropInInstance.current.requestPaymentMethod();
+
       const paymentResponse = await processPayment(userId!, token!, {
         paymentMethodNonce: nonce,
         amount: getTotal(),
       });
 
-      if (paymentResponse.error || !paymentResponse.data?.transaction) {
-        throw new Error(paymentResponse.error || "Payment failed");
+      if (!paymentResponse.data?.transaction) {
+        throw new Error("Payment failed");
       }
 
       const transaction = paymentResponse.data.transaction;
-      console.log("Transaction ID:", transaction.id);
 
       await createOrder(userId!, token!, {
         products,
         transaction_id: transaction.id,
         amount: Number(transaction.amount),
         address: data.address,
-        status: "Received",
+        status: "Not processed",
         user: userId!,
       });
 
       emptyCart(() => setRun(!run));
       setData(prev => ({ ...prev, success: true, loading: false }));
+
     } catch (err: any) {
       setData(prev => ({ ...prev, error: err.message, loading: false }));
     }
@@ -130,14 +151,15 @@ const Checkout: React.FC<CheckoutProps> = ({ products, setRun = () => { }, run =
               mb: 2,
             }}
           />
-
           <Button
             variant="contained"
             onClick={buy}
-            disabled={!dropInInstance || data.loading}
+            disabled={!dropInInstance.current || data.loading}
           >
             Pay
           </Button>
+
+
         </Box>
       ) : (
         <Link href="/signin">Sign in to checkout</Link>

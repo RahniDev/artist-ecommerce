@@ -4,7 +4,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// Connect to Braintree
 const gateway = new braintree.BraintreeGateway({
     environment: braintree.Environment.Sandbox,
     merchantId: process.env.BRAINTREE_MERCHANT_ID || '',
@@ -45,4 +44,3 @@ export const processPayment = async (req: Request, res: Response) => {
     res.status(500).json({ error: err });
   }
 };
-
