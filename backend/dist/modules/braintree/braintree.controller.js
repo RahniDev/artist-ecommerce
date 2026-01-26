@@ -11,7 +11,7 @@ const gateway = new braintree.BraintreeGateway({
 export const brainTreeToken = async (req, res) => {
     try {
         const response = await gateway.clientToken.generate({});
-        res.json(response);
+        res.json({ clientToken: response.clientToken });
     }
     catch (err) {
         res.status(500).json({ error: err });
@@ -23,11 +23,17 @@ export const processPayment = async (req, res) => {
         const result = await gateway.transaction.sale({
             amount: amount,
             paymentMethodNonce: paymentMethodNonce,
-            options: {
-                submitForSettlement: true
-            }
+            options: { submitForSettlement: true },
         });
-        res.json(result);
+        // result has `success` and `transaction`
+        if (!result.success) {
+            return res.status(400).json({
+                error: result.message || "Transaction failed",
+            });
+        }
+        res.json({
+            transaction: result.transaction,
+        });
     }
     catch (err) {
         res.status(500).json({ error: err });

@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import Layout from "./Layout";
 import { getCart } from "./cartHelpers";
 import type { CartItem } from "../types";
 import Checkout from "./Checkout";
 import { useTranslation } from "react-i18next";
-import { Box } from "@mui/material";
+import { Box, Grid, Link } from "@mui/material";
 import CartItemControls from "./CartItemControls";
 
 const Cart: React.FC = () => {
@@ -20,10 +19,11 @@ const Cart: React.FC = () => {
 
     const showItems = (items: CartItem[]) => (
         <div>
-            <h2>{t("Your cart has {items.length} items")}</h2>
+            <h2>{t(`Your cart has ${items.length} items`)}</h2>
             <hr />
             {items.map((product) => (
-                <Box key={product._id} sx={{ mb: 2 }}>
+                <Grid container>
+                <Grid key={product._id} sx={{ mb: 2, display: 'flex', mx: 'auto', justifyContent: 'space-between'}}>
                     <strong>{product.name}</strong>
                     <div>€ {product.price}</div>
 
@@ -33,7 +33,8 @@ const Cart: React.FC = () => {
                         run={run}
                         setRun={setRun}
                     />
-                </Box>
+                </Grid>
+                </Grid>
             ))}
         </div>
     );
@@ -41,7 +42,7 @@ const Cart: React.FC = () => {
     const noItemsMessage = () => (
         <h2>
             Your Cart is empty. <br />
-            <Link to="/shop">Continue shopping.</Link>
+            <Link href="/shop">Continue shopping.</Link>
         </h2>
     );
 
@@ -49,18 +50,15 @@ const Cart: React.FC = () => {
         <Layout
             title="Shopping Cart"
             description=""
-        >
-            <div className="row">
-                <div className="col-6">
+        >     
+                <Box>
                     {items.length > 0 ? showItems(items) : noItemsMessage()}
-                </div>
+                </Box>
 
-                <div className="col-6">
-                    <h2 className="mb-4">Your Cart Summary</h2>
+                <div>
                     <hr />
                     <Checkout products={items} setRun={setRun} run={run} />
                 </div>
-            </div>
         </Layout>
     );
 };

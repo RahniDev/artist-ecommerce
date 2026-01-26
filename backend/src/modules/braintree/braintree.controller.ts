@@ -12,28 +12,37 @@ const gateway = new braintree.BraintreeGateway({
     privateKey: process.env.BRAINTREE_PRIVATE_KEY || ''
 });
 
-export const brainTreeToken = async (req: Request, res: Response): Promise<void> => {
-    try {
-        const response = await gateway.clientToken.generate({});
-        res.json(response);
-    } catch (err) {
-        res.status(500).json({ error: err });
-    }
+export const brainTreeToken = async (req: Request, res: Response) => {
+  try {
+    const response = await gateway.clientToken.generate({});
+    res.json({ clientToken: response.clientToken });
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
 };
 
-export const processPayment = async (req: Request, res: Response): Promise<void> => {
-    const { paymentMethodNonce, amount } = req.body;
+export const processPayment = async (req: Request, res: Response) => {
+  const { paymentMethodNonce, amount } = req.body;
 
-    try {
-        const result = await gateway.transaction.sale({
-            amount: amount,
-            paymentMethodNonce: paymentMethodNonce,
-            options: {
-                submitForSettlement: true
-            }
-        });
-        res.json(result);
-    } catch (err) {
-        res.status(500).json({ error: err });
+  try {
+    const result = await gateway.transaction.sale({
+      amount: amount,
+      paymentMethodNonce: paymentMethodNonce,
+      options: { submitForSettlement: true },
+    });
+
+    // result has `success` and `transaction`
+    if (!result.success) {
+      return res.status(400).json({
+        error: result.message || "Transaction failed",
+      });
     }
+
+    res.json({
+      transaction: result.transaction,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err });
+  }
 };
+

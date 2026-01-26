@@ -1,5 +1,14 @@
 import type { ReactNode } from "react";
 
+export interface CreateOrderInput {
+  products: ICartItem[];
+  transaction_id: string;
+  amount: number;
+  address: string;
+  status: string;
+  user: string;
+}
+
 export interface AuthUser {
   _id: string;
   name: string;
@@ -220,7 +229,6 @@ export interface CheckoutData {
   success: boolean;
   clientToken: string | null;
   error: string;
-  instance: any;
   address: string;
 }
 

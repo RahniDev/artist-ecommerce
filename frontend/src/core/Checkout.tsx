@@ -1,145 +1,149 @@
-import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import DropIn from "braintree-web-drop-in-react";
-
-import {
-    getBraintreeClientToken,
-    processPayment,
-    createOrder,
-} from "./apiCore";
-import { emptyCart } from "./cartHelpers";
+import React, { useEffect, useRef, useState } from "react";
+import type { CheckoutProps, CheckoutData } from "../types";
 import { isAuthenticated } from "../auth";
-import type { CheckoutProps, CheckoutData, IOrder } from "../types";
+import { getBraintreeClientToken, processPayment, createOrder } from "./apiCore";
+import { emptyCart } from "./cartHelpers";
+import { Box, Button, Link } from "@mui/material";
+import braintree from "braintree-web-drop-in";
 
-const Checkout: React.FC<CheckoutProps> = ({
-    products,
-    setRun = () => { },
-    run = false,
-}) => {
-    const [data, setData] = useState<CheckoutData>({
-        loading: false,
-        success: false,
-        clientToken: null,
-        error: "",
-        instance: null,
-        address: "",
+const Checkout: React.FC<CheckoutProps> = ({ products, setRun = () => { }, run = false }) => {
+  const [data, setData] = useState<CheckoutData>({
+    loading: false,
+    success: false,
+    clientToken: null,
+    error: "",
+    address: "",
+  });
+  const [dropInInstance, setDropInInstance] = useState<any>(null);
+
+  const dropinContainer = useRef<HTMLDivElement>(null);
+
+  const auth = isAuthenticated();
+  const userId = auth?.user._id;
+  const token = auth?.token;
+
+  const getToken = async () => {
+    if (!userId || !token) return;
+
+    const res = await getBraintreeClientToken(userId, token);
+    if (res.error) {
+      setData(prev => ({ ...prev, error: res.error ?? "" }));
+    } else {
+      setData(prev => ({ ...prev, clientToken: res.clientToken ?? null, error: "" }));
+    }
+  };
+
+  useEffect(() => {
+    getToken();
+  }, [userId, token]);
+
+  // Initialize DropIn manually
+  useEffect(() => {
+    if (!data.clientToken || !dropinContainer.current) return;
+
+    let instance: any;
+    braintree.create({
+      authorization: data.clientToken,
+      container: dropinContainer.current,
+    }, (err: any, dropinInstance: any) => {
+      if (err) {
+        console.error("Braintree DropIn error:", err);
+        setData(prev => ({ ...prev, error: "Failed to load payment UI" }));
+        return;
+      }
+      instance = dropinInstance;
+      setDropInInstance(instance);
     });
 
-    const auth = isAuthenticated();
-    const userId = auth?.user._id;
-    const token = auth?.token;
-
-    const getToken = async () => {
-        const res = await getBraintreeClientToken(userId!, token!);
-
-        if (res.error) {
-            setData(prev => ({
-                ...prev,
-                error: res.error ?? "",
-            }));
-        } else {
-            setData(prev => ({
-                ...prev,
-                clientToken: res.clientToken ?? null,
-                error: "",
-            }));
-        }
+    return () => {
+      // Cleanup DropIn on unmount
+      if (instance) instance.teardown(() => console.log("Braintree DropIn torn down"));
     };
+  }, [data.clientToken]);
 
-    useEffect(() => {
-        if (userId && token) getToken();
-    }, [userId, token]);
+  const getTotal = () => products.reduce((sum, p) => sum + (p.count ?? 1) * p.price, 0);
 
-    const getTotal = (): number =>
-        products.reduce((sum, p) => sum + (p.count ?? 1) * p.price, 0);
+  const handleAddress = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setData(prev => ({ ...prev, address: e.target.value }));
+  };
 
-    const handleAddress = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-        setData({ ...data, address: e.target.value });
-    };
+  const buy = async () => {
+    if (!dropInInstance) return;
 
-    const buy = async () => {
-        if (!data.instance) return;
+    setData(prev => ({ ...prev, loading: true }));
+    try {
+      const { nonce } = await dropInInstance.requestPaymentMethod();
+      const paymentResponse = await processPayment(userId!, token!, {
+        paymentMethodNonce: nonce,
+        amount: getTotal(),
+      });
 
-        setData({ ...data, loading: true });
+      if (paymentResponse.error || !paymentResponse.data?.transaction) {
+        throw new Error(paymentResponse.error || "Payment failed");
+      }
 
-        try {
-            const { nonce } = await data.instance.requestPaymentMethod();
+      const transaction = paymentResponse.data.transaction;
+      console.log("Transaction ID:", transaction.id);
 
-            const paymentResponse = await processPayment(userId!, token!, {
-                paymentMethodNonce: nonce,
-                amount: getTotal(),
-            });
+      await createOrder(userId!, token!, {
+        products,
+        transaction_id: transaction.id,
+        amount: Number(transaction.amount),
+        address: data.address,
+        status: "Received",
+        user: userId!,
+      });
 
-            if (paymentResponse.error || !paymentResponse.data) {
-                throw new Error(paymentResponse.error || "Payment failed");
-            }
+      emptyCart(() => setRun(!run));
+      setData(prev => ({ ...prev, success: true, loading: false }));
+    } catch (err: any) {
+      setData(prev => ({ ...prev, error: err.message, loading: false }));
+    }
+  };
 
-            const transaction = paymentResponse.data.transaction;
+  return (
+    <Box>
+      <h2>Total: €{getTotal()}</h2>
+      {data.loading && <h2>Loading...</h2>}
+      {data.success && <div>Thanks! Your payment was successful!</div>}
+      {data.error && <div style={{ color: "red" }}>{data.error}</div>}
 
-            const orderData: IOrder = {
-                products,
-                transaction_id: transaction.id,
-                amount: Number(transaction.amount),
-                address: data.address,
-                status: "Received",
-                user: userId!,
-            };
+      {auth ? (
+        <Box>
+          <Box sx={{ mb: 2 }}>
+            <label>Delivery Address:</label>
+            <textarea
+              value={data.address}
+              onChange={handleAddress}
+              placeholder="Type your delivery address here..."
+              style={{ width: "100%" }}
+            />
+          </Box>
 
-            await createOrder(userId!, token!, orderData);
+          <Box
+            ref={dropinContainer}
+            sx={{
+              minHeight: 200,
+              border: "1px solid #ddd",
+              p: 2,
+              borderRadius: 2,
+              mb: 2,
+            }}
+          />
 
-            emptyCart(() => setRun(!run));
-            setData({ ...data, success: true, loading: false });
-
-        } catch (err: any) {
-            setData({ ...data, error: err.message, loading: false });
-        }
-    };
-
-
-
-
-    const showDropIn = () =>
-        data.clientToken !== null && products.length > 0 ? (
-            <div onBlur={() => setData({ ...data, error: "" })}>
-                <div className="form-group mb-3">
-                    <label className="text-muted">Delivery Address:</label>
-                    <textarea
-                        className="form-control"
-                        onChange={handleAddress}
-                        value={data.address}
-                        placeholder="Type your delivery address here..."
-                    />
-                </div>
-
-                <DropIn
-                    options={{
-                        authorization: data.clientToken!,
-                        paypal: { flow: "vault" },
-                    }}
-                    onInstance={(instance: any) => (data.instance = instance)}
-                />
-
-                <button onClick={buy} className="btn btn-success btn-block">
-                    Pay
-                </button>
-            </div>
-        ) : null;
-
-    return (
-        <div>
-            <h2>Total: ${getTotal()}</h2>
-            {data.loading && <h2 className="text-danger">Loading...</h2>}
-            {data.success && (
-                <div className="alert alert-info">Thanks! Your payment was successful!</div>
-            )}
-            {data.error && <div className="alert alert-danger">{data.error}</div>}
-            {auth ? showDropIn() : (
-                <Link to="/signin">
-                    <button className="btn btn-primary">Sign in to checkout</button>
-                </Link>
-            )}
-        </div>
-    );
+          <Button
+            variant="contained"
+            onClick={buy}
+            disabled={!dropInInstance || data.loading}
+          >
+            Pay
+          </Button>
+        </Box>
+      ) : (
+        <Link href="/signin">Sign in to checkout</Link>
+      )}
+    </Box>
+  );
 };
 
 export default Checkout;

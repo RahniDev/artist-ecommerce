@@ -3,6 +3,7 @@ import type {
   ICategory,
   IFilterParams,
   IOrder,
+  CreateOrderInput,
   IBraintreePaymentData,
   BraintreeTransaction,
   FilterResponse
@@ -85,23 +86,30 @@ export const list = async (
   }
 };
 
-export async function createOrder(
+export const createOrder = async (
   userId: string,
   token: string,
-  createOrderData: IOrder
-): Promise<ApiResponse<{ success: boolean; order?: unknown }>> {
-  return fetchJSON<{ success: boolean; order?: unknown }>(
-    `${API}/order/create/${userId}`,
-    {
+  orderData: CreateOrderInput
+): Promise<ApiResponse<IOrder>> => {
+  try {
+    const res = await fetch(`${API}/order/create/${userId}`, {
       method: "POST",
       headers: {
+        Accept: "application/json",
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify({ order: createOrderData }),
-    }
-  );
-}
+      body: JSON.stringify({ order: orderData }),
+    });
+
+    return await res.json();
+  } catch (err) {
+    console.error(err);
+    throw err;
+  }
+};
+
+
 
 export async function processPayment(
   userId: string,

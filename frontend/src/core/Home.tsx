@@ -54,10 +54,10 @@ const Home: React.FC = () => {
         </div>
       )}
 
-      <h2 className="text-center">New Arrivals</h2>
-      <div className="row">
+      <h2>New Arrivals</h2>
+      <div>
         {productsByArrival.length === 0 && !loading && !error && (
-          <p className="text-center text-muted w-100">
+          <p>
             No new arrivals yet.
           </p>
         )}
