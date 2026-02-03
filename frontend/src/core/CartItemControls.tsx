@@ -1,5 +1,12 @@
 import { useState } from "react";
 import { updateItem, removeItem } from "./cartHelpers";
+import {
+  Box,
+  TextField,
+  IconButton,
+  Tooltip,
+} from "@mui/material";
+import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 
 type Props = {
   productId: string;
@@ -23,28 +30,33 @@ const CartItemControls: React.FC<Props> = ({
     setRun(!run);
   };
 
-  return (
-    <>
-      <div className="input-group mb-2">
-        <span className="input-group-text">Qty</span>
-        <input
-          type="number"
-          className="form-control"
-          value={count}
-          onChange={handleChange}
-        />
-      </div>
+  const handleRemove = () => {
+    removeItem(productId);
+    setRun(!run);
+  };
 
-      <button
-        className="btn btn-outline-danger btn-sm"
-        onClick={() => {
-          removeItem(productId);
-          setRun(!run);
-        }}
-      >
-        Remove
-      </button>
-    </>
+  return (
+    <Box
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        gap: 1.5,
+      }}
+    >
+      <TextField
+        type="number"
+        size="small"
+        value={count}
+        onChange={handleChange}
+        sx={{ width: 80 }}
+      />
+
+      <Tooltip title="Remove item">
+        <IconButton color="error" onClick={handleRemove}>
+          <DeleteOutlineIcon />
+        </IconButton>
+      </Tooltip>
+    </Box>
   );
 };
 

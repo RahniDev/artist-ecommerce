@@ -6,6 +6,7 @@ import Checkout from "./Checkout";
 import { useTranslation } from "react-i18next";
 import { Box, Grid, Link } from "@mui/material";
 import CartItemControls from "./CartItemControls";
+import ShowImage from "./ShowImage";
 
 const Cart: React.FC = () => {
     const [items, setItems] = useState<CartItem[]>([]);
@@ -18,25 +19,60 @@ const Cart: React.FC = () => {
     }, [run]);
 
     const showItems = (items: CartItem[]) => (
-        <div>
-            <h2>{t(`Your cart has ${items.length} items`)}</h2>
-            <hr />
-            {items.map((product) => (
-                <Grid container>
-                <Grid key={product._id} sx={{ mb: 2, display: 'flex', mx: 'auto', justifyContent: 'space-between'}}>
-                    <strong>{product.name}</strong>
-                    <div>€ {product.price}</div>
+        <Box>
+            <h2>
+                {t(
+                    `Your cart has ${items.length} ${items.length === 1 ? "item" : "items"
+                    }`
+                )}
+            </h2>
 
-                    <CartItemControls
-                        productId={product._id}
-                        initialCount={product.count ?? 1}
-                        run={run}
-                        setRun={setRun}
-                    />
-                </Grid>
+            <hr />
+
+            {items.map((product) => (
+                <Grid
+                    container
+                    key={product._id}
+                    alignItems="center"
+                    sx={{
+                        mb: 2,
+                        p: 2,
+                        borderBottom: "1px solid #eee",
+                        width: "100%",       
+                    }}
+                >
+                    <Grid size={3}>
+                         <Link href={`/product/${product._id}`}> 
+                        <ShowImage
+                            item={product}
+                            width="120px"
+                            height="120px"
+                            url="product"
+                        />
+                        </Link>
+                    </Grid>
+
+                    <Grid size={5}>
+                          <Link href={`/product/${product._id}`}>
+                        <h3 style={{ margin: 0 }}>{product.name}</h3>
+                        </Link>
+                        <p style={{ margin: 0 }}>€ {product.price}</p>
+                    </Grid>
+
+                    <Grid
+                        size={4}
+                        sx={{ display: "flex", justifyContent: "flex-end" }}
+                    >
+                        <CartItemControls
+                            productId={product._id}
+                            initialCount={product.count ?? 1}
+                            run={run}
+                            setRun={setRun}
+                        />
+                    </Grid>
                 </Grid>
             ))}
-        </div>
+        </Box>
     );
 
     const noItemsMessage = () => (
@@ -50,15 +86,15 @@ const Cart: React.FC = () => {
         <Layout
             title="Shopping Cart"
             description=""
-        >     
-                <Box>
-                    {items.length > 0 ? showItems(items) : noItemsMessage()}
-                </Box>
+        >
+            <Box>
+                {items.length > 0 ? showItems(items) : noItemsMessage()}
+            </Box>
 
-                <div>
-                    <hr />
-                    <Checkout products={items} setRun={setRun} run={run} />
-                </div>
+            <div>
+                <hr />
+                <Checkout products={items} setRun={setRun} run={run} />
+            </div>
         </Layout>
     );
 };
