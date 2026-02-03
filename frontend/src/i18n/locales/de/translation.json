@@ -1,14 +1,16 @@
 {
   "add_to_cart": "In den Warenkorb",
-  "cart_items_count": "Ihr Warenkorb enthält {items.length} Artikel",
+  "cart_items_count": "Ihr Warenkorb enthält {{count}} Artikel",
   "no_products": "Keine Produkte gefunden",
   "found_products": "{{count}} Produkte gefunden",
   "signin_checkout": "Zum Bezahlen anmelden",
-  "in_stock": "Auf Lager",
-  "out_of_stock": "Nicht auf Lager",
+  "sold": "Ausverkauft",
   "search": "Produkte suchen",
   "category": "Kategorie",
   "signin": "Anmelden",
   "signup": "Registrieren",
-  "signout": "Abmelden"
+  "signout": "Abmelden",
+  "new_arrivals": "Neu eingetroffen",
+  "no_new_arrivals": "Noch keine Neuerscheinungen",
+  "shipping_and_returns": "Versand & Rückgabe"
 }

@@ -4,11 +4,13 @@
   "no_products": "No products found",
   "found_products": "Found {{count}} products",
   "signin_checkout": "Sign in to checkout",
-  "in_stock": "In Stock",
-  "out_of_stock": "Out of Stock",
+  "sold": "Sold",
   "search": "Search products",
   "category": "Category",
   "signin": "Sign In",
   "signup": "Sign Up",
-  "signout": "Sign Out"
+  "signout": "Sign Out",
+  "new_arrivals": "New Arrivals",
+  "no_new_arrivals": "No new arrivals yet",
+  "shipping_and_returns": "Shipping and returns"
 }

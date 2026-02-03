@@ -1,14 +1,16 @@
 {
   "add_to_cart": "Aggiungi al carrello",
-  "cart_items_count": "Il tuo carrello contiene {items.length} articoli",
+  "cart_items_count": "Il tuo carrello contiene {{count}} articolo{{count > 1 ? 'i' : ''}}",
   "no_products": "Nessun prodotto trovato",
-  "found_products": "Trovati {{count}} prodotti",
-  "signin_checkout": "Accedi per il pagamento",
-  "in_stock": "Disponibile",
-  "out_of_stock": "Non disponibile",
+  "found_products": "{{count}} prodotto{{count > 1 ? 'i' : ''}} trovato{{count > 1 ? 'i' : ''}}",
+  "signin_checkout": "Accedi per completare l'acquisto",
+  "sold": "Esaurito",
   "search": "Cerca prodotti",
   "category": "Categoria",
   "signin": "Accedi",
   "signup": "Registrati",
-  "signout": "Esci"
+  "signout": "Esci",
+  "new_arrivals": "Novità",
+  "no_new_arrivals": "Nessuna novità ancora",
+  "shipping_and_returns": "Spedizione e resi"
 }

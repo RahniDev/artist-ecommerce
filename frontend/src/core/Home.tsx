@@ -6,11 +6,13 @@ import Hero from "./Hero";
 import type { IProduct, ApiResponse } from "../types";
 import ListProducts from './ListProducts'
 import { Box, CircularProgress, Alert } from "@mui/material";
+import { useTranslation } from "react-i18next";
 
 const Home: React.FC = () => {
   const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const { t } = useTranslation();
 
   const loadProducts = async () => {
     setLoading(true);
@@ -55,17 +57,23 @@ const Home: React.FC = () => {
         </Box>
       )}
 
-      <h2>New Arrivals</h2>
+      <h2>{t("new_arrivals")}</h2>
       <div>
         {productsByArrival.length === 0 && !loading && !error && (
           <p>
-            No new arrivals yet.
+            {t("no_new_arrivals")}
           </p>
         )}
-        <ListProducts
-          products={productsByArrival}
-        />
-
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center"
+          }}
+        >
+          <ListProducts
+            products={productsByArrival}
+          />
+        </Box>
       </div>
     </Layout>
   );

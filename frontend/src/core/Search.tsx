@@ -15,6 +15,7 @@ import {
   Typography
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
+import { useTranslation } from "react-i18next";
 
 const Search: React.FC = () => {
   const [data, setData] = useState<SearchState>({
@@ -24,6 +25,8 @@ const Search: React.FC = () => {
     results: [],
     searched: false,
   });
+  
+  const { t } = useTranslation();
 
   const { categories, category, search, results, searched } = data;
 
@@ -78,9 +81,8 @@ const Search: React.FC = () => {
 
   const searchMessage = (searched: boolean, results: IProduct[]) => {
     if (!searched) return "";
-    return results.length > 0
-      ? `Found ${results.length} products`
-      : "No products found";
+    return results.length > 0 ? `${t("found_products", { count: results.length })}`
+      : `${t("no_products")}`;
   };
 
   const searchedProducts = (results: IProduct[]) => (
@@ -115,11 +117,10 @@ const Search: React.FC = () => {
     >
       {/* Category dropdown */}
       <FormControl sx={{ minWidth: 160 }}>
-        <InputLabel id="category-label">Category</InputLabel>
+        <InputLabel id="category-label">{t("category")}</InputLabel>
         <Select
           labelId="category-label"
           value={category}
-          label="Category"
           onChange={handleCategoryChange}
           size="medium"
         >
@@ -135,7 +136,7 @@ const Search: React.FC = () => {
       {/* Search input */}
       <TextField
         type="search"
-        label="Search products"
+        label={t("search")}
         value={search}
         onChange={handleSearchChange}
         sx={{
