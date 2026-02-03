@@ -6,24 +6,22 @@ import SoldBadge from "./SoldBadge";
 import AddToCartButton from "./AddToCartButton";
 
 const ProductCard: React.FC<CardProps> = ({
-    product,
-    showAddToCartButton = true,
+    product
 }) => {
 
     return (
-        <Card sx={{ width: '300px' }}>
+        <Card sx={{ width: '240px', textAlign: "center" }}>
             <Link to={`/product/${product._id}`}>
                 <ShowImage
                     item={product}
                     url="product"
-                    width={220}
-                    height={220}
+                    width={240}
+                    height={240}
                 />
                 <div className="product-header">{product.name}</div>
                 <p className="p-info">€ {product.price}</p>
                 <SoldBadge quantity={product.quantity} />
-                <br />
-                {showAddToCartButton && (
+                {product.quantity > 0 && (
                     <AddToCartButton product={product} />
                 )}
             </Link>

@@ -1,135 +1,54 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import ProductCard from "./Card";
-import CategoryCheckbox from "./CategoryCheckbox";
-import RadioBox from "./RadioBox";
-import { getCategories, getFilteredProducts } from "./apiCore";
-import { prices } from "./fixedPrices";
-import Grid from "@mui/material/Grid";
-import type { ICategory, IProduct, FilterState } from "../types";
+import { Box, Grid } from "@mui/material";
+import type { IProduct } from "../types";
 
-const ListProducts: React.FC = () => {
-  const [myFilters, setMyFilters] = useState<FilterState>({
-    filters: { category: [], price: [] },
-  });
+interface ListProductsProps {
+  products: IProduct[];
+  loadMore?: () => void;
+  hasMore?: boolean;
+}
 
-  const [categories, setCategories] = useState<ICategory[]>([]);
-  const [filteredResults, setFilteredResults] = useState<IProduct[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  const [limit] = useState<number>(6);
-  const [skip, setSkip] = useState<number>(0);
-  const [size, setSize] = useState<number>(0);
-
-  const init = async () => {
-    const res = await getCategories();
-    if (res.error) {
-      setError(res.error);
-    } else {
-      setCategories(res.data ?? []);
-    }
-  };
-
-  const loadFilteredResults = async (filters: FilterState["filters"]) => {
-    const res = await getFilteredProducts(0, limit, filters);
-
-    if (res.error) {
-      setError(res.error);
-    } else {
-      setFilteredResults(res.data?.data ?? []);
-      setSize(res.data?.size ?? 0);
-      setSkip(0);
-    }
-  };
-
-  const loadMore = async () => {
-    const toSkip = skip + limit;
-
-    const res = await getFilteredProducts(toSkip, limit, myFilters.filters);
-
-    if (res.error) {
-      setError(res.error);
-    } else {
-      setFilteredResults((prev) => [
-        ...prev,
-        ...(res.data?.data ?? []),
-      ]);
-      setSize(res.data?.size ?? 0);
-      setSkip(toSkip);
-    }
-  };
-
-  const loadMoreButton = () =>
-    size > 0 && size >= limit ? (
-      <button onClick={loadMore}>
-        Load more
-      </button>
-    ) : null;
-
-  useEffect(() => {
-    init();
-    loadFilteredResults(myFilters.filters);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const handlePrice = (priceId: number): number[] => {
-    const selected = prices.find((p) => p._id === priceId);
-    return selected ? selected.array : [];
-  };
-
-  const handleFilters = (
-    filter: string[] | number,
-    filterBy: "category" | "price"
-  ) => {
-    const newFilters = { ...myFilters };
-
-    if (filterBy === "price") {
-      newFilters.filters.price = handlePrice(filter as number);
-    } else {
-      newFilters.filters.category = filter as string[];
-    }
-
-    setMyFilters(newFilters);
-    loadFilteredResults(newFilters.filters);
-  };
+const ListProducts: React.FC<ListProductsProps> = ({ products, loadMore, hasMore }) => {
+  if (!products || products.length === 0) {
+    return <p>No products found.</p>;
+  }
 
   return (
     <>
-      {error && (
-        <div>{error}</div>
+      <Box
+        sx={{
+          display: "grid",
+          gridTemplateColumns: {
+            xs: "repeat(1, 1fr)",
+            sm: "repeat(2, 1fr)",
+            md: "repeat(3, 1fr)",
+          },
+          gap: 2,
+        }}
+      >
+        {products.map((product) => (
+          <ProductCard key={product._id} product={product} />
+        ))}
+      </Box>
+
+      {hasMore && loadMore && (
+        <Grid container justifyContent="center" sx={{ mt: 3 }}>
+          <button
+            onClick={loadMore}
+            style={{
+              padding: "10px 20px",
+              border: "2px solid #000",
+              backgroundColor: "#fff",
+              cursor: "pointer",
+            }}
+          >
+            Load More
+          </button>
+        </Grid>
       )}
-
-      <Grid container spacing={2}>
-        <Grid size={3}>
-          <h4>Categories</h4>
-        <CategoryCheckbox
-              categories={categories}
-              handleFilters={(filters) =>
-                handleFilters(filters, "category")
-              }
-            />
-
-          <h4>Prices</h4>
-          <RadioBox
-            prices={prices}
-            handleFilters={(selectedPrice) =>
-              handleFilters(selectedPrice, "price")
-            }
-          />
-        </Grid>
-
-        <Grid size={9}>
-          <Grid container spacing={2}>
-            {filteredResults.map((product) => (
-              <Grid size={3} key={product._id}>
-                <ProductCard product={product} />
-              </Grid>
-            ))}
-          </Grid>
-          {loadMoreButton()}
-        </Grid>
-      </Grid>
     </>
   );
 };
-
-export default ListProducts;
+// prevents re-rendering if props have not changed
+export default React.memo(ListProducts);

@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { addItem } from "./cartHelpers";
 import type { AddToCartButtonProps } from "../types";
 import { useTranslation } from "react-i18next";
+import { Button } from "@mui/material";
 
 const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   product,
@@ -19,9 +20,24 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({
   };
 
   return (
-    <button onClick={handleAddToCart}>
+    <Button
+      variant="contained"
+      sx={{
+        backgroundColor: "#fff",
+        color: "#000",
+        border: "1px solid #000",
+         mb: 2,
+        textTransform: "none",
+        fontWeight: "bold",
+        "&:hover": {
+          backgroundColor: "#000",
+          color: "#fff",
+        },
+      }}
+      onClick={handleAddToCart}
+    >
       {t("Add to cart")}
-    </button>
+    </Button>
   );
 };
 

@@ -5,6 +5,7 @@ import Search from "./Search";
 import Hero from "./Hero";
 import type { IProduct, ApiResponse } from "../types";
 import ListProducts from './ListProducts'
+import { Box, CircularProgress, Alert } from "@mui/material";
 
 const Home: React.FC = () => {
   const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
@@ -43,15 +44,15 @@ const Home: React.FC = () => {
       <Search />
 
       {error && (
-        <div>
+        <Alert severity="error" sx={{ my: 2 }}>
           {error}
-        </div>
+        </Alert>
       )}
 
       {loading && (
-        <div>
-          Loading products...
-        </div>
+        <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
+          <CircularProgress />
+        </Box>
       )}
 
       <h2>New Arrivals</h2>
@@ -61,7 +62,10 @@ const Home: React.FC = () => {
             No new arrivals yet.
           </p>
         )}
-       <ListProducts />
+        <ListProducts
+          products={productsByArrival}
+        />
+
       </div>
     </Layout>
   );
