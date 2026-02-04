@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { signin, authenticate, isAuthenticated } from "../auth";
 import type { IUser, SigninState } from "../types";
 import { useTranslation } from "react-i18next";
+import Loader from "../core/Loader";
 
 const Signin: React.FC = () => {
     const navigate = useNavigate();
@@ -96,18 +97,12 @@ const Signin: React.FC = () => {
     const showError = () =>
         error ? <div>{error}</div> : null;
 
-    const showLoading = () =>
-        loading ? (
-            <div>
-                <h2>Loading...</h2>
-            </div>
-        ) : null;
 
     return (
         <Layout
             title={t("signin")}
             description="">
-            {showLoading()}
+            <Loader loading={loading} />
             {showError()}
             {signInForm()}
         </Layout>

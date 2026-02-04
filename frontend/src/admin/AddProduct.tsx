@@ -4,6 +4,7 @@ import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { createProduct, getCategories } from "./apiAdmin";
 import type { Category } from "../types";
+import Loader from "../core/Loader";
 
 interface AuthUser {
     _id: string;
@@ -211,13 +212,6 @@ const AddProduct: React.FC = () => {
             </div>
         );
 
-    const showLoading = () =>
-        loading && (
-            <div className="alert alert-success">
-                <h2>Loading...</h2>
-            </div>
-        );
-
     return (
         <Layout
             title="Add a new product"
@@ -225,7 +219,7 @@ const AddProduct: React.FC = () => {
         >
             <div className="row">
                 <div className="col-md-8 offset-md-2">
-                    {showLoading()}
+                    <Loader loading={loading} />
                     {showSuccess()}
                     {showError()}
                     {newPostForm()}

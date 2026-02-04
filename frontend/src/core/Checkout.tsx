@@ -6,6 +6,7 @@ import { emptyCart } from "./cartHelpers";
 import { Box, Button, Link } from "@mui/material";
 import braintree from "braintree-web-drop-in";
 import { useTranslation } from "react-i18next";
+import Loader from "./Loader";
 
 const Checkout: React.FC<CheckoutProps> = ({ products, setRun = () => { }, run = false }) => {
   const [data, setData] = useState<CheckoutData>({
@@ -19,8 +20,8 @@ const Checkout: React.FC<CheckoutProps> = ({ products, setRun = () => { }, run =
   const dropInInstance = useRef<any>(null);
   const dropInMounted = useRef(false);
 
-    const { t } = useTranslation();
-  
+  const { t } = useTranslation();
+
   const auth = isAuthenticated();
   const userId = auth?.user._id;
   const token = auth?.token;
@@ -128,7 +129,7 @@ const Checkout: React.FC<CheckoutProps> = ({ products, setRun = () => { }, run =
   return (
     <Box>
       <h2>Total: €{getTotal()}</h2>
-      {data.loading && <h2>Loading...</h2>}
+      <Loader loading={data.loading} />
       {data.success && <div>Thanks! Your payment was successful!</div>}
       {data.error && <div style={{ color: "red" }}>{data.error}</div>}
 

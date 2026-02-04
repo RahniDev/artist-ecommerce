@@ -5,8 +5,9 @@ import Search from "./Search";
 import Hero from "./Hero";
 import type { IProduct, ApiResponse } from "../types";
 import ListProducts from './ListProducts'
-import { Box, CircularProgress, Alert } from "@mui/material";
+import { Box, Alert } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import Loader from "./Loader";
 
 const Home: React.FC = () => {
   const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
@@ -51,11 +52,8 @@ const Home: React.FC = () => {
         </Alert>
       )}
 
-      {loading && (
-        <Box sx={{ display: "flex", justifyContent: "center", my: 4 }}>
-          <CircularProgress />
-        </Box>
-      )}
+     <Loader loading={loading} />
+
 
       <h2>{t("new_arrivals")}</h2>
       <div>

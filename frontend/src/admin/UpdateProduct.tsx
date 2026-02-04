@@ -5,6 +5,7 @@ import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { getProduct, getCategories, updateProduct } from "./apiAdmin";
 import type { ApiResponse, ICategory, IProduct } from "../types";
+import Loader from "../core/Loader";
 
 interface Values {
     name: string;
@@ -173,7 +174,7 @@ const UpdateProduct = () => {
         >
             <div className="row">
                 <div className="col-md-8 offset-md-2">
-                    {loading && <div className="alert alert-info">Loading...</div>}
+                   <Loader loading={loading} />
                     {error && <div className="alert alert-danger">{error}</div>}
                     {createdProduct && (
                         <div className="alert alert-success">
