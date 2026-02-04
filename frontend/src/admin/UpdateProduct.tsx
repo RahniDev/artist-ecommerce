@@ -1,26 +1,23 @@
 import { useEffect, useState } from "react";
-import type { FormEvent, ChangeEvent } from "react";
+import type { FormEvent } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { getProduct, getCategories, updateProduct } from "./apiAdmin";
-import type { ApiResponse, ICategory, IProduct } from "../types";
+import type { ApiResponse, ICategory, IProduct, UpdateProductValues, ProductFormField } from "../types";
 import Loader from "../core/Loader";
-
-interface Values {
-    name: string;
-    description: string;
-    price: string;
-    categories: ICategory[];
-    category: string;
-    shipping: string;
-    quantity: string;
-    photo: File | null;
-    loading: boolean;
-    error: string;
-    createdProduct: string;
-    formData: FormData | null;
-}
+import {
+    Box,
+    Button,
+    Container,
+    TextField,
+    Select,
+    MenuItem,
+    InputLabel,
+    FormControl,
+    Alert,
+} from "@mui/material";
+import type { SelectChangeEvent } from "@mui/material/Select";
 
 const UpdateProduct = () => {
     const { productId } = useParams<{ productId: string }>();
@@ -34,7 +31,7 @@ const UpdateProduct = () => {
 
     const { user } = auth;
 
-    const [values, setValues] = useState<Values>({
+    const [values, setValues] = useState<UpdateProductValues>({
         name: "",
         description: "",
         price: "",
@@ -106,26 +103,38 @@ const UpdateProduct = () => {
         }
     };
 
-    const handleChange =
-        (field: keyof Values) =>
-            (
-                e: ChangeEvent<
-                    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-                >
-            ) => {
+    const handleInputChange =
+        (field: ProductFormField) =>
+            (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
                 if (!formData) return;
 
-                const value =
-                    field === "photo" && e.target instanceof HTMLInputElement
-                        ? e.target.files?.[0] ?? null
-                        : e.target.value;
-
-                if (value !== null) {
-                    formData.set(field, value);
-                }
-
+                const value = e.target.value;
+                formData.set(field, value);
                 setValues((p) => ({ ...p, [field]: value }));
             };
+
+
+    const handleSelectChange =
+        (field: ProductFormField) =>
+            (e: SelectChangeEvent<string>) => {
+                if (!formData) return;
+
+                const value = e.target.value;
+                formData.set(field, value);
+                setValues((p) => ({ ...p, [field]: value }));
+            };
+
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!formData) return;
+
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        formData.set("photo", file);
+        setValues((p) => ({ ...p, photo: file }));
+    };
+
 
     const clickSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -172,78 +181,128 @@ const UpdateProduct = () => {
             title="Update product"
             description={`Hello ${user.name}, update your product`}
         >
-            <div className="row">
-                <div className="col-md-8 offset-md-2">
-                   <Loader loading={loading} />
-                    {error && <div className="alert alert-danger">{error}</div>}
-                    {createdProduct && (
-                        <div className="alert alert-success">
-                            {createdProduct} updated successfully
-                        </div>
+            <Container maxWidth="md">
+                <Box sx={{ mt: 4 }}>
+                    <Loader loading={loading} />
+
+                    {error && (
+                        <Alert severity="error" sx={{ mb: 2 }}>
+                            {error}
+                        </Alert>
                     )}
 
-                    <form onSubmit={clickSubmit}>
-                        <input type="file" accept="image/*" onChange={handleChange("photo")} />
+                    {createdProduct && (
+                        <Alert severity="success" sx={{ mb: 2 }}>
+                            {createdProduct} updated successfully
+                        </Alert>
+                    )}
 
-                        <input
-                            className="form-control mt-2"
+                    <Box
+                        component="form"
+                        onSubmit={clickSubmit}
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 2,
+                        }}
+                    >
+                        {/* Image upload */}
+                        <Button variant="outlined" component="label">
+                            Upload Image
+                            <input
+                                type="file"
+                                hidden
+                                accept="image/*"
+                                onChange={handleFileChange}
+                            />
+                        </Button>
+
+                        {/* Name */}
+                        <TextField
+                            label="Name"
                             value={name}
-                            onChange={handleChange("name")}
-                            placeholder="Name"
+                            onChange={handleInputChange("name")}
+                            fullWidth
                         />
 
-                        <textarea
-                            className="form-control mt-2"
+
+                        {/* Description */}
+                        <TextField
+                            label="Description"
                             value={description}
-                            onChange={handleChange("description")}
-                            placeholder="Description"
+                            onChange={handleInputChange("description")}
+                            multiline
+                            rows={4}
+                            fullWidth
                         />
 
-                        <input
-                            className="form-control mt-2"
+                        {/* Price */}
+                        <TextField
+                            label="Price"
                             type="number"
                             value={price}
-                            onChange={handleChange("price")}
+                            onChange={handleInputChange("price")}
+                            fullWidth
                         />
 
-                        <select
-                            className="form-control mt-2"
-                            value={category}
-                            onChange={handleChange("category")}
-                        >
-                            <option value="">Select category</option>
-                            {categories.map((c) => (
-                                <option key={c._id} value={c._id}>
-                                    {c.name}
-                                </option>
-                            ))}
-                        </select>
+                        {/* Category */}
+                        <FormControl fullWidth>
+                            <InputLabel>Category</InputLabel>
+                            <Select
+                                value={category}
+                                label="Category"
+                                onChange={handleSelectChange("category")}
+                            >
+                                <MenuItem value="">
+                                    <em>Select category</em>
+                                </MenuItem>
+                                {categories.map((c) => (
+                                    <MenuItem key={c._id} value={c._id}>
+                                        {c.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
 
-                        <select
-                            className="form-control mt-2"
-                            value={shipping}
-                            onChange={handleChange("shipping")}
-                        >
-                            <option value="">Shipping</option>
-                            <option value="0">No</option>
-                            <option value="1">Yes</option>
-                        </select>
+                        {/* Shipping */}
+                        <FormControl fullWidth>
+                            <InputLabel>Shipping</InputLabel>
+                            <Select
+                                value={shipping}
+                                label="Shipping"
+                                onChange={handleSelectChange("shipping")}
+                            >
+                                <MenuItem value="">
+                                    <em>Select</em>
+                                </MenuItem>
+                                <MenuItem value="0">No</MenuItem>
+                                <MenuItem value="1">Yes</MenuItem>
+                            </Select>
+                        </FormControl>
 
-                        <input
-                            className="form-control mt-2"
+                        {/* Quantity */}
+                        <TextField
+                            label="Quantity"
                             type="number"
                             value={quantity}
-                            onChange={handleChange("quantity")}
+                            onChange={handleInputChange("quantity")}
+                            fullWidth
                         />
 
-                        <button className="btn btn-primary mt-3">
+                        {/* Submit */}
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            size="large"
+                            sx={{ mt: 2 }}
+                        >
                             Update Product
-                        </button>
-                    </form>
-                </div>
-            </div>
+                        </Button>
+                    </Box>
+                </Box>
+            </Container>
         </Layout>
-    );
+    )
 };
 
 export default UpdateProduct;

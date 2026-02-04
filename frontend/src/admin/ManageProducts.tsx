@@ -1,54 +1,56 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { getProducts, deleteProduct } from "./apiAdmin";
-import type { Product } from "./apiAdmin";
-
-interface AuthUser {
-    _id: string;
-    name: string;
-    email: string;
-    role: number;
-}
-
-interface AuthData {
-    user: AuthUser;
-    token: string;
-}
+import type { Product, AuthData } from "../types";
+import Loader from "../core/Loader";
+import ManageProductRow from "./ManageProductRow";
 
 const ManageProducts: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
 
     const { user, token } = isAuthenticated() as AuthData;
 
-    const loadProducts = async () => {
-        const data = await getProducts();
-        if (data.error) {
-            console.error(data.error);
-        } else {
-            setProducts(data.data || []);
-        }
-    };
+    const loadProducts = React.useCallback(async () => {
+        setLoading(true);
+        setError(null);
 
+        try {
+            const data = await getProducts();
+            if (data.error) {
+                setError(data.error);
+            } else {
+                setProducts(data.data || []);
+            }
+        } catch {
+            setError("Failed to load products");
+        } finally {
+            setLoading(false);
+        }
+    }, []);
 
     const destroy = async (productId: string) => {
+        const confirmed = window.confirm("Are you sure you want to delete this product?");
+        if (!confirmed) return;
+
         try {
             const data = await deleteProduct(productId, user._id, token);
             if (data.error) {
-                console.error(data.error);
+                setError(data.error);
             } else {
-                await loadProducts();
+                setProducts(prev => prev.filter(p => p._id !== productId));
             }
-        } catch (err) {
-            console.error("Failed to delete product", err);
+        } catch {
+            setError("Failed to delete product");
         }
     };
 
-    // Load products on mount
     useEffect(() => {
         loadProducts();
-    }, []);
+    }, [loadProducts]);
 
     return (
         <Layout
@@ -56,28 +58,15 @@ const ManageProducts: React.FC = () => {
             description="Update and delete products"
             className="container-fluid"
         >
+            {loading && <Loader loading={loading} />}
+            {error && <div className="alert alert-danger">{error}</div>}
             <div className="row">
                 <div className="col-12">
                     <h2 className="text-center">Total {products.length} products</h2>
                     <hr />
                     <ul className="list-group">
-                        {products.map((p) => (
-                            <li
-                                key={p._id}
-                                className="list-group-item d-flex justify-content-between align-items-center"
-                            >
-                                <strong>{p.name}</strong>
-                                <Link to={`/admin/product/update/${p._id}`}>
-                                    <span className="badge badge-warning badge-pill">Update</span>
-                                </Link>
-                                <span
-                                    onClick={() => destroy(p._id)}
-                                    className="badge badge-danger badge-pill"
-                                    style={{ cursor: "pointer" }}
-                                >
-                                    Delete
-                                </span>
-                            </li>
+                        {products.map(p => (
+                            <ManageProductRow key={p._id} product={p} onDelete={destroy} />
                         ))}
                     </ul>
                 </div>

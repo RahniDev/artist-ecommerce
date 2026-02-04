@@ -1,5 +1,54 @@
 import type { ReactNode } from "react";
 
+export interface ManageProductRowProps {
+  product: Product;
+  onDelete: (id: string) => void;
+}
+
+export interface AuthUser {
+    _id: string;
+    name: string;
+    email: string;
+    role: number;
+}
+
+export interface AuthData {
+    user: AuthUser;
+    token: string;
+}
+
+export type ProductFormField =
+  | "name"
+  | "description"
+  | "price"
+  | "category"
+  | "shipping"
+  | "quantity"
+  | "photo";
+
+
+export interface ProductFormBase {
+  name: string;
+  description: string;
+  price: string;
+  categories: ICategory[];
+  category: string;
+  shipping: string;
+  quantity: string;
+  loading: boolean;
+  error: string;
+  createdProduct: string;
+  formData: FormData | null;
+}
+
+export interface AddProductValues extends ProductFormBase {
+  photo: File | string;
+}
+
+export interface UpdateProductValues extends ProductFormBase {
+  photo: File | null;
+}
+
 export interface CreateOrderInput {
   products: ICartItem[];
   transaction_id: string;

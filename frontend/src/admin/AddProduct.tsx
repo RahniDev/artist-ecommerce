@@ -3,38 +3,11 @@ import type { ChangeEvent, FormEvent } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { createProduct, getCategories } from "./apiAdmin";
-import type { Category } from "../types";
+import type { AddProductValues, ProductFormField, AuthData } from "../types";
 import Loader from "../core/Loader";
 
-interface AuthUser {
-    _id: string;
-    name: string;
-    email: string;
-    role: number;
-}
-
-interface AuthData {
-    user: AuthUser;
-    token: string;
-}
-
-interface Values {
-    name: string;
-    description: string;
-    price: string;
-    categories: Category[];
-    category: string;
-    shipping: string;
-    quantity: string;
-    photo: File | string;
-    loading: boolean;
-    error: string;
-    createdProduct: string;
-    formData: FormData | null;
-}
-
 const AddProduct: React.FC = () => {
-    const [values, setValues] = useState<Values>({
+    const [values, setValues] = useState<AddProductValues>({
         name: "",
         description: "",
         price: "",
@@ -77,14 +50,25 @@ const AddProduct: React.FC = () => {
     }, []);
 
     const handleChange =
-        (field: keyof Values) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-            const value = field === "photo" && event.target instanceof HTMLInputElement && event.target.files
-                ? event.target.files[0]
-                : event.target.value;
+        (field: ProductFormField) =>
+            (
+                event: ChangeEvent<
+                    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+                >
+            ) => {
+                if (!formData) return;
 
-            formData?.set(field, value as string | Blob);
-            setValues((prev) => ({ ...prev, [field]: value }));
-        };
+                const value =
+                    field === "photo" &&
+                        event.target instanceof HTMLInputElement &&
+                        event.target.files
+                        ? event.target.files[0]
+                        : event.target.value;
+
+                formData.set(field, value);
+                setValues((prev) => ({ ...prev, [field]: value }));
+            };
+
 
     const clickSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
