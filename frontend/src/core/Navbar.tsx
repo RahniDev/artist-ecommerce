@@ -71,13 +71,6 @@ const Navbar: React.FC = () => {
                             >
                                 Signin
                             </Button>
-                            <Button
-                                component={NavLink}
-                                to="/signup"
-                                sx={linkStyle}
-                            >
-                                Signup
-                            </Button>
                         </>
                     )}
 

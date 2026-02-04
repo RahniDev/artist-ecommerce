@@ -4,13 +4,21 @@
   "no_products": "Aucun produit trouvé",
   "found_products": "{{count}} produit trouvé",
   "signin_checkout": "Connectez-vous pour payer",
+  "delivery_address": "Adresse de livraison",
   "sold": "Vendu",
   "search": "Rechercher des produits",
   "category": "Catégorie",
   "signin": "Se connecter",
   "signup": "S’inscrire",
   "signout": "Se déconnecter",
+  "password": "Mot de passe",
+  "email": "E-mail",
+  "name": "Nom",
+  "update": "Mettre à jour",
   "new_arrivals": "Nouveautés",
   "no_new_arrivals": "Aucune nouveauté pour le moment",
-  "shipping_and_returns": "Livraison et retours"
+  "shipping_and_returns": "Livraison et retours",
+  "no_orders": "Vous n'avez pas encore passé de commandes.",
+  "user_info": "Informations utilisateur",
+  "purchase_history": "Historique des achats"
 }

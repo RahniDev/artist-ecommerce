@@ -1,59 +1,48 @@
 import { useTranslation } from "react-i18next";
+import {
+  FormControl,
+  Select,
+  MenuItem,
+  type SelectChangeEvent,
+} from "@mui/material";
+
+type Lang = "en" | "fr" | "de" | "es" | "it";
 
 export default function LangToggle() {
   const { i18n } = useTranslation();
-  const currentLang = i18n.language.startsWith("fr") ? "fr" : i18n.language.startsWith("de") ? "de" : i18n.language.startsWith("es") ? "es" : i18n.language.startsWith("it") ? "it" : "en";
 
-  const changeLang = (lang: "en" | "fr" | "de" | "es" | "it") => {
-    i18n.changeLanguage(lang);
+  const currentLang: Lang =
+    i18n.language.startsWith("fr")
+      ? "fr"
+      : i18n.language.startsWith("de")
+      ? "de"
+      : i18n.language.startsWith("es")
+      ? "es"
+      : i18n.language.startsWith("it")
+      ? "it"
+      : "en";
+
+  const handleChange = (event: SelectChangeEvent) => {
+    i18n.changeLanguage(event.target.value as Lang);
   };
 
   return (
-    <div className="lang-toggle">
-      <button
-        className={`lang-option ${currentLang === "en" ? "active" : ""}`}
-        onClick={() => changeLang("en")}
-        aria-pressed={currentLang === "en"}
+    <FormControl size="small" sx={{ minWidth: 80 }}>
+      <Select
+        value={currentLang}
+        onChange={handleChange}
+        displayEmpty
+        sx={{
+          borderRadius: 0,
+          fontWeight: 600,
+        }}
       >
-        EN
-      </button>
-            <span className="lang-separator">/</span>
-
-      <button
-        className={`lang-option ${currentLang === "de" ? "active" : ""}`}
-        onClick={() => changeLang("de")}
-        aria-pressed={currentLang === "de"}
-      >
-        DE
-      </button>
-            <span className="lang-separator">/</span>
-
-      <button
-        className={`lang-option ${currentLang === "es" ? "active" : ""}`}
-        onClick={() => changeLang("es")}
-        aria-pressed={currentLang === "es"}
-      >
-        ES
-      </button>
-            <span className="lang-separator">/</span>
-
-      <button
-        className={`lang-option ${currentLang === "it" ? "active" : ""}`}
-        onClick={() => changeLang("it")}
-        aria-pressed={currentLang === "it"}
-      >
-        IT
-      </button>
-
-      <span className="lang-separator">/</span>
-
-      <button
-        className={`lang-option ${currentLang === "fr" ? "active" : ""}`}
-        onClick={() => changeLang("fr")}
-        aria-pressed={currentLang === "fr"}
-      >
-        FR
-      </button>
-    </div>
+        <MenuItem value="en">EN</MenuItem>
+        <MenuItem value="de">DE</MenuItem>
+        <MenuItem value="es">ES</MenuItem>
+        <MenuItem value="it">IT</MenuItem>
+        <MenuItem value="fr">FR</MenuItem>
+      </Select>
+    </FormControl>
   );
 }

@@ -4,6 +4,7 @@ import Layout from "../core/Layout";
 import { useNavigate } from "react-router-dom";
 import { signin, authenticate, isAuthenticated } from "../auth";
 import type { IUser, SigninState } from "../types";
+import { useTranslation } from "react-i18next";
 
 const Signin: React.FC = () => {
     const navigate = useNavigate();
@@ -15,7 +16,7 @@ const Signin: React.FC = () => {
         loading: false,
         redirectToReferrer: false,
     });
-
+    const { t } = useTranslation();
     const { email, password, loading, error, redirectToReferrer } = values;
 
     const auth = isAuthenticated();
@@ -68,17 +69,16 @@ const Signin: React.FC = () => {
     const signInForm = () => (
         <form>
             <div className="form-group">
-                <label className="text-muted">Email</label>
+                <label className="text-muted">{t("email")}</label>
                 <input
                     onChange={handleChange("email")}
                     type="email"
-                    className="form-control"
                     value={email}
                 />
             </div>
 
-            <div className="form-group">
-                <label className="text-muted">Password</label>
+            <div>
+                <label>{t("password")}</label>
                 <input
                     onChange={handleChange("password")}
                     type="password"
@@ -87,27 +87,26 @@ const Signin: React.FC = () => {
                 />
             </div>
 
-            <button onClick={clickSubmit} className="btn btn-primary">
-                Submit
+            <button onClick={clickSubmit}>
+                {t("signin")}
             </button>
         </form>
     );
 
     const showError = () =>
-        error ? <div className="alert alert-danger">{error}</div> : null;
+        error ? <div>{error}</div> : null;
 
     const showLoading = () =>
         loading ? (
-            <div className="alert alert-info">
+            <div>
                 <h2>Loading...</h2>
             </div>
         ) : null;
 
     return (
         <Layout
-            title="Signin"
-            description="Signin to our eco-friendly e-commerce shop."
-            className="container col-md-8 offset-md-2">
+            title={t("signin")}
+            description="">
             {showLoading()}
             {showError()}
             {signInForm()}

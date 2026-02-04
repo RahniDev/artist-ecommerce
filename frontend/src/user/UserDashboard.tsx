@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import moment from "moment";
-
+import { useTranslation } from 'react-i18next';
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { getPurchaseHistory } from "./apiUser";
@@ -23,7 +23,7 @@ import {
 
 const UserDashboard = () => {
     const [history, setHistory] = useState<Order[]>([]);
-
+    const { t } = useTranslation();
     const auth = isAuthenticated() as AuthResponse | false;
     if (!auth) {
         // Safety guard — should never happen due to PrivateRoute
@@ -77,7 +77,7 @@ const UserDashboard = () => {
 
     const userInfo = () => (
         <Card sx={{ mb: 4 }}>
-            <CardHeader title="User Information" />
+            <CardHeader title={t('user_info')} />
             <List>
                 <ListItem>
                     <ListItemText primary={name} />
@@ -98,14 +98,14 @@ const UserDashboard = () => {
         if (history.length === 0) {
             return (
                 <Alert severity="info">
-                    You haven’t placed any orders yet.
+                    {t('no_orders')}
                 </Alert>
             );
         }
 
         return (
             <Card sx={{ mb: 4 }}>
-                <CardHeader title="Purchase History" />
+                <CardHeader title={t('purchase_history')} />
                 <CardContent>
                     {history.map(order => (
                         <Box key={order._id} sx={{ mb: 3 }}>

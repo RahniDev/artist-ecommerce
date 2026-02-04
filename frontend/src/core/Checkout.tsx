@@ -5,6 +5,7 @@ import { getBraintreeClientToken, processPayment, createOrder } from "./apiCore"
 import { emptyCart } from "./cartHelpers";
 import { Box, Button, Link } from "@mui/material";
 import braintree from "braintree-web-drop-in";
+import { useTranslation } from "react-i18next";
 
 const Checkout: React.FC<CheckoutProps> = ({ products, setRun = () => { }, run = false }) => {
   const [data, setData] = useState<CheckoutData>({
@@ -18,6 +19,8 @@ const Checkout: React.FC<CheckoutProps> = ({ products, setRun = () => { }, run =
   const dropInInstance = useRef<any>(null);
   const dropInMounted = useRef(false);
 
+    const { t } = useTranslation();
+  
   const auth = isAuthenticated();
   const userId = auth?.user._id;
   const token = auth?.token;
@@ -132,7 +135,7 @@ const Checkout: React.FC<CheckoutProps> = ({ products, setRun = () => { }, run =
       {auth ? (
         <Box>
           <Box sx={{ mb: 2 }}>
-            <label>Delivery Address:</label>
+            <label>{t("delivery_address")}:</label>
             <textarea
               value={data.address}
               onChange={handleAddress}
@@ -162,7 +165,7 @@ const Checkout: React.FC<CheckoutProps> = ({ products, setRun = () => { }, run =
 
         </Box>
       ) : (
-        <Link href="/signin">Sign in to checkout</Link>
+        <Link href="/signin">{t("Sign in to checkout")}</Link>
       )}
     </Box>
   );

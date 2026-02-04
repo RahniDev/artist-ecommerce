@@ -4,13 +4,21 @@
   "no_products": "No products found",
   "found_products": "Found {{count}} products",
   "signin_checkout": "Sign in to checkout",
+  "delivery_address": "Delivery Address",
   "sold": "Sold",
   "search": "Search products",
   "category": "Category",
   "signin": "Sign In",
   "signup": "Sign Up",
   "signout": "Sign Out",
+  "password": "Password",
+  "email": "Email",
+  "name": "Name",
+  "update": "Update",
   "new_arrivals": "New Arrivals",
   "no_new_arrivals": "No new arrivals yet",
-  "shipping_and_returns": "Shipping and returns"
+  "shipping_and_returns": "Shipping and returns",
+  "no_orders": "You haven't placed any orders yet.",
+  "user_info": "User Information",
+  "purchase_history": "Purchase History"
 }

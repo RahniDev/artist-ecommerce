@@ -4,13 +4,21 @@
   "no_products": "Nessun prodotto trovato",
   "found_products": "{{count}} prodotto{{count > 1 ? 'i' : ''}} trovato{{count > 1 ? 'i' : ''}}",
   "signin_checkout": "Accedi per completare l'acquisto",
+  "delivery_address": "Indirizzo di consegna",
   "sold": "Esaurito",
   "search": "Cerca prodotti",
   "category": "Categoria",
   "signin": "Accedi",
   "signup": "Registrati",
   "signout": "Esci",
+  "password": "Password",
+  "email": "Email",
+  "name": "Nome",
+  "update": "Aggiorna",
   "new_arrivals": "Novità",
   "no_new_arrivals": "Nessuna novità ancora",
-  "shipping_and_returns": "Spedizione e resi"
+  "shipping_and_returns": "Spedizione e resi",
+  "no_orders": "Non hai ancora effettuato ordini.",
+  "user_info": "Informazioni utente",
+  "purchase_history": "Cronologia acquisti"
 }

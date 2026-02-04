@@ -4,11 +4,12 @@ import { isAuthenticated } from "../auth";
 import { useParams, Navigate } from "react-router-dom";
 import { read, update, updateUser } from "./apiUser";
 import type { ProfileState } from "../types";
-
+import { useTranslation } from "react-i18next";
 const Profile: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
 
   const auth = isAuthenticated();
+  const { t } = useTranslation();
 
   if (!auth) {
     return <Navigate to="/signin" replace />;
@@ -85,8 +86,8 @@ const Profile: React.FC = () => {
 
   const profileUpdateForm = () => (
     <form>
-      <div className="form-group">
-        <label className="text-muted">Name</label>
+      <div>
+        <label>{t("name")}</label>
         <input
           type="text"
           onChange={handleChange("name")}
@@ -97,7 +98,7 @@ const Profile: React.FC = () => {
       </div>
 
       <div className="form-group">
-        <label className="text-muted">Email</label>
+        <label className="text-muted">{t("email")}</label>
         <input
           type="email"
           onChange={handleChange("email")}
@@ -108,7 +109,7 @@ const Profile: React.FC = () => {
       </div>
 
       <div className="form-group">
-        <label className="text-muted">Password</label>
+        <label className="text-muted">{t("password")}</label>
         <input
           type="password"
           onChange={handleChange("password")}
@@ -117,8 +118,8 @@ const Profile: React.FC = () => {
         />
       </div>
 
-      <button className="btn btn-primary" onClick={clickSubmit}>
-        Submit
+      <button onClick={clickSubmit}>
+        {t("update")}
       </button>
     </form>
   );
@@ -133,7 +134,7 @@ const Profile: React.FC = () => {
       description="Update your profile"
       className="container-fluid"
     >
-      <h2 className="mb-4">Profile update</h2>
+      <h2 className="mb-4">Update profile</h2>
       {profileUpdateForm()}
       {error && <div className="alert alert-danger">Something went wrong</div>}
     </Layout>
