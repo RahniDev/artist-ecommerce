@@ -3,6 +3,8 @@ import ReactDOM from "react-dom/client";
 import Routes from "./Routes";
 import "../src/i18n";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import { Provider } from "react-redux";
+import { store } from "./redux/store";
 
 const theme = createTheme({
   typography: {
@@ -20,8 +22,10 @@ const root = ReactDOM.createRoot(
 
 root.render(
   <React.StrictMode>
-    <ThemeProvider theme={theme}>
-      <Routes />
-    </ThemeProvider>
+    <Provider store={store}>
+      <ThemeProvider theme={theme}>
+        <Routes />
+      </ThemeProvider>
+    </Provider>
   </React.StrictMode>
 );

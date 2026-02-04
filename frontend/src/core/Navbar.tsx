@@ -6,13 +6,14 @@ import {
     Box,
     IconButton,
     Button,
-    Badge
+    Badge,
 } from "@mui/material";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 
 import { signout, isAuthenticated } from "../auth";
-import { itemTotal } from "./cartHelpers";
+import { useSelector } from "react-redux";
+import type { RootState } from "../redux/store";
 import logo from "../assets/react.svg";
 import LangToggle from "./LangToggle";
 
@@ -28,6 +29,9 @@ const Navbar: React.FC = () => {
     const navigate = useNavigate();
     const auth = isAuthenticated();
 
+    const cartItems = useSelector((state: RootState) => state.cart.items);
+    const cartCount = cartItems.reduce((total, item) => total + (item.count ?? 1), 0);
+
     const handleSignout = () => {
         signout(() => navigate("/"));
     };
@@ -40,56 +44,38 @@ const Navbar: React.FC = () => {
                         <img src={logo} width="40" height="40" alt="Logo" />
                     </NavLink>
                 </Box>
-                <Box display="flex" alignItems="center" gap={2}>
 
+                <Box display="flex" alignItems="center" gap={2}>
                     {auth && auth.user.role === 0 && (
-                        <IconButton
-                            component={NavLink}
-                            to="/user/dashboard"
-                            sx={linkStyle}
-                        >
+                        <IconButton component={NavLink} to="/user/dashboard" sx={linkStyle}>
                             <Person2OutlinedIcon />
                         </IconButton>
                     )}
+
                     <LangToggle />
+
                     {auth && auth.user.role === 1 && (
-                        <Button
-                            component={NavLink}
-                            to="/admin/dashboard"
-                            sx={linkStyle}
-                        >
+                        <Button component={NavLink} to="/admin/dashboard" sx={linkStyle}>
                             <Person2OutlinedIcon />
                         </Button>
                     )}
 
                     {!auth && (
                         <>
-                            <Button
-                                component={NavLink}
-                                to="/signin"
-                                sx={linkStyle}
-                            >
+                            <Button component={NavLink} to="/signin" sx={linkStyle}>
                                 Signin
                             </Button>
                         </>
                     )}
 
                     {auth && (
-                        <Button
-                            onClick={handleSignout}
-                            sx={{ color: "#3a3535" }}
-                        >
+                        <Button onClick={handleSignout} sx={{ color: "#3a3535" }}>
                             Signout
                         </Button>
                     )}
 
-                    {/* Cart */}
-                    <IconButton
-                        component={NavLink}
-                        to="/cart"
-                        sx={{ color: "#ff7315" }}
-                    >
-                        <Badge badgeContent={itemTotal()} color="error">
+                    <IconButton component={NavLink} to="/cart" sx={{ color: "#ff7315" }}>
+                        <Badge badgeContent={cartCount} color="error">
                             <ShoppingCartOutlinedIcon />
                         </Badge>
                     </IconButton>

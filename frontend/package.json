@@ -14,6 +14,7 @@
     "@emotion/styled": "^11.14.1",
     "@mui/icons-material": "^7.3.5",
     "@mui/material": "^7.3.5",
+    "@reduxjs/toolkit": "^2.11.2",
     "braintree-web-drop-in": "^1.46.0",
     "braintree-web-drop-in-react": "^1.2.0",
     "i18next": "^25.7.3",
@@ -23,6 +24,7 @@
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-i18next": "^16.5.1",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.6"
   },
   "devDependencies": {
