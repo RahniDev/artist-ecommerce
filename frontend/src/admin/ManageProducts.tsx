@@ -5,6 +5,14 @@ import { getProducts, deleteProduct } from "./apiAdmin";
 import type { Product, AuthData } from "../types";
 import Loader from "../core/Loader";
 import ManageProductRow from "./ManageProductRow";
+import {
+    Container,
+    Typography,
+    Divider,
+    Alert,
+    List,
+    Box,
+} from "@mui/material";
 
 const ManageProducts: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -56,21 +64,34 @@ const ManageProducts: React.FC = () => {
         <Layout
             title="Manage Products"
             description="Update and delete products"
-            className="container-fluid"
         >
-            {loading && <Loader loading={loading} />}
-            {error && <div className="alert alert-danger">{error}</div>}
-            <div className="row">
-                <div className="col-12">
-                    <h2 className="text-center">Total {products.length} products</h2>
-                    <hr />
-                    <ul className="list-group">
-                        {products.map(p => (
-                            <ManageProductRow key={p._id} product={p} onDelete={destroy} />
+            <Container maxWidth="md">
+                {loading && <Loader loading={loading} />}
+
+                {error && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {error}
+                    </Alert>
+                )}
+
+                <Box sx={{ mt: 3 }}>
+                    <Typography variant="h5" align="center" gutterBottom>
+                        Total {products.length} {products.length === 1 ? "product" : "products"}
+                    </Typography>
+
+                    <Divider sx={{ mb: 2 }} />
+
+                    <List disablePadding>
+                        {products.map((p) => (
+                            <ManageProductRow
+                                key={p._id}
+                                product={p}
+                                onDelete={destroy}
+                            />
                         ))}
-                    </ul>
-                </div>
-            </div>
+                    </List>
+                </Box>
+            </Container>
         </Layout>
     );
 };

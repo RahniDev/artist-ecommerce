@@ -1,7 +1,15 @@
 import React, { useEffect, useState } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
-import { useParams, Navigate } from "react-router-dom";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Alert,
+  Stack,
+} from "@mui/material";
+import { Navigate, useParams } from "react-router-dom";
 import { read, update, updateUser } from "./apiUser";
 import type { ProfileState } from "../types";
 import { useTranslation } from "react-i18next";
@@ -83,62 +91,76 @@ const Profile: React.FC = () => {
     });
   };
 
+const profileUpdateForm = () => (
+  <Box
+    component="form"
+    sx={{ maxWidth: 400 }}
+  >
+    <Stack spacing={2}>
+      <TextField
+        label={t("name")}
+        value={name}
+        onChange={handleChange("name")}
+        placeholder={user.name}
+        fullWidth
+      />
 
-  const profileUpdateForm = () => (
-    <form>
-      <div>
-        <label>{t("name")}</label>
-        <input
-          type="text"
-          onChange={handleChange("name")}
-          className="form-control"
-          value={name}
-          placeholder={user.name}
-        />
-      </div>
+      <TextField
+        label={t("email")}
+        type="email"
+        value={email}
+        onChange={handleChange("email")}
+        placeholder={user.email}
+        fullWidth
+      />
 
-      <div className="form-group">
-        <label className="text-muted">{t("email")}</label>
-        <input
-          type="email"
-          onChange={handleChange("email")}
-          className="form-control"
-          value={email}
-          placeholder={user.email}
-        />
-      </div>
+      <TextField
+        label={t("password")}
+        type="password"
+        value={password}
+        onChange={handleChange("password")}
+        fullWidth
+      />
 
-      <div className="form-group">
-        <label className="text-muted">{t("password")}</label>
-        <input
-          type="password"
-          onChange={handleChange("password")}
-          className="form-control"
-          value={password}
-        />
-      </div>
-
-      <button onClick={clickSubmit}>
+      <Button
+        variant="contained"
+        size="large"
+        onClick={clickSubmit}
+      >
         {t("update")}
-      </button>
-    </form>
-  );
+      </Button>
+    </Stack>
+  </Box>
+);
 
   if (success) {
     return <Navigate to="/cart" replace />;
   }
 
-  return (
-    <Layout
-      title="Profile"
-      description="Update your profile"
-      className="container-fluid"
-    >
-      <h2 className="mb-4">Update profile</h2>
+  if (success) {
+  return <Navigate to="/cart" replace />;
+}
+
+return (
+  <Layout
+    title="Profile"
+    description="Update your profile"
+  >
+    <Box maxWidth="md" mx="auto" mt={4}>
+      <Typography variant="h5" gutterBottom>
+        Update profile
+      </Typography>
+
       {profileUpdateForm()}
-      {error && <div className="alert alert-danger">Something went wrong</div>}
-    </Layout>
-  );
-};
+
+      {error && (
+        <Alert severity="error" sx={{ mt: 2 }}>
+          Something went wrong
+        </Alert>
+      )}
+    </Box>
+  </Layout>
+);
+}
 
 export default Profile;

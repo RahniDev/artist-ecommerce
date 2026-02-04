@@ -1,4 +1,10 @@
 import React, { useState } from "react";
+import {
+  Radio,
+  RadioGroup,
+  FormControl,
+  FormControlLabel,
+} from "@mui/material";
 import type { RadioBoxProps } from "../types";
 
 const RadioBox: React.FC<RadioBoxProps> = ({ prices, handleFilters }) => {
@@ -11,20 +17,22 @@ const RadioBox: React.FC<RadioBoxProps> = ({ prices, handleFilters }) => {
   };
 
   return (
-    <>
-      {prices.map((p) => (
-        <div key={p._id}>
-          <input
-            type="radio"
-            name="price"
+    <FormControl>
+      <RadioGroup
+        name="price"
+        value={value}
+        onChange={handleChange}
+      >
+        {prices.map((p) => (
+          <FormControlLabel
+            key={p._id}
             value={p._id}
-            checked={value === p._id}
-            onChange={handleChange}
+            control={<Radio />}
+            label={p.name}
           />
-          <label>{p.name}</label>
-        </div>
-      ))}
-    </>
+        ))}
+      </RadioGroup>
+    </FormControl>
   );
 };
 

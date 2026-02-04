@@ -1,10 +1,23 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { createProduct, getCategories } from "./apiAdmin";
 import type { AddProductValues, ProductFormField, AuthData } from "../types";
 import Loader from "../core/Loader";
+import {
+    Box,
+    Button,
+    Container,
+    TextField,
+    Select,
+    MenuItem,
+    InputLabel,
+    FormControl,
+    Alert,
+    Typography,
+} from "@mui/material";
+import type { SelectChangeEvent } from "@mui/material/Select";
 
 const AddProduct: React.FC = () => {
     const [values, setValues] = useState<AddProductValues>({
@@ -23,6 +36,7 @@ const AddProduct: React.FC = () => {
     });
 
     const { user, token } = isAuthenticated() as AuthData;
+
     const {
         name,
         description,
@@ -37,34 +51,39 @@ const AddProduct: React.FC = () => {
         formData,
     } = values;
 
-    const init = async () => {
-        const data = await getCategories();
-        if (data.error) {
-            setValues(prev => ({ ...prev, error: data.error || "" }));
-        } else {
-            setValues(prev => ({ ...prev, categories: data.data || [], formData: new FormData() }));
-        }
-    };
     useEffect(() => {
+        const init = async () => {
+            const data = await getCategories();
+            if (data.error) {
+                setValues((p) => ({ ...p, error: data.error || "" }));
+            } else {
+                setValues((p) => ({
+                    ...p,
+                    categories: data.data || [],
+                    formData: new FormData(),
+                }));
+            }
+        };
+
         init();
     }, []);
 
-    const handleChange =
+    const handleInputChange =
         (field: ProductFormField) =>
-            (
-                event: ChangeEvent<
-                    HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-                >
-            ) => {
+            (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
                 if (!formData) return;
 
-                const value =
-                    field === "photo" &&
-                        event.target instanceof HTMLInputElement &&
-                        event.target.files
-                        ? event.target.files[0]
-                        : event.target.value;
+                const value = event.target.value;
+                formData.set(field, value);
+                setValues((prev) => ({ ...prev, [field]: value }));
+            };
 
+    const handleSelectChange =
+        (field: ProductFormField) =>
+            (event: SelectChangeEvent) => {
+                if (!formData) return;
+
+                const value = event.target.value;
                 formData.set(field, value);
                 setValues((prev) => ({ ...prev, [field]: value }));
             };
@@ -74,16 +93,20 @@ const AddProduct: React.FC = () => {
         event.preventDefault();
         if (!formData) return;
 
-        setValues((prev) => ({ ...prev, error: "", loading: true }));
+        setValues((p) => ({ ...p, loading: true, error: "" }));
 
         try {
             const data = await createProduct(user._id, token, formData);
 
             if (data.error) {
-                setValues(prev => ({ ...prev, error: data.error || "", loading: false }));
+                setValues((p) => ({
+                    ...p,
+                    error: data.error || "",
+                    loading: false,
+                }));
             } else if (data.data) {
-                setValues(prev => ({
-                    ...prev,
+                setValues((p) => ({
+                    ...p,
                     name: "",
                     description: "",
                     price: "",
@@ -94,121 +117,133 @@ const AddProduct: React.FC = () => {
                     formData: new FormData(),
                 }));
             }
-        } catch (err) {
-            console.error(err);
-            setValues((prev) => ({ ...prev, error: "Product creation failed", loading: false }));
+        } catch {
+            setValues((p) => ({
+                ...p,
+                error: "Product creation failed",
+                loading: false,
+            }));
         }
     };
-
-    const newPostForm = () => (
-        <form onSubmit={clickSubmit}>
-            <h4>Post Photo</h4>
-            <div className="form-group">
-                <label className="btn btn-secondary">
-                    <input
-                        type="file"
-                        name="photo"
-                        accept="image/*"
-                        onChange={handleChange("photo")}
-                    />
-                </label>
-            </div>
-
-            <div className="form-group">
-                <label className="text-muted">Name</label>
-                <input
-                    type="text"
-                    className="form-control"
-                    value={name}
-                    onChange={handleChange("name")}
-                />
-            </div>
-
-            <div className="form-group">
-                <label className="text-muted">Product Description</label>
-                <textarea
-                    className="form-control"
-                    value={description}
-                    onChange={handleChange("description")}
-                />
-            </div>
-
-            <div className="form-group">
-                <label className="text-muted">Price</label>
-                <input
-                    type="number"
-                    className="form-control"
-                    value={price}
-                    onChange={handleChange("price")}
-                />
-            </div>
-
-            <div className="form-group">
-                <label className="text-muted">Category</label>
-                <select
-                    className="form-control"
-                    value={category}
-                    onChange={handleChange("category")}
-                >
-                    <option>Please select</option>
-                    {categories.map((c) => (
-                        <option key={c._id} value={c._id}>
-                            {c.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            <div className="form-group">
-                <label className="text-muted">Shipping</label>
-                <select
-                    className="form-control"
-                    value={shipping}
-                    onChange={handleChange("shipping")}
-                >
-                    <option>Please select</option>
-                    <option value="0">No</option>
-                    <option value="1">Yes</option>
-                </select>
-            </div>
-
-            <div className="form-group">
-                <label className="text-muted">Quantity</label>
-                <input
-                    type="number"
-                    className="form-control"
-                    value={quantity}
-                    onChange={handleChange("quantity")}
-                />
-            </div>
-
-            <button className="btn btn-dashboard btn-outline-primary">Create Product</button>
-        </form>
-    );
-
-    const showError = () =>
-        error && <div className="alert alert-danger">{error}</div>;
-
-    const showSuccess = () =>
-        createdProduct && (
-            <div className="alert alert-info">
-                <h2>{`${createdProduct} is created!`}</h2>
-            </div>
-        );
 
     return (
         <Layout
             title="Add a new product"
             description={`Hello ${user.name}, ready to add a new product?`}
         >
-            <div className="row">
-                <div className="col-md-8 offset-md-2">
+            <Container maxWidth="md">
+                <Box sx={{ mt: 4 }}>
                     <Loader loading={loading} />
-                    {showSuccess()}
-                    {showError()}
-                    {newPostForm()}
-                </div>
-            </div>
+
+                    {createdProduct && (
+                        <Alert severity="success" sx={{ mb: 2 }}>
+                            {createdProduct} is created!
+                        </Alert>
+                    )}
+
+                    {error && (
+                        <Alert severity="error" sx={{ mb: 2 }}>
+                            {error}
+                        </Alert>
+                    )}
+
+                    <Box
+                        component="form"
+                        onSubmit={clickSubmit}
+                        sx={{
+                            display: "flex",
+                            flexDirection: "column",
+                            gap: 2,
+                        }}
+                    >
+                        <Typography variant="h6">Post Photo</Typography>
+
+                        <Button variant="outlined" component="label">
+                            Upload Image
+                            <input
+                                hidden
+                                type="file"
+                                accept="image/*"
+                                onChange={handleInputChange("photo")}
+                            />
+                        </Button>
+
+                        <TextField
+                            label="Name"
+                            value={name}
+                            onChange={handleInputChange("name")}
+                            fullWidth
+                        />
+
+                        <TextField
+                            label="Product Description"
+                            value={description}
+                            onChange={handleInputChange("description")}
+                            multiline
+                            rows={4}
+                            fullWidth
+                        />
+
+                        <TextField
+                            label="Price"
+                            type="number"
+                            value={price}
+                            onChange={handleInputChange("price")}
+                            fullWidth
+                        />
+
+                        <FormControl fullWidth>
+                            <InputLabel>Category</InputLabel>
+                            <Select
+                                value={category}
+                                label="Category"
+                                onChange={handleSelectChange("category")}
+                            >
+                                <MenuItem value="">
+                                    <em>Please select</em>
+                                </MenuItem>
+                                {categories.map((c) => (
+                                    <MenuItem key={c._id} value={c._id}>
+                                        {c.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+
+                        <FormControl fullWidth>
+                            <InputLabel>Shipping</InputLabel>
+                            <Select
+                                value={shipping}
+                                label="Shipping"
+                                onChange={handleSelectChange("shipping")}
+                            >
+                                <MenuItem value="">
+                                    <em>Please select</em>
+                                </MenuItem>
+                                <MenuItem value="0">No</MenuItem>
+                                <MenuItem value="1">Yes</MenuItem>
+                            </Select>
+                        </FormControl>
+
+                        <TextField
+                            label="Quantity"
+                            type="number"
+                            value={quantity}
+                            onChange={handleInputChange("quantity")}
+                            fullWidth
+                        />
+
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            size="large"
+                            sx={{ mt: 2 }}
+                        >
+                            Create Product
+                        </Button>
+                    </Box>
+                </Box>
+            </Container>
         </Layout>
     );
 };

@@ -1,6 +1,11 @@
 import React, { useState } from "react";
-import TextField from "@mui/material/TextField";
-import Button from '@mui/material/Button';
+import {
+    Box,
+    Button,
+    TextField,
+    Alert,
+    Stack,
+} from "@mui/material";
 import Layout from "../core/Layout";
 import { Link } from "react-router-dom";
 
@@ -56,49 +61,69 @@ const ForgotPassword: React.FC = () => {
     };
 
     return (
-        <Layout title="Forgot Password Screen" description="Reset your password">
-            <div>
-                <form className="profile-form" onSubmit={sendEmail}>
-                    <TextField
-                        id="email"
-                        label="Email"
-                        value={email}
-                        onChange={handleChange}
-                        placeholder="Email Address"
-                    />
-                    <Button
-                        type="submit"
-                        variant="contained">Send Forgot Password Email</Button>
+        <Layout
+            title="Forgot Password"
+            description="Reset your password"
+        >
+            <Box
+                maxWidth={400}
+                mx="auto"
+                mt={4}
+            >
+                <form onSubmit={sendEmail}>
+                    <Stack spacing={2}>
+                        <TextField
+                            id="email"
+                            label="Email"
+                            type="email"
+                            value={email}
+                            onChange={handleChange}
+                            placeholder="Email address"
+                            fullWidth
+                            required
+                        />
+
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            size="large"
+                        >
+                            Send password reset email
+                        </Button>
+                    </Stack>
                 </form>
 
-                {showNullError && (
-                    <div>
-                        <p>The email address cannot be null.</p>
-                    </div>
-                )}
+                <Stack spacing={2} mt={3}>
+                    {showNullError && (
+                        <Alert severity="warning">
+                            The email address cannot be empty.
+                        </Alert>
+                    )}
 
-                {showError && (
-                    <div>
-                        <p>
-                            That email address isn&apos;t recognized. Please try again or
-                            register for a new account.
-                        </p>
-                        {/* <Button
-                        type="submit"
-                        variant="contained"
-                        link="/register"
-                    /> */}
-                    </div>
-                )}
+                    {showError && (
+                        <Alert severity="error">
+                            That email address isn&apos;t recognized. Please try again or register
+                            for a new account.
+                        </Alert>
+                    )}
 
-                {messageFromServer === "recovery email sent" && (
-                    <div>
-                        <h3>Password Reset Email Successfully Sent!</h3>
-                    </div>
-                )}
+                    {messageFromServer === "recovery email sent" && (
+                        <Alert severity="success">
+                            Password reset email successfully sent!
+                        </Alert>
+                    )}
+                </Stack>
 
-                <Link to="/">Go Home</Link>
-            </div>
+                <Box mt={3} textAlign="center">
+                    <Button
+                        component={Link}
+                        to="/"
+                        variant="text"
+                    >
+                        Go Home
+                    </Button>
+                </Box>
+            </Box>
         </Layout>
     );
 };

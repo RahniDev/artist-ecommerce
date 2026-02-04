@@ -1,6 +1,6 @@
 import React from "react";
 import ProductCard from "./Card";
-import { Box, Grid } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import type { IProduct } from "../types";
 
 interface ListProductsProps {
@@ -34,7 +34,7 @@ const ListProducts: React.FC<ListProductsProps> = ({ products, loadMore, hasMore
 
       {hasMore && loadMore && (
         <Grid container justifyContent="center" sx={{ mt: 3 }}>
-          <button
+          <Button
             onClick={loadMore}
             style={{
               padding: "10px 20px",
@@ -44,7 +44,7 @@ const ListProducts: React.FC<ListProductsProps> = ({ products, loadMore, hasMore
             }}
           >
             Load More
-          </button>
+          </Button>
         </Grid>
       )}
     </>

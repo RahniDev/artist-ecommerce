@@ -1,30 +1,35 @@
-import React, { useState, useEffect } from "react";
-import type { ChangeEvent } from "react";
+import React, { useEffect, useState } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { listOrders, getStatusValues, updateOrderStatus } from "./apiAdmin";
 import moment from "moment";
 import type { ApiResponse, IOrder, IAuthData } from "../types";
-
-
-
-type Status = string[];
-
+import {
+    Box,
+    Container,
+    Typography,
+    Paper,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel,
+    List,
+    ListItem,
+    Divider,
+    TextField,
+} from "@mui/material";
+import type { SelectChangeEvent } from "@mui/material/Select";
 
 const Orders: React.FC = () => {
     const [orders, setOrders] = useState<IOrder[]>([]);
-    const [statusValues, setStatusValues] = useState<Status>([]);
+    const [statusValues, setStatusValues] = useState<string[]>([]);
 
     const { user, token } = isAuthenticated() as IAuthData;
 
     const loadOrders = async () => {
         try {
-            const data: ApiResponse<IOrder[]> = await listOrders(user._id, token);
-            if (data.error) {
-                console.error(data.error);
-            } else {
-                setOrders(data.data || []);
-            }
+            const res: ApiResponse<IOrder[]> = await listOrders(user._id, token);
+            if (!res.error) setOrders(res.data || []);
         } catch (err) {
             console.error("Failed to load orders", err);
         }
@@ -39,106 +44,136 @@ const Orders: React.FC = () => {
         }
     };
 
-
     useEffect(() => {
         loadOrders();
         loadStatusValues();
     }, []);
 
-    const handleStatusChange = async (e: ChangeEvent<HTMLSelectElement>, orderId: string) => {
+    const handleStatusChange = async (
+        e: SelectChangeEvent<string>,
+        orderId: string
+    ) => {
         try {
-            const data: ApiResponse<IOrder> = await updateOrderStatus(user._id, token, orderId, e.target.value);
-            if (data.error) {
-                console.error("Status update failed:", data.error);
-            } else {
-                await loadOrders();
-            }
+            const res = await updateOrderStatus(
+                user._id,
+                token,
+                orderId,
+                e.target.value
+            );
+            if (!res.error) await loadOrders();
         } catch (err) {
             console.error("Failed to update status", err);
         }
     };
-
-    const showOrdersLength = () =>
-        orders.length > 0 ? (
-            <h1 className="text-danger display-2">Total orders: {orders.length}</h1>
-        ) : (
-            <h1 className="text-danger">No orders</h1>
-        );
-
-    // read-only input
-    const showInput = (key: string, value: string | number) => (
-        <div className="input-group mb-2 mr-sm-2">
-            <div className="input-group-prepend">
-                <div className="input-group-text">{key}</div>
-            </div>
-            <input type="text" value={value} className="form-control" readOnly />
-        </div>
-    );
-
-    // Show order status selector
-    const showStatus = (order: IOrder) => (
-        <div className="form-group">
-            <h3 className="mark mb-4">Status: {order.status}</h3>
-            <select
-                className="form-control"
-                onChange={(e) => handleStatusChange(e, order._id)}
-            >
-                <option>Update Status</option>
-                {statusValues.map((status, index) => (
-                    <option key={index} value={status}>
-                        {status}
-                    </option>
-                ))}
-            </select>
-        </div>
-    );
 
     return (
         <Layout
             title="Orders"
             description={`Hi ${user.name}, you can manage the orders here.`}
         >
-            <div className="row">
-                <div className="col-md-8 offset-md-2">
-                    {showOrdersLength()}
-                    {orders.map((o) => (
-                        <div
-                            className="mt-5"
-                            key={o._id}
-                            style={{ borderBottom: "5px solid indigo" }}
+            <Container maxWidth="md">
+                <Box sx={{ mt: 4 }}>
+                    <Typography variant="h4" color="error" gutterBottom>
+                        {orders.length > 0
+                            ? `Total orders: ${orders.length}`
+                            : "No orders"}
+                    </Typography>
+
+                    {orders.map((order) => (
+                        <Paper
+                            key={order._id}
+                            sx={{
+                                mt: 4,
+                                p: 3,
+                                borderLeft: "6px solid indigo",
+                            }}
                         >
-                            <h2 className="mb-5">
-                                <span className="bg-primary">Order ID: {o._id}</span>
-                            </h2>
-                            <ul className="list-group mb-2">
-                                <li>{showStatus(o)}</li>
-                                <li>Transaction ID: {o.transaction_id}</li>
-                                <li>Amount: £{o.amount}</li>
-                                <li>Ordered by: {o.user.name}</li>
-                                <li>Ordered on: {moment(o.createdAt).fromNow()}</li>
-                                <li>Delivery Address: {o.address}</li>
-                            </ul>
+                            <Typography variant="h6" gutterBottom>
+                                Order ID: {order._id}
+                            </Typography>
 
-                            <h3 className="mt-4 mb-4 font-italic">
-                                Total products in the order: {o.products.length}
-                            </h3>
-
-                            {o.products.map((p) => (
-                                <div
-                                    className="mb-4"
-                                    key={p._id}
-                                    style={{ padding: "20px", border: "1px solid indigo" }}
+                            <FormControl fullWidth sx={{ mb: 3 }}>
+                                <InputLabel>Status</InputLabel>
+                                <Select
+                                    label="Status"
+                                    value={order.status}
+                                    onChange={(e) => handleStatusChange(e, order._id)}
                                 >
-                                    {showInput("Product name", p.name)}
-                                    {showInput("Product price", p.price)}
-                                    {showInput("Product total", p.count ?? 0)}
-                                    {showInput("Product Id", p._id)}
-                                </div>
+                                    {statusValues.map((status) => (
+                                        <MenuItem key={status} value={status}>
+                                            {status}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+
+                            <List dense>
+                                <ListItem>Transaction ID: {order.transaction_id}</ListItem>
+                                <ListItem>Amount: £{order.amount}</ListItem>
+                                <ListItem>Ordered by: {order.user.name}</ListItem>
+                                <ListItem>
+                                    Ordered on: {moment(order.createdAt).fromNow()}
+                                </ListItem>
+                                <ListItem>Delivery address: {order.address}</ListItem>
+                            </List>
+
+                            <Divider sx={{ my: 3 }} />
+
+                            <Typography variant="subtitle1" sx={{ mb: 2 }}>
+                                Total products: {order.products.length}
+                            </Typography>
+
+                            {order.products.map((p) => (
+                                <Paper
+                                    key={p._id}
+                                    variant="outlined"
+                                    sx={{ p: 2, mb: 2 }}
+                                >
+                                    <TextField
+                                        label="Product name"
+                                        value={p.name}
+                                        fullWidth
+                                        slotProps={{
+                                            input: { readOnly: true },
+                                        }}
+                                        sx={{ mb: 2 }}
+                                    />
+
+                                    <TextField
+                                        label="Price"
+                                        value={p.price}
+                                        fullWidth
+                                        slotProps={{
+                                            input: { readOnly: true },
+                                        }}
+                                        sx={{ mb: 2 }}
+                                    />
+
+                                    <TextField
+                                        label="Quantity"
+                                        value={p.count ?? 0}
+                                        fullWidth
+                                        slotProps={{
+                                            input: { readOnly: true },
+                                        }}
+                                        sx={{ mb: 2 }}
+                                    />
+
+                                    <TextField
+                                        label="Product ID"
+                                        value={p._id}
+                                        fullWidth
+                                        slotProps={{
+                                            input: { readOnly: true },
+                                        }}
+                                    />
+
+                                </Paper>
                             ))}
-                        </div>
+                        </Paper>
                     ))}
-                </div>
-            </div>
+                </Box>
+            </Container>
         </Layout>
     );
 };

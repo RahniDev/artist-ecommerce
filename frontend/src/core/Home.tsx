@@ -5,7 +5,7 @@ import Search from "./Search";
 import Hero from "./Hero";
 import type { IProduct, ApiResponse } from "../types";
 import ListProducts from './ListProducts'
-import { Box, Alert } from "@mui/material";
+import { Box, Container, Typography, Alert, Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Loader from "./Loader";
 
@@ -40,39 +40,45 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <Layout
-      title=""
-      description="">
-      <Hero />
-      <Search />
+    <Layout title="" description="">
+      <Container maxWidth="lg">
+        <Stack spacing={4}>
+          <Hero />
+          <Search />
 
-      {error && (
-        <Alert severity="error" sx={{ my: 2 }}>
-          {error}
-        </Alert>
-      )}
+          {error && (
+            <Alert severity="error">
+              {error}
+            </Alert>
+          )}
 
-     <Loader loading={loading} />
+          <Loader loading={loading} />
 
+          {/* New Arrivals */}
+          <Typography variant="h4" component="h2" textAlign="center">
+            {t("new_arrivals")}
+          </Typography>
 
-      <h2>{t("new_arrivals")}</h2>
-      <div>
-        {productsByArrival.length === 0 && !loading && !error && (
-          <p>
-            {t("no_new_arrivals")}
-          </p>
-        )}
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center"
-          }}
-        >
-          <ListProducts
-            products={productsByArrival}
-          />
-        </Box>
-      </div>
+          {productsByArrival.length === 0 && !loading && !error && (
+            <Typography
+              variant="body1"
+              color="text.secondary"
+              textAlign="center"
+            >
+              {t("no_new_arrivals")}
+            </Typography>
+          )}
+
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+            }}
+          >
+            <ListProducts products={productsByArrival} />
+          </Box>
+        </Stack>
+      </Container>
     </Layout>
   );
 };

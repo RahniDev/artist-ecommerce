@@ -1,22 +1,47 @@
 import type { ManageProductRowProps } from "../types";
-import { Link } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
+import {
+    ListItem,
+    ListItemText,
+    Stack,
+    Chip,
+    Typography
+} from "@mui/material";
 
 const ManageProductRow: React.FC<ManageProductRowProps> = ({ product, onDelete }) => (
-    <li className="list-group-item d-flex justify-content-between align-items-center">
-        <strong>{product.name}</strong>
+    <ListItem
+        divider
+        sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+        }}
+    >
+        <ListItemText
+            primary={
+                <Typography fontWeight={600}>
+                    {product.name}
+                </Typography>}
+        />
+        <Stack direction="row" spacing={1}>
+            <Chip
+                label="Update"
+                color="warning"
+                size="small"
+                component={RouterLink}
+                to={`/admin/product/update/${product._id}`}
+                clickable
+            />
 
-        <Link to={`/admin/product/update/${product._id}`}>
-            <span className="badge badge-warning badge-pill">Update</span>
-        </Link>
-
-        <span
-            onClick={() => onDelete(product._id)}
-            className="badge badge-danger badge-pill"
-            style={{ cursor: "pointer" }}
-        >
-            Delete
-        </span>
-    </li>
+            <Chip
+                label="Delete"
+                color="error"
+                size="small"
+                onClick={() => onDelete(product._id)}
+                clickable
+            />
+        </Stack>
+    </ListItem>
 );
 
 export default ManageProductRow;
