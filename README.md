@@ -2,13 +2,13 @@
 
 ### Technical Info
 
-Frontend: React, TypeScript, MaterialUI
+Frontend: React 19, TypeScript, Redux & Redux Toolkit, MaterialUI
 
-Backend: Node, Express, MongoDB
+Backend: Node, Express, TypeScript, MongoDB
 
 ### Features
 
-- User Signin/Signup
+- User Signin/Signup (hashed passwords with bcrypt)
 - User Dashboard (update profile details & view order history)
 - Admin Dashboard (Create, update & delete products & categories and view orders)
 - Checkout (payment with Braintree)
@@ -17,4 +17,4 @@ Backend: Node, Express, MongoDB
 - Search products
 - Related products section on product page
 - Product breadcrumbs
-  
+- React multi-language translation using I18n
