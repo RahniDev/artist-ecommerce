@@ -4,82 +4,112 @@ import Layout from "./Layout";
 import type { CartItem } from "../types";
 import Checkout from "./Checkout";
 import { useTranslation } from "react-i18next";
-import { Box, Grid, Link } from "@mui/material";
+import {
+    Box,
+    Grid,
+    Link,
+    Typography,
+    Card,
+    CardContent,
+    Divider,
+    Container,
+} from "@mui/material";
 import CartItemControls from "./CartItemControls";
 import ShowImage from "./ShowImage";
+import { Link as RouterLink } from "react-router-dom";
+import CartBreadcrumbs from "./CartBreadcrumbs";
 
 const Cart: React.FC = () => {
-    const items = useSelector((state: RootState) => state.cart.items); // Redux source of truth
+    const items = useSelector((state: RootState) => state.cart.items);
     const { t } = useTranslation();
 
     const showItems = (items: CartItem[]) => (
         <Box>
-            <h2>
+            <Typography variant="h5" gutterBottom>
                 {t(
-                    `Your cart has ${items.length} ${items.length === 1 ? "item" : "items"}`
+                    `Your cart has ${items.length} ${items.length === 1 ? "item" : "items"
+                    }`
                 )}
-            </h2>
+            </Typography>
 
-            <hr />
+            <Divider sx={{ mb: 2 }} />
 
             {items.map((product) => (
-                <Grid
-                    container
-                    key={product._id}
-                    alignItems="center"
-                    sx={{
-                        mb: 2,
-                        p: 2,
-                        borderBottom: "1px solid #eee",
-                        width: "100%",
-                    }}
-                >
-                    <Grid>
-                        <Link href={`/product/${product._id}`}>
-                            <ShowImage
-                                item={product}
-                                width="120px"
-                                height="120px"
-                                url="product"
-                            />
-                        </Link>
-                    </Grid>
+                <Card key={product._id} sx={{ mb: 2 }}>
+                    <CardContent>
+                        <Grid container spacing={2} alignItems="center">
+                            {/* Image */}
+                            <Grid>
+                                <Link
+                                    component={RouterLink}
+                                    to={`/product/${product._id}`}
+                                    underline="none"
+                                >
+                                    <ShowImage
+                                        item={product}
+                                        width="120px"
+                                        height="120px"
+                                        url="product"
+                                    />
+                                </Link>
+                            </Grid>
 
-                    <Grid>
-                        <Link href={`/product/${product._id}`}>
-                            <h3 style={{ margin: 0 }}>{product.name}</h3>
-                        </Link>
-                        <p style={{ margin: 0 }}>€ {product.price}</p>
-                    </Grid>
+                            {/* Info */}
+                            <Grid>
+                                <Typography
+                                    variant="subtitle1"
+                                    component={RouterLink}
+                                    to={`/product/${product._id}`}
+                                    sx={{ textDecoration: "none", color: "text.primary" }}
+                                >
+                                    {product.name}
+                                </Typography>
 
-                    <Grid sx={{ display: "flex", justifyContent: "flex-end" }}>
-                        <CartItemControls
-                            productId={product._id}
-                            initialCount={product.count ?? 1}
-                        />
-                    </Grid>
-                </Grid>
+                                <Typography variant="body2" color="text.secondary">
+                                    € {product.price}
+                                </Typography>
+                            </Grid>
+
+                            {/* Controls */}
+                            <Grid
+                                sx={{ display: "flex", justifyContent: { sm: "flex-end" } }}
+                            >
+                                <CartItemControls
+                                    productId={product._id}
+                                    initialCount={product.count ?? 1}
+                                />
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                </Card>
             ))}
         </Box>
     );
 
     const noItemsMessage = () => (
-        <h2>
-            Your Cart is empty. <br />
-            <Link href="/">Continue shopping.</Link>
-        </h2>
+        <Box textAlign="center" mt={4}>
+            <Typography variant="h5" gutterBottom>
+                {t("empty_cart")}
+            </Typography>
+            <Link component={RouterLink} to="/">
+                {t("continue_shopping")}
+            </Link>
+        </Box>
     );
 
     return (
-        <Layout title="Shopping Cart" description="">
-            <Box>
+        <Layout title="" description="">
+            <Container maxWidth="md">
+                <CartBreadcrumbs />
                 {items.length > 0 ? showItems(items) : noItemsMessage()}
-            </Box>
 
-            <div>
-                <hr />
-                <Checkout />
-            </div>
+                {items.length > 0 && (
+                    <>
+                        <Divider sx={{ my: 3 }} />
+                        <Checkout />
+                    </>
+                )}
+            </Container>
         </Layout>
     );
 };

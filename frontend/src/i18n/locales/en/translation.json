@@ -1,6 +1,8 @@
 {
   "add_to_cart": "Add to cart",
   "cart_items_count": "Your cart has {items.length} items",
+  "empty_cart": "Your cart is empty",
+  "continue_shopping": "Continue shopping",
   "no_products": "No products found",
   "found_products": "Found {{count}} products",
   "signin_checkout": "Sign in to checkout",

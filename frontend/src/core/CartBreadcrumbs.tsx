@@ -3,41 +3,23 @@ import Link from "@mui/material/Link";
 import Typography from "@mui/material/Typography";
 import { Link as RouterLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import type { IProduct } from "../types";
 
-interface ProductBreadcrumbsProps {
-  product: IProduct;
-}
-
-const ProductBreadcrumbs: React.FC<ProductBreadcrumbsProps> = ({ product }) => {
+const CartBreadcrumbs: React.FC = () => {
   const { t } = useTranslation();
 
-  const breadcrumbItems: { name: string; url: string }[] = [
+  const breadcrumbItems = [
     { name: t("home"), url: "/" },
-    { name: t("shop"), url: "/shop" },
+    { name: t("cart"), url: "" }, // current page
   ];
 
-  if (product.category) {
-    breadcrumbItems.push({
-      name: product.category.name,
-      url: `/shop?category=${product.category._id}`,
-    });
-  }
-
-  breadcrumbItems.push({
-    name: product.name,
-    url: "", // Current page
-  });
-
-  // Generate JSON-LD structured data
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": breadcrumbItems.map((item, index) => ({
+    itemListElement: breadcrumbItems.map((item, index) => ({
       "@type": "ListItem",
-      "position": index + 1,
-      "name": item.name,
-      "item": window.location.origin + item.url, // full URL
+      position: index + 1,
+      name: item.name,
+      item: window.location.origin + item.url,
     })),
   };
 
@@ -72,4 +54,4 @@ const ProductBreadcrumbs: React.FC<ProductBreadcrumbsProps> = ({ product }) => {
   );
 };
 
-export default ProductBreadcrumbs;
+export default CartBreadcrumbs;

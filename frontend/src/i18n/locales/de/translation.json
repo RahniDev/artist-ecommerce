@@ -1,6 +1,8 @@
 {
   "add_to_cart": "In den Warenkorb",
   "cart_items_count": "Ihr Warenkorb enthält {{count}} Artikel",
+  "empty_cart": "Ihr Warenkorb ist leer",
+  "continue_shopping": "Weiter einkaufen",
   "no_products": "Keine Produkte gefunden",
   "found_products": "{{count}} Produkte gefunden",
   "signin_checkout": "Zum Bezahlen anmelden",

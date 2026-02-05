@@ -1,6 +1,8 @@
 {
   "add_to_cart": "Ajouter au panier",
   "cart_items_count": "Votre panier contient {{count}} article",
+  "empty_cart": "Votre panier est vide",
+  "continue_shopping": "Continuer vos achats",
   "no_products": "Aucun produit trouvé",
   "found_products": "{{count}} produit trouvé",
   "signin_checkout": "Connectez-vous pour payer",

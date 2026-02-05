@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { getCategories, list } from "./apiCore";
-import Card from "./Card";
+import Card from "./ProductCard";
 import type { SearchState, IProduct } from "../types";
 import SearchIcon from "@mui/icons-material/Search";
 import {

@@ -1,6 +1,8 @@
 {
   "add_to_cart": "Aggiungi al carrello",
   "cart_items_count": "Il tuo carrello contiene {{count}} articolo{{count > 1 ? 'i' : ''}}",
+  "empty_cart": "Il tuo carrello è vuoto",
+  "continue_shopping": "Continua a fare acquisti",
   "no_products": "Nessun prodotto trovato",
   "found_products": "{{count}} prodotto{{count > 1 ? 'i' : ''}} trovato{{count > 1 ? 'i' : ''}}",
   "signin_checkout": "Accedi per completare l'acquisto",

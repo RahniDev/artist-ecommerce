@@ -16,8 +16,8 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({ product, redirect = t
   };
 
   return (
-    <Button variant="contained" onClick={handleAddToCart}>
-      {t("Add to cart")}
+    <Button variant="outlined" onClick={handleAddToCart}>
+      {t("add_to_cart")}
     </Button>
   );
 };

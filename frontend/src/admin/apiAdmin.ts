@@ -50,7 +50,6 @@ export const createProduct = async (
         const res = await fetch(`${API}/product/create/${userId}`, {
             method: 'POST',
             headers: {
-                Accept: 'application/json',
                 Authorization: `Bearer ${token}`,
             },
             body: product,

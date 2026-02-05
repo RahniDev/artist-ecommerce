@@ -68,15 +68,24 @@ const AddProduct: React.FC = () => {
         init();
     }, []);
 
-    const handleInputChange =
-        (field: ProductFormField) =>
-            (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-                if (!formData) return;
+const handleInputChange =
+  (field: ProductFormField) =>
+  (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (!formData) return;
 
-                const value = event.target.value;
-                formData.set(field, value);
-                setValues((prev) => ({ ...prev, [field]: value }));
-            };
+    if (field === "photo" && event.target instanceof HTMLInputElement) {
+      const file = event.target.files?.[0];
+      if (file) {
+        formData.set("photo", file);
+        setValues((prev) => ({ ...prev, photo: file }));
+      }
+    } else {
+      const value = event.target.value;
+      formData.set(field, value);
+      setValues((prev) => ({ ...prev, [field]: value }));
+    }
+  };
+
 
     const handleSelectChange =
         (field: ProductFormField) =>
@@ -86,6 +95,9 @@ const AddProduct: React.FC = () => {
                 const value = event.target.value;
                 formData.set(field, value);
                 setValues((prev) => ({ ...prev, [field]: value }));
+                for (const pair of formData.entries()) {
+  console.log(pair[0], pair[1]);
+}
             };
 
 

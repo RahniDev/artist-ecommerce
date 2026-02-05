@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "./Layout";
-import ProductCard from "./Card";
+import ProductCard from "./ProductCard";
 import { read, listRelated } from "./apiCore";
 import type { IProduct } from "../types";
 import SoldBadge from "./SoldBadge";

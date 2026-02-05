@@ -1,5 +1,5 @@
 import React from "react";
-import ProductCard from "./Card";
+import ProductCard from "./ProductCard";
 import { Box, Button, Grid } from "@mui/material";
 import type { IProduct } from "../types";
 
