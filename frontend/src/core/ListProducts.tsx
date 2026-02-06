@@ -1,13 +1,7 @@
 import React from "react";
 import ProductCard from "./ProductCard";
 import { Box, Button, Grid } from "@mui/material";
-import type { IProduct } from "../types";
-
-interface ListProductsProps {
-  products: IProduct[];
-  loadMore?: () => void;
-  hasMore?: boolean;
-}
+import type { ListProductsProps } from "../types";
 
 const ListProducts: React.FC<ListProductsProps> = ({ products, loadMore, hasMore }) => {
   if (!products || products.length === 0) {

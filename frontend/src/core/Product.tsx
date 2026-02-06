@@ -10,7 +10,6 @@ import SoldBadge from "./SoldBadge";
 import AddToCartButton from "./AddToCartButton";
 import ProductBreadcrumbs from "./ProductBreadcrumbs";
 import ShowImage from "./ShowImage";
-
 import { Box, Typography, Grid } from "@mui/material";
 
 const Product: React.FC = () => {

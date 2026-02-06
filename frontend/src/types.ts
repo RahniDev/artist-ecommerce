@@ -1,5 +1,11 @@
 import type { ReactNode } from "react";
 
+export interface ListProductsProps {
+  products: IProduct[];
+  loadMore?: () => void;
+  hasMore?: boolean;
+}
+
 export interface ManageProductRowProps {
   product: Product;
   onDelete: (id: string) => void;

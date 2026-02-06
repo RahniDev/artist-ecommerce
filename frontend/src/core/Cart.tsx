@@ -16,19 +16,25 @@ import {
 } from "@mui/material";
 import CartItemControls from "./CartItemControls";
 import ShowImage from "./ShowImage";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, Navigate } from "react-router-dom";
 import CartBreadcrumbs from "./CartBreadcrumbs";
 
 const Cart: React.FC = () => {
     const items = useSelector((state: RootState) => state.cart.items);
+    const auth = useSelector((state: RootState) => state.auth.user);
+    const token = useSelector((state: RootState) => state.auth.token);
+
     const { t } = useTranslation();
+
+    if (!auth || !token) {
+        return <Navigate to="/signin" replace />;
+    }
 
     const showItems = (items: CartItem[]) => (
         <Box>
             <Typography variant="h5" gutterBottom>
                 {t(
-                    `Your cart has ${items.length} ${items.length === 1 ? "item" : "items"
-                    }`
+                    `Your cart has ${items.length} ${items.length === 1 ? "item" : "items"}`
                 )}
             </Typography>
 
@@ -38,7 +44,6 @@ const Cart: React.FC = () => {
                 <Card key={product._id} sx={{ mb: 2 }}>
                     <CardContent>
                         <Grid container spacing={2} alignItems="center">
-                            {/* Image */}
                             <Grid>
                                 <Link
                                     component={RouterLink}
@@ -98,7 +103,7 @@ const Cart: React.FC = () => {
     );
 
     return (
-        <Layout title="" description="">
+        <Layout title="Shopping Cart" description="">
             <Container maxWidth="md">
                 <CartBreadcrumbs />
                 {items.length > 0 ? showItems(items) : noItemsMessage()}

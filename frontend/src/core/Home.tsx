@@ -45,7 +45,6 @@ const Home: React.FC = () => {
         <Stack spacing={4}>
           <Hero />
           <Search />
-
           {error && (
             <Alert severity="error">
               {error}
