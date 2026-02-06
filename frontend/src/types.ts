@@ -5,18 +5,6 @@ export interface ManageProductRowProps {
   onDelete: (id: string) => void;
 }
 
-export interface AuthUser {
-    _id: string;
-    name: string;
-    email: string;
-    role: number;
-}
-
-export interface AuthData {
-    user: AuthUser;
-    token: string;
-}
-
 export type ProductFormField =
   | "name"
   | "description"
@@ -58,17 +46,6 @@ export interface CreateOrderInput {
   user: string;
 }
 
-export interface AuthUser {
-  _id: string;
-  name: string;
-  email: string;
-  role: number;
-}
-
-export interface AuthData {
-  user: AuthUser;
-  token: string;
-}
 
 export interface ApiResponse<T = any> {
   data?: T;
@@ -111,6 +88,15 @@ export interface ICategory {
   name: string;
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface SignInInput {
+  email: string;
+  password: string;
+}
+
+export interface SignUpInput extends SignInInput {
+  name: string;
 }
 
 export interface IUser {
@@ -213,18 +199,6 @@ export interface Product {
 export interface Order {
   _id: string;
   products: Product[];
-}
-
-export interface User {
-  _id: string;
-  name: string;
-  email: string;
-  role: number;
-}
-
-export interface AuthResponse {
-  user: User;
-  token: string;
 }
 
 export interface ProfileState {

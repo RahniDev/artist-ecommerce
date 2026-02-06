@@ -9,7 +9,7 @@ const CartBreadcrumbs: React.FC = () => {
 
   const breadcrumbItems = [
     { name: t("home"), url: "/" },
-    { name: t("cart"), url: "" }, // current page
+    { name: t("cart"), url: "/cart" },
   ];
 
   const jsonLd = {

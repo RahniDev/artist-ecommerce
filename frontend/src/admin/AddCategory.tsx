@@ -100,7 +100,6 @@ const AddCategory: React.FC = () => {
       <Typography variant="h1" gutterBottom>
         Add a new category
       </Typography>
-
       <Box>
         {goBack()}
         {showSuccess()}

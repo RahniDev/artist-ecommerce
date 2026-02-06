@@ -1,7 +1,7 @@
 import { API } from "../config";
-import type { IAuthData } from "../types";
+import type { IAuthData, SignInInput, SignUpInput } from "../types";
 
-export const signup = async (user: any): Promise<IAuthData | { error: string }> => {
+export const signup = async (user: SignUpInput): Promise<IAuthData | { error: string }> => {
     try {
         const response = await fetch(`${API}/signup`, {
             method: "POST",
@@ -18,7 +18,7 @@ export const signup = async (user: any): Promise<IAuthData | { error: string }> 
     }
 };
 
-export const signin = async (user: any): Promise<IAuthData | { error: string }> => {
+export const signin = async (user: SignInInput): Promise<IAuthData | { error: string }> => {
     try {
         const response = await fetch(`${API}/signin`, {
             method: "POST",

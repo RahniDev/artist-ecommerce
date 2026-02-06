@@ -22,5 +22,8 @@
   "shipping_and_returns": "Spedizione e resi",
   "no_orders": "Non hai ancora effettuato ordini.",
   "user_info": "Informazioni utente",
-  "purchase_history": "Cronologia acquisti"
+  "purchase_history": "Cronologia acquisti",
+  "home": "Pagina iniziale",
+  "shop": "Negozio",
+  "cart": "Carrello"
 }

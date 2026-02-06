@@ -22,5 +22,8 @@
   "shipping_and_returns": "Shipping and returns",
   "no_orders": "You haven't placed any orders yet.",
   "user_info": "User Information",
-  "purchase_history": "Purchase History"
+  "purchase_history": "Purchase History",
+  "home": "Home",
+  "shop": "Shop",
+  "cart": "Cart"
 }

@@ -1,63 +1,55 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../redux/store";
+import { fetchProduct, clearProduct } from "../redux/slices/productSlice";
+
 import Layout from "./Layout";
 import ProductCard from "./ProductCard";
-import { read, listRelated } from "./apiCore";
-import type { IProduct } from "../types";
 import SoldBadge from "./SoldBadge";
 import AddToCartButton from "./AddToCartButton";
 import ProductBreadcrumbs from "./ProductBreadcrumbs";
 import ShowImage from "./ShowImage";
-import {
-  Box,
-  Typography,
-  Grid
-} from "@mui/material";
+
+import { Box, Typography, Grid } from "@mui/material";
 
 const Product: React.FC = () => {
-
-  const [product, setProduct] = useState<IProduct | null>(null);
-  const [related, setRelated] = useState<IProduct[]>([]);
-
   const { productId } = useParams<{ productId: string }>();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { product, related, loading, error } = useSelector(
+    (state: RootState) => state.product
+  );
 
   useEffect(() => {
     if (!productId) return;
 
-    const loadSingleProduct = async () => {
-      const productRes = await read(productId);
+    dispatch(fetchProduct(productId));
 
-      if (productRes.error) {
-        console.error(productRes.error);
-        return;
-      }
-
-      setProduct(productRes.data!);
-
-      const relatedRes = await listRelated(productId);
-      if (!relatedRes.error) {
-        setRelated(relatedRes.data?.data ?? []);
-      }
+    return () => {
+      dispatch(clearProduct());
     };
-
-    loadSingleProduct();
-  }, [productId]);
+  }, [dispatch, productId]);
 
   return (
     <Layout title="" description="">
       <Grid container spacing={2} p={3}>
         <Grid size={12}>
+          {loading && <Typography>Loading...</Typography>}
+          {error && <Typography color="error">{error}</Typography>}
+
           {product && (
             <Box>
               <ProductBreadcrumbs product={product} />
-              <Grid container
-                alignItems="center">
+
+              <Grid container alignItems="center">
                 <Grid size={6}>
                   <ShowImage
-                  item={product}
-                  url="product"
-                  width={380}
-                  height={380} />
+                    item={product}
+                    url="product"
+                    width={380}
+                    height={380}
+                  />
                 </Grid>
 
                 <Grid size={6}>
@@ -69,22 +61,20 @@ const Product: React.FC = () => {
                     {product.description}
                   </Typography>
 
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    gutterBottom
-                  >
+                  <Typography variant="body2" color="text.secondary">
                     {product.category?.name ?? "Uncategorized"}
                   </Typography>
+
                   <Typography
                     variant="h5"
                     color="success.main"
                     fontWeight="bold"
-                    gutterBottom
                   >
                     € {product.price}
                   </Typography>
+
                   <SoldBadge quantity={product.quantity} />
+
                   <AddToCartButton
                     product={{ ...product, count: 1 }}
                     redirect={false}

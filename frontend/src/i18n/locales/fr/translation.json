@@ -22,5 +22,8 @@
   "shipping_and_returns": "Livraison et retours",
   "no_orders": "Vous n'avez pas encore passé de commandes.",
   "user_info": "Informations utilisateur",
-  "purchase_history": "Historique des achats"
+  "purchase_history": "Historique des achats",
+  "home": "Accueil",
+  "shop": "Boutique",
+  "cart": "Panier"
 }

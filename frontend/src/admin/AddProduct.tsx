@@ -3,7 +3,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { createProduct, getCategories } from "./apiAdmin";
-import type { AddProductValues, ProductFormField, AuthData } from "../types";
+import type { AddProductValues, ProductFormField, IAuthData } from "../types";
 import Loader from "../core/Loader";
 import {
     Box,
@@ -35,7 +35,7 @@ const AddProduct: React.FC = () => {
         formData: null,
     });
 
-    const { user, token } = isAuthenticated() as AuthData;
+    const { user, token } = isAuthenticated() as IAuthData;
 
     const {
         name,
