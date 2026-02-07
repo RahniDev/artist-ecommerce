@@ -6,6 +6,11 @@ export interface ListProductsProps {
   hasMore?: boolean;
 }
 
+export interface AuthCardProps {
+    title: string;
+    children: React.ReactNode;
+}
+
 export interface ManageProductRowProps {
   product: Product;
   onDelete: (id: string) => void;

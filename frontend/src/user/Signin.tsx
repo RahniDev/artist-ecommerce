@@ -1,12 +1,13 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import type { ChangeEvent, FormEvent } from "react";
 import Layout from "../core/Layout";
-import { useNavigate } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { signin, authenticate, isAuthenticated } from "../auth";
 import type { IUser, SigninState } from "../types";
 import { useTranslation } from "react-i18next";
 import Loader from "../core/Loader";
-import { Box, TextField, Button, Typography, Alert, Stack, Paper } from "@mui/material";
+import { Box, TextField, Button, Typography, Alert, Link } from "@mui/material";
+import AuthCard from "./AuthCard";
 
 const Signin: React.FC = () => {
     const navigate = useNavigate();
@@ -26,9 +27,9 @@ const Signin: React.FC = () => {
 
     const handleChange =
         (name: keyof SigninState) =>
-        (event: ChangeEvent<HTMLInputElement>) => {
-            setValues({ ...values, error: "", [name]: event.target.value });
-        };
+            (event: ChangeEvent<HTMLInputElement>) => {
+                setValues({ ...values, error: "", [name]: event.target.value });
+            };
 
     const clickSubmit = async (event: FormEvent) => {
         event.preventDefault();
@@ -68,40 +69,43 @@ const Signin: React.FC = () => {
     }, [redirectToReferrer, user, navigate]);
 
     const signInForm = () => (
-        <Paper elevation={3} sx={{ p: 4, maxWidth: 400, width: "100%" }}>
-            <Stack spacing={2}>
-                <Typography variant="h5" textAlign="center">{t("signin")}</Typography>
+    <AuthCard title={t("signin")}>
+        {error && <Alert severity="error">{error}</Alert>}
 
-                {error && <Alert severity="error">{error}</Alert>}
+        <TextField
+            label={t("email")}
+            type="email"
+            value={email}
+            onChange={handleChange("email")}
+            fullWidth
+            required
+        />
 
-                <TextField
-                    label={t("email")}
-                    type="email"
-                    value={email}
-                    onChange={handleChange("email")}
-                    fullWidth
-                />
+        <TextField
+            label={t("password")}
+            type="password"
+            value={password}
+            onChange={handleChange("password")}
+            fullWidth
+            required
+        />
 
-                <TextField
-                    label={t("password")}
-                    type="password"
-                    value={password}
-                    onChange={handleChange("password")}
-                    fullWidth
-                />
+        <Button
+            variant="contained"
+            size="large"
+            fullWidth
+            onClick={clickSubmit}
+        >
+            {t("signin")}
+        </Button>
 
-                <Button
-                    variant="contained"
-                    color="primary"
-                    size="large"
-                    onClick={clickSubmit}
-                    fullWidth
-                    disabled={loading}
-                >
-                    {t("signin")}
-                </Button>
-            </Stack>
-        </Paper>
+        <Typography variant="body2" textAlign="center">
+            {t("no_account")}{" "}
+            <Link component={RouterLink} to="/signup">
+                {t("signup")}
+            </Link>
+        </Typography>
+    </AuthCard>
     );
 
     return (

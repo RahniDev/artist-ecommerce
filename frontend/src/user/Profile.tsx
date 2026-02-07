@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import { Navigate, useParams } from "react-router-dom";
 import Layout from "../core/Layout";
 import {
   Box,
@@ -8,7 +9,6 @@ import {
   Alert,
   Stack,
 } from "@mui/material";
-import { Navigate, useParams } from "react-router-dom";
 import { read, update } from "./apiUser";
 import { useTranslation } from "react-i18next";
 
@@ -89,7 +89,7 @@ const Profile: React.FC = () => {
 
     if (!res.data) return;
 
-    // Update auth in Redux (instead of localStorage here)
+    // Update auth in Redux
     dispatch(setAuth({ user: res.data, token }));
 
     setValues((prev) => ({

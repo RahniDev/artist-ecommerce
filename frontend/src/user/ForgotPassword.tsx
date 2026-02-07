@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import {
     Box,
     Button,
@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import Layout from "../core/Layout";
 import { Link } from "react-router-dom";
-
+import { API } from "../config";
 
 const ForgotPassword: React.FC = () => {
     const [email, setEmail] = useState("");
@@ -31,7 +31,7 @@ const ForgotPassword: React.FC = () => {
         }
 
         try {
-            const res = await fetch("http://localhost:3000/forgotPassword", {
+            const res = await fetch(`${API}/forgotPassword`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email }),
