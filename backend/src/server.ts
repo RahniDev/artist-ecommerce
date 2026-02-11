@@ -11,6 +11,7 @@ import categoryRoutes from './modules/category/category.routes.js'
 import productRoutes from './modules/product/product.routes.js'
 import orderRoutes from './modules/order/order.routes.js'
 import braintreeRoutes from './modules/braintree/braintree.routes.js'
+import contactRoutes from './modules/contact/contact.routes.js'
 
 const app = express()
 
@@ -43,6 +44,7 @@ app.use('/api', categoryRoutes)
 app.use('/api', productRoutes)
 app.use('/api', orderRoutes)
 app.use('/api', braintreeRoutes)
+app.use('/api', contactRoutes)
 
 const port = process.env.PORT || 8000
 

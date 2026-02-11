@@ -38,9 +38,7 @@ const AdminStats: React.FC = () => {
             <CardHeader title="Total Orders" />
             <CardContent>
                 {totalOrders === null ? (
-                    <Typography color="text.secondary" align="center">
-                        <Loader loading={true} />
-                    </Typography>
+                    <Loader loading={true} />
                 ) : (
                     <Typography variant="h4" align="center">
                         {totalOrders}

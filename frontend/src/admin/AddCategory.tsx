@@ -3,7 +3,7 @@ import type { ChangeEvent, FormEvent } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { createCategory } from "./apiAdmin";
-import type { AuthData, ApiResponse, Category } from "../types";
+import type { IAuthData, ApiResponse, Category } from "../types";
 import {
   Box,
   Typography,
@@ -17,7 +17,7 @@ const AddCategory: React.FC = () => {
   const [success, setSuccess] = useState(false);
   const [createdCategory, setCreatedCategory] = useState<Category | null>(null);
 
-  const { user, token } = isAuthenticated() as AuthData;
+  const { user, token } = isAuthenticated() as IAuthData;
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setError(null);

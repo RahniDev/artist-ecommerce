@@ -64,20 +64,20 @@ const Product: React.FC = () => {
                     {product.category?.name ?? "Uncategorized"}
                   </Typography>
 
-                  <Typography
-                    variant="h5"
-                    color="success.main"
-                    fontWeight="bold"
-                  >
-                    € {product.price}
-                  </Typography>
-
                   <SoldBadge quantity={product.quantity} />
-
-                  <AddToCartButton
-                    product={{ ...product, count: 1 }}
-                    redirect={false}
-                  />
+                  {product.quantity > 0 && (
+                    <>
+                      <Typography
+                        variant="h5"
+                        color="success.main"
+                        fontWeight="bold"
+                      >
+                        € {product.price}
+                      </Typography>
+                      <AddToCartButton
+                        product={{ ...product, count: 1 }}
+                        redirect={false}
+                      />  </>)}
                 </Grid>
               </Grid>
             </Box>

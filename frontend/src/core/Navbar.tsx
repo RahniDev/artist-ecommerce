@@ -63,7 +63,6 @@ const Navbar: React.FC = () => {
                 sx={{ textTransform: "none", color: "#3a3535" }}
                 startIcon={<Person2OutlinedIcon />}
               >
-                {user?.name}
               </Button>
               <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
                 {user?.role === 0 && (

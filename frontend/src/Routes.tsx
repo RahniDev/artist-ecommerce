@@ -19,8 +19,7 @@ import ForgotPassword from "./user/ForgotPassword";
 import Contact from "./core/Contact";
 import { useDispatch } from "react-redux";
 import { loadAuthFromStorage } from "./redux/slices/authSlice";
-
-
+import About from "./core/About";
 
 const AppRoutes: React.FC = () => {
     const dispatch = useDispatch();
@@ -39,6 +38,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/product/:productId" element={<Product />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/about" element={<About />} />
         {/* Private Routes */}
         <Route 
           path="/user/dashboard" 
