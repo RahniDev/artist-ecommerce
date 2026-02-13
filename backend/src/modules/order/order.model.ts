@@ -1,5 +1,5 @@
 import mongoose, { Schema, Types } from 'mongoose';
-import {IProduct} from '../product/product.model.js';
+import {IProduct} from '../product/product.model';
 
 // This represents one product in an order
 interface ICartItem {

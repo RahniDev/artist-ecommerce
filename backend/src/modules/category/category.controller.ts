@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { Category, ICategory } from '../category/category.model.js';
-import { Product } from '../product/product.model.js';
-import { errorHandler } from '../../helpers/errorHandler.js';
+import { Category, ICategory } from '../category/category.model';
+import { Product } from '../product/product.model';
+import { errorHandler } from '../../helpers/errorHandler';
 
 interface CustomRequest extends Request {
     category?: ICategory;

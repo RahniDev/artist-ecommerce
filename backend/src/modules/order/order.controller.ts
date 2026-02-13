@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { Order, IOrder } from './order.model.js';
-import { errorHandler } from '../../helpers/errorHandler.js';
+import { Order, IOrder } from './order.model';
+import { errorHandler } from '../../helpers/errorHandler';
 import sgMail from '@sendgrid/mail'
 
 interface CustomRequest extends Request {

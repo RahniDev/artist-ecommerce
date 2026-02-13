@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { requireSignin, isAuth, isAdmin } from '../auth/auth.controller.js'
+import { requireSignin, isAuth, isAdmin } from '../auth/auth.controller'
 import {
     create,
     productById,
@@ -13,8 +13,8 @@ import {
     listBySearch,
     photo,
     listSearch
-} from './product.controller.js';
-import { userById } from '../user/user.controller.js'
+} from './product.controller';
+import { userById } from '../user/user.controller'
 
 const router: Router = Router();
 

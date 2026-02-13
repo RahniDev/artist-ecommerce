@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { User, IUser } from "../user/user.model.js";
-import { Order } from "../order/order.model.js";
-import { errorHandler } from "../../helpers/errorHandler.js";
+import { User, IUser } from "../user/user.model";
+import { Order } from "../order/order.model";
+import { errorHandler } from "../../helpers/errorHandler";
 
 interface CustomRequest extends Request {
   profile?: IUser;

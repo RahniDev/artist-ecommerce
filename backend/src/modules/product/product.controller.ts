@@ -1,7 +1,7 @@
 import formidable, { Fields, Files } from 'formidable'
 import * as fs from 'fs'
-import { Product } from './product.model.js'
-import { errorHandler } from '../../helpers/errorHandler.js'
+import { Product } from './product.model'
+import { errorHandler } from '../../helpers/errorHandler'
 import { NextFunction, Request, Response } from 'express'
 import mongoose from 'mongoose'
 
