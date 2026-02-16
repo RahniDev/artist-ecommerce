@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { User, IUser } from "../user/user.model"; 
-import { errorHandler } from "../../helpers/errorHandler";
+import { User, IUser } from "../user/user.model.js"; 
+import { errorHandler } from "../../helpers/errorHandler.js";
 
 // Custom Request type to attach user/auth
 interface AuthRequest extends Request {

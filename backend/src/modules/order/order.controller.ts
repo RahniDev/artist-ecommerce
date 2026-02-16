@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
-import { Order, IOrder } from './order.model';
-import { errorHandler } from '../../helpers/errorHandler';
+import { Order, IOrder } from './order.model.js';
+import { errorHandler, MongoError } from '../../helpers/errorHandler.js';
 import sgMail from '@sendgrid/mail'
 
 interface CustomRequest extends Request {
@@ -20,7 +20,7 @@ export const orderById = async (req: CustomRequest, res: Response, next: NextFun
         req.order = order;
         next();
     } catch (err) {
-        return res.status(400).json({ error: errorHandler(err) });
+        return res.status(400).json({ error: errorHandler(err as MongoError) });
     }
 };
 
@@ -77,7 +77,7 @@ export const create = async (req: CustomRequest, res: Response) => {
         return res.json(savedOrder);
 
     } catch (err) {
-        return res.status(400).json({ error: errorHandler(err) });
+        return res.status(400).json({ error: errorHandler(err as MongoError) });
     }
 };
 
@@ -90,7 +90,7 @@ export const listOrders = async (req: Request, res: Response) => {
 
         return res.json(orders);
     } catch (err) {
-        return res.status(400).json({ error: errorHandler(err) });
+        return res.status(400).json({ error: errorHandler(err as MongoError) });
     }
 };
 
@@ -109,6 +109,6 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
 
         return res.json(updated);
     } catch (err) {
-        return res.status(400).json({ error: errorHandler(err) });
+        return res.status(400).json({ error: errorHandler(err as MongoError) });
     }
 };

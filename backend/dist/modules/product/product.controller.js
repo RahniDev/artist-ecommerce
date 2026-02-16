@@ -95,19 +95,19 @@ export const create = async (req, res) => {
         });
         let { name, description, price, category, quantity, shipping } = fields;
         const normalize = (v) => Array.isArray(v) ? v[0] : v;
-        name = normalize(name);
-        description = normalize(description);
-        price = Number(normalize(price));
-        quantity = Number(normalize(quantity));
-        category = normalize(category);
-        shipping = normalize(shipping);
-        shipping = shipping === "1" || shipping === "true";
-        if (name == null ||
-            description == null ||
-            isNaN(price) ||
-            category == null ||
-            isNaN(quantity) ||
-            shipping == null) {
+        const nameValue = normalize(fields.name);
+        const descriptionValue = normalize(fields.description);
+        const priceValue = Number(normalize(fields.price));
+        const quantityValue = Number(normalize(fields.quantity));
+        const categoryValue = normalize(fields.category);
+        const shippingValue = normalize(fields.shipping) === "1" ||
+            normalize(fields.shipping) === "true";
+        if (nameValue == null ||
+            descriptionValue == null ||
+            isNaN(priceValue) ||
+            categoryValue == null ||
+            isNaN(quantityValue) ||
+            shippingValue == null) {
             return res.status(400).json({ error: "All fields are required" });
         }
         const product = new Product({
@@ -125,7 +125,7 @@ export const create = async (req, res) => {
             }
             product.photo = {
                 data: await fs.promises.readFile(photo.filepath),
-                contentType: photo.mimetype
+                contentType: photo.mimetype || "application/octet-stream"
             };
         }
         const result = await product.save();
@@ -153,8 +153,7 @@ export const deleteProduct = async (req, res) => {
     }
 };
 export const update = async (req, res) => {
-    let form = new formidable.IncomingForm();
-    form.keepExtensions = true;
+    const form = formidable();
     try {
         const { fields, files } = await new Promise((resolve, reject) => {
             form.parse(req, (err, fields, files) => {
@@ -174,7 +173,7 @@ export const update = async (req, res) => {
                 return res.status(400).json({ error: "Image should be less than 1MB" });
             }
             const photoBuffer = await fs.promises.readFile(photo.filepath);
-            product.photo = { data: photoBuffer, contentType: photo.mimetype };
+            product.photo = { data: photoBuffer, contentType: photo.mimetype || "application/octet-stream" };
         }
         const result = await product.save();
         return res.json(result);

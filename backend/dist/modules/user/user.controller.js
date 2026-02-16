@@ -1,4 +1,4 @@
-import { User } from "../user/user.model.js";
+import { User } from "./user.model.js";
 import { Order } from "../order/order.model.js";
 import { errorHandler } from "../../helpers/errorHandler.js";
 export const userById = async (req, res, next, id) => {

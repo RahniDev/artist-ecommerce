@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { Category, ICategory } from '../category/category.model';
-import { Product } from '../product/product.model';
-import { errorHandler } from '../../helpers/errorHandler';
+import { Category, ICategory } from '../category/category.model.js';
+import { Product } from '../product/product.model.js';
+import { errorHandler, MongoError } from '../../helpers/errorHandler.js';
 
 interface CustomRequest extends Request {
     category?: ICategory;
@@ -16,7 +16,7 @@ export const categoryById = async (req: CustomRequest, res: Response, next: Next
         req.category = category;
         next();
     } catch (err) {
-        return res.status(400).json({ error: errorHandler(err) });
+        return res.status(400).json({ error: errorHandler(err as MongoError) });
     }
 };
 
@@ -26,7 +26,7 @@ export const create = async (req: Request, res: Response) => {
         const savedCategory = await category.save();
         res.json(savedCategory);
     } catch (err) {
-        return res.status(400).json({ error: errorHandler(err) });
+        return res.status(400).json({ error: errorHandler(err as MongoError) });
     }
 };
 
@@ -43,7 +43,7 @@ export const update = async (req: CustomRequest, res: Response) => {
         const updatedCategory = await req.category.save();
         res.json(updatedCategory);
     } catch (err) {
-        return res.status(400).json({ error: errorHandler(err) });
+        return res.status(400).json({ error: errorHandler(err as MongoError) });
     }
 };
 
@@ -61,11 +61,11 @@ export const remove = async (req: CustomRequest, res: Response) => {
         await req.category.deleteOne();
         res.json({ message: 'Category deleted successfully' });
     } catch (err) {
-        return res.status(400).json({ error: errorHandler(err) });
+        return res.status(400).json({ error: errorHandler(err as MongoError) });
     }
 };
 
-export const list = async (req, res) => {
+export const list = async (req: Request, res: Response) => {
   try {
     const categories = await Category.find().select("_id name");
     return res.json(categories);

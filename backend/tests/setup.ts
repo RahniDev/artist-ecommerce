@@ -21,3 +21,15 @@ afterAll(async () => {
   await mongoose.connection.close();
   await mongo.stop();
 });
+
+function beforeAll(arg0: () => Promise<void>) {
+  throw new Error("Function not implemented.");
+}
+
+function afterEach(arg0: () => Promise<void>) {
+  throw new Error("Function not implemented.");
+}
+
+function afterAll(arg0: () => Promise<void>) {
+  throw new Error("Function not implemented.");
+}

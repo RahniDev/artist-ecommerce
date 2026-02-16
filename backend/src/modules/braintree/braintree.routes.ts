@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { requireSignin, isAuth } from '../auth/auth.controller';
-import { userById } from '../user/user.controller';
-import { brainTreeToken, processPayment } from './braintree.controller';
+import { requireSignin, isAuth } from '../auth/auth.controller.js';
+import { userById } from '../user/user.controller.js';
+import { brainTreeToken, processPayment } from './braintree.controller.js';
 
 const router = Router();
 

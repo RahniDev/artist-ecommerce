@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
-import { User, IUser } from "../user/user.model";
-import { Order } from "../order/order.model";
-import { errorHandler } from "../../helpers/errorHandler";
+import { User, IUser } from "./user.model.js";
+import { Order } from "../order/order.model.js";
+import { errorHandler, MongoError } from "../../helpers/errorHandler.js";
 
 interface CustomRequest extends Request {
   profile?: IUser;
@@ -16,7 +16,7 @@ export const userById = async (req: CustomRequest, res: Response, next: NextFunc
     req.profile = user;
     next();
   } catch (err) {
-    return res.status(400).json({ error: errorHandler(err) });
+    return res.status(400).json({ error: errorHandler(err as MongoError) });
   }
 };
 
@@ -83,6 +83,6 @@ export const purchaseHistory = async (req: CustomRequest, res: Response) => {
 
     res.json(orders);
   } catch (err) {
-    res.status(400).json({ error: errorHandler(err) });
+    res.status(400).json({ error: errorHandler(err as MongoError) });
   }
 };

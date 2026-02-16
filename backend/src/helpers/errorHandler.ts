@@ -1,4 +1,4 @@
-interface MongoError extends Error {
+export interface MongoError extends Error {
   code?: number;
   message: string;
   errors?: {

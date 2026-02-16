@@ -1,14 +1,14 @@
 import formidable, { Fields, Files } from 'formidable'
 import * as fs from 'fs'
-import { Product } from './product.model'
-import { errorHandler } from '../../helpers/errorHandler'
+import { Product } from './product.model.js'
+import { errorHandler, MongoError } from '../../helpers/errorHandler.js'
 import { NextFunction, Request, Response } from 'express'
 import mongoose from 'mongoose'
 
 declare global {
     namespace Express {
         interface Request {
-            product?: import('../product/product.model').IProductDocument
+            product?: import('./product.model.js').IProductDocument
         }
     }
 }
@@ -86,19 +86,19 @@ export const listCategories = async (req: Request, res: Response) => {
 }
 
 export const photo = async (req: Request, res: Response) => {
-  try {
-    const product = await Product.findById(req.params.productId)
-      .select("photo");
+    try {
+        const product = await Product.findById(req.params.productId)
+            .select("photo");
 
-    if (!product || !product.photo?.data) {
-      return res.status(404).send("No image");
+        if (!product || !product.photo?.data) {
+            return res.status(404).send("No image");
+        }
+
+        res.set("Content-Type", product.photo.contentType);
+        return res.send(product.photo.data);
+    } catch (err) {
+        return res.status(500).send("Image error");
     }
-
-    res.set("Content-Type", product.photo.contentType);
-    return res.send(product.photo.data);
-  } catch (err) {
-    return res.status(500).send("Image error");
-  }
 };
 
 export const create = async (req: Request, res: Response) => {
@@ -114,24 +114,24 @@ export const create = async (req: Request, res: Response) => {
 
         let { name, description, price, category, quantity, shipping } = fields;
 
-        const normalize = (v: any) => Array.isArray(v) ? v[0] : v;
+        const normalize = (v: string | string[] | undefined) => Array.isArray(v) ? v[0] : v;
 
-        name = normalize(name);
-        description = normalize(description);
-        price = Number(normalize(price));
-        quantity = Number(normalize(quantity));
-        category = normalize(category);
-        shipping = normalize(shipping);
-
-        shipping = shipping === "1" || shipping === "true";
+        const nameValue = normalize(fields.name);
+        const descriptionValue = normalize(fields.description);
+        const priceValue = Number(normalize(fields.price));
+        const quantityValue = Number(normalize(fields.quantity));
+        const categoryValue = normalize(fields.category);
+        const shippingValue =
+            normalize(fields.shipping) === "1" ||
+            normalize(fields.shipping) === "true";
 
         if (
-            name == null ||
-            description == null ||
-            isNaN(price) ||
-            category == null ||
-            isNaN(quantity) ||
-            shipping == null
+            nameValue == null ||
+            descriptionValue == null ||
+            isNaN(priceValue) ||
+            categoryValue == null ||
+            isNaN(quantityValue) ||
+            shippingValue == null
         ) {
             return res.status(400).json({ error: "All fields are required" });
         }
@@ -152,7 +152,7 @@ export const create = async (req: Request, res: Response) => {
             }
             product.photo = {
                 data: await fs.promises.readFile(photo.filepath),
-                contentType: photo.mimetype
+                contentType: photo.mimetype || "application/octet-stream"
             };
         }
 
@@ -166,25 +166,24 @@ export const create = async (req: Request, res: Response) => {
 };
 
 export const deleteProduct = async (req: Request, res: Response) => {
-  try {
-    const product = await Product.findById(req.params.productId);
-    if (!product) {
-      return res.status(404).json({ error: "Product not found" });
-    }
+    try {
+        const product = await Product.findById(req.params.productId);
+        if (!product) {
+            return res.status(404).json({ error: "Product not found" });
+        }
 
-    await product.deleteOne();
-    return res.json({
-      message: "Product deleted successfully",
-      productId: product._id
-    });
-  } catch (err) {
-    return res.status(400).json({ error: errorHandler(err) });
-  }
+        await product.deleteOne();
+        return res.json({
+            message: "Product deleted successfully",
+            productId: product._id
+        });
+    } catch (err) {
+        return res.status(400).json({ error: errorHandler(err as MongoError) });
+    }
 };
 
 export const update = async (req: Request, res: Response) => {
-    let form = new formidable.IncomingForm()
-    form.keepExtensions = true
+    const form = formidable();
     try {
         const { fields, files } = await new Promise<{ fields: formidable.Fields; files: formidable.Files }>
             ((resolve, reject) => {
@@ -205,12 +204,12 @@ export const update = async (req: Request, res: Response) => {
                 return res.status(400).json({ error: "Image should be less than 1MB" });
             }
             const photoBuffer = await fs.promises.readFile(photo.filepath);
-            product.photo = { data: photoBuffer, contentType: photo.mimetype };
+            product.photo = { data: photoBuffer, contentType: photo.mimetype || "application/octet-stream" };
         }
         const result = await product.save();
         return res.json(result);
     } catch (err) {
-        return res.status(400).json({ error: errorHandler(err) });
+        return res.status(400).json({ error: errorHandler(err as MongoError) });
     }
 };
 
@@ -238,7 +237,7 @@ export const listSearch = async (req: Request, res: Response) => {
 
         return res.json(products);
     } catch (err) {
-        res.status(400).json({ error: errorHandler(err) });
+        res.status(400).json({ error: errorHandler(err as MongoError) });
     }
 };
 
