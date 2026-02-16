@@ -1,5 +1,6 @@
 body {
   margin: 0;
+  font-family: 'Roboto', sans-serif;
 }
 
 #hero {
@@ -7,8 +8,4 @@ body {
   height: 500px;
   background-size: cover;
   background-position: center center;
-}
-
-#categoryForm input, #categoryForm label, #categoryForm button  {
-  margin: 8px;
 }

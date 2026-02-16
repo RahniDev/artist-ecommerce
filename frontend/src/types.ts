@@ -1,5 +1,31 @@
 import type { ReactNode } from "react";
 
+export interface ContactFormState {
+  name: string;
+  email: string;
+  message: string;
+  loading: boolean;
+  success: boolean | null;
+  error: string | null;
+}
+
+export interface Address {
+  street: string;
+  city: string;
+  postcode: string;
+  country: string;
+  full: string;
+}
+
+export interface PhotonPlace {
+  properties: {
+    name?: string;
+    city?: string;
+    postcode?: string;
+    country?: string;
+  };
+}
+
 export interface ListProductsProps {
   products: IProduct[];
   loadMore?: () => void;

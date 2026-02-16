@@ -5,6 +5,7 @@ import "../src/i18n";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
 import { Provider } from "react-redux";
 import { store } from "./redux/store";
+import "./index.css";
 
 const theme = createTheme({
   typography: {
