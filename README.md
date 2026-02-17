@@ -6,6 +6,8 @@ Frontend: React 19, TypeScript, Redux & Redux Toolkit, MaterialUI
 
 Backend: Node, Express, TypeScript, MongoDB
 
+Using React Compiler for optimal performance
+
 ### Features
 
 - User Signin/Signup (hashed passwords with bcrypt)
