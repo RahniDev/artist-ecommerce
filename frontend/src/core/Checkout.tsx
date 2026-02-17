@@ -4,11 +4,12 @@ import type { RootState } from "../redux/store";
 import { clearCart } from "../redux/slices/cartSlice";
 import { isAuthenticated } from "../auth";
 import { getBraintreeClientToken, processPayment, createOrder } from "./apiCore";
-import { Box, Button, Link } from "@mui/material";
+import { Box, Button, Link, TextField } from "@mui/material";
 import braintree from "braintree-web-drop-in";
 import Loader from "./Loader";
 import AddressForm from "./AddressForm";
 import type { Address } from "../types";
+import { MuiTelInput } from 'mui-tel-input'
 
 const Checkout: React.FC = () => {
   const dispatch = useDispatch();
@@ -19,7 +20,10 @@ const Checkout: React.FC = () => {
     success: false,
     clientToken: null as string | null,
     error: "",
-    address: { street: "", city: "", postcode: "", country: "", full: "" } as Address,
+    address: { number: "", street: "", city: "", postcode: "", country: "", full: "" } as Address,
+    firstName: "",
+    lastName: "",
+    phone: "",
   });
 
   const dropinContainer = useRef<HTMLDivElement | null>(null);
@@ -79,6 +83,9 @@ const Checkout: React.FC = () => {
         transaction_id: transaction.id,
         amount: Number(transaction.amount),
         address: data.address.full,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        phone: data.phone,
         status: "Not processed",
         user: userId,
       });
@@ -98,11 +105,46 @@ const Checkout: React.FC = () => {
       <Loader loading={data.loading} />
       {data.success && <Box sx={{ color: "green" }}>Thanks! Your payment was successful!</Box>}
       {data.error && <Box sx={{ color: "red" }}>{data.error}</Box>}
+      <TextField
+        label="First name"
+        value={data.firstName}
+        onChange={(e) =>
+          setData(prev => ({ ...prev, firstName: e.target.value }))
+        }
+        fullWidth
+        sx={{ mb: 1 }}
+      />
+
+      <TextField
+        label="Last name"
+        value={data.lastName}
+        onChange={(e) =>
+          setData(prev => ({ ...prev, lastName: e.target.value }))
+        }
+        fullWidth
+        sx={{ mb: 1 }}
+      />
 
       <AddressForm value={data.address} onChange={(addr) => setData(prev => ({ ...prev, address: addr }))} />
+      <MuiTelInput
+        label="Phone number"
+        value={data.phone}
+        onChange={(value) =>
+          setData(prev => ({ ...prev, phone: value }))
+        }
+        defaultCountry="FR"
+        fullWidth
+      />
 
       <Box ref={dropinContainer} sx={{ minHeight: 200, border: "1px solid #ddd", p: 2, borderRadius: 2, mb: 2 }} />
-      <Button variant="contained" onClick={buy} disabled={!dropInInstance.current || data.loading}>
+      <Button variant="contained" onClick={buy} disabled={
+        !dropInInstance.current ||
+        data.loading ||
+        !data.firstName ||
+        !data.lastName ||
+        !data.phone ||
+        !data.address.full
+      }>
         Pay
       </Button>
     </Box>

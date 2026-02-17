@@ -1,12 +1,12 @@
 import mongoose, { Schema, Types } from 'mongoose';
-import {IProduct} from '../product/product.model.js';
+import { IProduct } from '../product/product.model.js';
 
 // This represents one product in an order
 interface ICartItem {
-    product: Types.ObjectId | IProduct;  
-    count: number;
-    name?: string;   
-    price?: number;  
+  product: Types.ObjectId | IProduct;
+  count: number;
+  name?: string;
+  price?: number;
 }
 const CartItemSchema = new Schema<ICartItem>({
   product: { type: Schema.Types.ObjectId, ref: "Product" },
@@ -20,6 +20,9 @@ export interface IOrder {
   transaction_id: string;
   amount: number;
   address: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
   status: string;
   updated: Date;
   user: Types.ObjectId;
@@ -30,6 +33,9 @@ const OrderSchema = new Schema<IOrder>({
   transaction_id: {},
   amount: { type: Number },
   address: String,
+  firstName: String,
+  lastName: String,
+  phone: String,
   status: {
     type: String,
     default: "Not processed",

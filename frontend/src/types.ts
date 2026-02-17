@@ -10,6 +10,7 @@ export interface ContactFormState {
 }
 
 export interface Address {
+  number: Number | string;
   street: string;
   city: string;
   postcode: string;
@@ -79,6 +80,9 @@ export interface CreateOrderInput {
   transaction_id: string;
   amount: number;
   address: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
   status: string;
   user: string;
 }
