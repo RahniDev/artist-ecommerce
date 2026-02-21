@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import Layout from "../core/Layout";
@@ -43,7 +43,6 @@ const UpdateProduct = () => {
         loading: false,
         error: "",
         createdProduct: "",
-        formData: null,
     });
 
     const {
@@ -57,9 +56,11 @@ const UpdateProduct = () => {
         loading,
         error,
         createdProduct,
-        formData,
     } = values;
-
+    // Using useRef instead of useState to avoid re-renders
+    // as FormData does not affect the UI, only used when 
+    // submitting to the API so should not cause re-render when updated.
+    const formData = useRef<FormData>(new FormData())
     useEffect(() => {
         if (!productId) return;
         initProduct(productId);
@@ -78,7 +79,7 @@ const UpdateProduct = () => {
             }
 
             const product = res.data;
-
+            formData.current = new FormData();
             setValues((p) => ({
                 ...p,
                 name: product.name,
@@ -87,7 +88,6 @@ const UpdateProduct = () => {
                 category: product.category._id,
                 shipping: product.shipping ? "1" : "0",
                 quantity: product.quantity.toString(),
-                formData: new FormData(),
             }));
 
             loadCategories();
@@ -106,10 +106,10 @@ const UpdateProduct = () => {
     const handleInputChange =
         (field: ProductFormField) =>
             (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-                if (!formData) return;
+                if (!formData.current) return;
 
                 const value = e.target.value;
-                formData.set(field, value);
+                formData.current.set(field, value);
                 setValues((p) => ({ ...p, [field]: value }));
             };
 
@@ -117,10 +117,10 @@ const UpdateProduct = () => {
     const handleSelectChange =
         (field: ProductFormField) =>
             (e: SelectChangeEvent<string>) => {
-                if (!formData) return;
+                if (!formData.current) return;
 
                 const value = e.target.value;
-                formData.set(field, value);
+                formData.current.set(field, value);
                 setValues((p) => ({ ...p, [field]: value }));
             };
 
@@ -131,14 +131,14 @@ const UpdateProduct = () => {
         const file = e.target.files?.[0];
         if (!file) return;
 
-        formData.set("photo", file);
+        formData.current.set("photo", file);
         setValues((p) => ({ ...p, photo: file }));
     };
 
 
     const clickSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!productId || !formData) return;
+        if (!productId || !formData.current) return;
 
         setValues((p) => ({ ...p, loading: true, error: "" }));
 
@@ -147,7 +147,7 @@ const UpdateProduct = () => {
                 productId,
                 auth.user._id,
                 auth.token,
-                formData
+                formData.current
             );
 
             if (res.error || !res.data) {
@@ -223,6 +223,7 @@ const UpdateProduct = () => {
                             value={name}
                             onChange={handleInputChange("name")}
                             fullWidth
+                            required
                         />
 
 
@@ -243,6 +244,7 @@ const UpdateProduct = () => {
                             value={price}
                             onChange={handleInputChange("price")}
                             fullWidth
+                            required
                         />
 
                         {/* Category */}
@@ -289,7 +291,6 @@ const UpdateProduct = () => {
                             fullWidth
                         />
 
-                        {/* Submit */}
                         <Button
                             type="submit"
                             variant="contained"

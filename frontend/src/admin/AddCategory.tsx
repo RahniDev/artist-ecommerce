@@ -65,7 +65,6 @@ const AddCategory: React.FC = () => {
           type="text"
           value={name}
           onChange={handleChange}
-          autoFocus
           required
         />
         <Button type="submit" variant="contained">

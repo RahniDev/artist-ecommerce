@@ -64,7 +64,6 @@ export interface ProductFormBase {
   loading: boolean;
   error: string;
   createdProduct: string;
-  formData: FormData | null;
 }
 
 export interface AddProductValues extends ProductFormBase {
