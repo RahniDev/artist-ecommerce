@@ -33,7 +33,7 @@ export async function getProducts(
   );
 }
 
-export async function read(
+export async function getProduct(
   productId: string
 ): Promise<ApiResponse<IProduct>> {
   return fetchJSON<IProduct>(`${API}/product/${productId}`);

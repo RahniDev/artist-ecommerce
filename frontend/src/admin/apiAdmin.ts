@@ -176,16 +176,6 @@ export const deleteProduct = async (
     }
 };
 
-export const getProduct = async (productId: string): Promise<ApiResponse> => {
-    try {
-        const res = await fetch(`${API}/product/${productId}`);
-        return await res.json();
-    } catch (err) {
-        console.error(err);
-        throw err;
-    }
-};
-
 export const updateProduct = async (
     productId: string,
     userId: string,

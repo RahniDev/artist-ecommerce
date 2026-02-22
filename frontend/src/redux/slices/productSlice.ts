@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { IProduct } from "../../types";
-import { read, listRelated } from "../../core/apiCore";
+import { getProduct, listRelated } from "../../core/apiCore";
 
 interface ProductState {
   product: IProduct | null;
@@ -20,7 +20,7 @@ const initialState: ProductState = {
 export const fetchProduct = createAsyncThunk(
   "product/fetchProduct",
   async (productId: string, { rejectWithValue }) => {
-    const productRes = await read(productId);
+    const productRes = await getProduct(productId);
 
     if (productRes.error || !productRes.data) {
       return rejectWithValue(productRes.error || "Failed to load product");

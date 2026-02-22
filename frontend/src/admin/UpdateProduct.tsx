@@ -4,7 +4,8 @@ import { API } from '../config'
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
-import { getProduct, getCategories, updateProduct } from "./apiAdmin";
+import { getCategories, updateProduct } from "./apiAdmin";
+import { getProduct } from "../core/apiCore";
 import type { ApiResponse, ICategory, IProduct, UpdateProductValues, ProductFormField } from "../types";
 import Loader from "../core/Loader";
 import {
@@ -62,16 +63,16 @@ const UpdateProduct = () => {
     // Using useRef instead of useState to avoid re-renders
     // as FormData does not affect the UI, only used when 
     // submitting to the API so should not cause re-render when updated.
-    const formData = useRef<FormData>(new FormData())
+    const formData = useRef<FormData | null>(null)
     useEffect(() => {
         if (!productId) return;
+        loadCategories();
         initProduct(productId);
     }, [productId]);
 
     const initProduct = async (id: string) => {
         try {
             const res: ApiResponse<IProduct> = await getProduct(id);
-
             if (res.error || !res.data) {
                 setValues((p) => ({
                     ...p,
@@ -100,8 +101,6 @@ const UpdateProduct = () => {
                 shipping: product.shipping ? "1" : "0",
                 quantity: product.quantity.toString(),
             }));
-
-            loadCategories();
         } catch {
             setValues((p) => ({ ...p, error: "Failed to load product" }));
         }
@@ -120,6 +119,21 @@ const UpdateProduct = () => {
             setValues((p) => ({ ...p, categories: res.data ?? [] }));
         }
     };
+    useEffect(() => {
+        if (!createdProduct) return;
+
+        const timer = setTimeout(() => {
+            navigate("/");
+
+            setValues(p => ({
+                ...p,
+                createdProduct: ""
+            }))
+        }, 1500)
+
+
+        return () => clearTimeout(timer)
+    }, [createdProduct, navigate])
 
     const handleInputChange =
         (field: ProductFormField) =>
@@ -143,6 +157,8 @@ const UpdateProduct = () => {
 
 
     const handlePhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (!formData.current) return;
+
         const file = e.target.files?.[0];
         if (!file) return;
 
@@ -150,9 +166,17 @@ const UpdateProduct = () => {
             setValues(p => ({ ...p, error: "File must be image" }))
             return;
         }
+        const MAX_SIZE = 2 * 1024 * 1024;
 
+        if (file.size > MAX_SIZE) {
+            setValues(p => ({
+                ...p,
+                error: "Image must be less than 2MB"
+            }))
+            return;
+        }
         formData.current.set("photo", file);
-        setValues((p) => ({ ...p, photo: file }));
+        setValues((p) => ({ ...p, photo: file, error: "" }));
         setImgPreview(URL.createObjectURL(file))
     };
 
@@ -185,9 +209,6 @@ const UpdateProduct = () => {
                 createdProduct: res.data?.name ?? "",
                 loading: false
             }));
-
-
-            navigate("/");
         } catch {
             setValues((p) => ({
                 ...p,
@@ -239,6 +260,7 @@ const UpdateProduct = () => {
                         </Button>
                         {productId && (
                             <img src={imgPreview || `${API}/product/photo/${productId}`}
+                                alt="Product preview"
                                 style={{ width: 200 }} />
                         )}
 
