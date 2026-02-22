@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
+import { API } from '../config'
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
@@ -21,6 +22,7 @@ import type { SelectChangeEvent } from "@mui/material/Select";
 
 const UpdateProduct = () => {
     const { productId } = useParams<{ productId: string }>();
+
     const navigate = useNavigate();
 
     const auth = isAuthenticated();
@@ -30,7 +32,7 @@ const UpdateProduct = () => {
     }
 
     const { user } = auth;
-
+    const [imgPreview, setImgPreview] = useState("")
     const [values, setValues] = useState<UpdateProductValues>({
         name: "",
         description: "",
@@ -79,7 +81,16 @@ const UpdateProduct = () => {
             }
 
             const product = res.data;
-            formData.current = new FormData();
+            const fd = new FormData()
+            fd.set("name", product.name)
+            fd.set("description", product.description)
+            fd.set("price", product.price.toString())
+            fd.set("category", product.category._id)
+            fd.set("shipping", product.shipping ? "1" : "0")
+            fd.set("quantity", product.quantity.toString())
+
+            formData.current = fd
+
             setValues((p) => ({
                 ...p,
                 name: product.name,
@@ -95,6 +106,13 @@ const UpdateProduct = () => {
             setValues((p) => ({ ...p, error: "Failed to load product" }));
         }
     };
+    useEffect(() => {
+        return () => {
+            if (imgPreview) {
+                URL.revokeObjectURL(imgPreview)
+            }
+        }
+    }, [imgPreview])
 
     const loadCategories = async () => {
         const res: ApiResponse<ICategory[]> = await getCategories();
@@ -107,7 +125,6 @@ const UpdateProduct = () => {
         (field: ProductFormField) =>
             (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
                 if (!formData.current) return;
-
                 const value = e.target.value;
                 formData.current.set(field, value);
                 setValues((p) => ({ ...p, [field]: value }));
@@ -125,14 +142,18 @@ const UpdateProduct = () => {
             };
 
 
-    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!formData) return;
-
+    const handlePhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
 
+        if (!file.type.startsWith("image/")) {
+            setValues(p => ({ ...p, error: "File must be image" }))
+            return;
+        }
+
         formData.current.set("photo", file);
         setValues((p) => ({ ...p, photo: file }));
+        setImgPreview(URL.createObjectURL(file))
     };
 
 
@@ -162,6 +183,7 @@ const UpdateProduct = () => {
             setValues((prev) => ({
                 ...prev,
                 createdProduct: res.data?.name ?? "",
+                loading: false
             }));
 
 
@@ -206,18 +228,20 @@ const UpdateProduct = () => {
                             gap: 2,
                         }}
                     >
-                        {/* Image upload */}
                         <Button variant="outlined" component="label">
                             Upload Image
                             <input
                                 type="file"
                                 hidden
                                 accept="image/*"
-                                onChange={handleFileChange}
+                                onChange={handlePhotoFileChange}
                             />
                         </Button>
+                        {productId && (
+                            <img src={imgPreview || `${API}/product/photo/${productId}`}
+                                style={{ width: 200 }} />
+                        )}
 
-                        {/* Name */}
                         <TextField
                             label="Name"
                             value={name}
@@ -226,8 +250,6 @@ const UpdateProduct = () => {
                             required
                         />
 
-
-                        {/* Description */}
                         <TextField
                             label="Description"
                             value={description}
@@ -237,7 +259,6 @@ const UpdateProduct = () => {
                             fullWidth
                         />
 
-                        {/* Price */}
                         <TextField
                             label="Price"
                             type="number"
@@ -247,7 +268,6 @@ const UpdateProduct = () => {
                             required
                         />
 
-                        {/* Category */}
                         <FormControl fullWidth>
                             <InputLabel>Category</InputLabel>
                             <Select
@@ -266,7 +286,6 @@ const UpdateProduct = () => {
                             </Select>
                         </FormControl>
 
-                        {/* Shipping */}
                         <FormControl fullWidth>
                             <InputLabel>Shipping</InputLabel>
                             <Select
@@ -282,7 +301,6 @@ const UpdateProduct = () => {
                             </Select>
                         </FormControl>
 
-                        {/* Quantity */}
                         <TextField
                             label="Quantity"
                             type="number"
@@ -296,6 +314,7 @@ const UpdateProduct = () => {
                             variant="contained"
                             size="large"
                             sx={{ mt: 2 }}
+                            disabled={loading}
                         >
                             Update Product
                         </Button>

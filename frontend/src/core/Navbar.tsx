@@ -16,7 +16,6 @@ import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../redux/store";
 import { clearAuth } from "../redux/slices/authSlice";
-import logo from "../assets/react.svg";
 import LangToggle from "./LangToggle";
 
 const linkStyle = {
@@ -51,7 +50,7 @@ const Navbar: React.FC = () => {
       <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
         <Box display="flex" alignItems="center">
           <NavLink to="/">
-            <img src={logo} width="40" height="40" alt="Logo" />
+            {/* <img src={logo} width="40" height="40" alt="Logo" /> */}
           </NavLink>
         </Box>
 
