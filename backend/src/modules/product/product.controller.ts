@@ -116,14 +116,14 @@ export const create = async (req: Request, res: Response) => {
 
         const normalize = (v: string | string[] | undefined) => Array.isArray(v) ? v[0] : v;
 
-        const nameValue = normalize(fields.name);
-        const descriptionValue = normalize(fields.description);
-        const priceValue = Number(normalize(fields.price));
-        const quantityValue = Number(normalize(fields.quantity));
-        const categoryValue = normalize(fields.category);
+        const nameValue = normalize(name);
+        const descriptionValue = normalize(description);
+        const priceValue = Number(normalize(price));
+        const quantityValue = Number(normalize(quantity));
+        const categoryValue = normalize(category);
         const shippingValue =
-            normalize(fields.shipping) === "1" ||
-            normalize(fields.shipping) === "true";
+            normalize(shipping) === "1" ||
+            normalize(shipping) === "true";
 
         if (
             nameValue == null ||
@@ -137,14 +137,13 @@ export const create = async (req: Request, res: Response) => {
         }
 
         const product = new Product({
-            name,
-            description,
-            price,
-            category,
-            quantity,
-            shipping
+            name: nameValue,
+            description: descriptionValue,
+            price: priceValue,
+            category: categoryValue,
+            quantity: quantityValue,
+            shipping: shippingValue
         });
-
         const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
         if (photo) {
             if (photo.size > 1_000_000) {
@@ -157,7 +156,7 @@ export const create = async (req: Request, res: Response) => {
         }
 
         const result = await product.save();
-        return res.json(result);
+        return res.json({ data: result });
 
     } catch (err) {
         console.error(err);

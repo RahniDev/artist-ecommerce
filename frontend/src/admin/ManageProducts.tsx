@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { getProducts, deleteProduct } from "./apiAdmin";
-import type { Product, AuthData } from "../types";
+import type { Product, IAuthData } from "../types";
 import Loader from "../core/Loader";
 import ManageProductRow from "./ManageProductRow";
 import {
@@ -16,11 +16,10 @@ import {
 
 const ManageProducts: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
-
-    const { user, token } = isAuthenticated() as AuthData;
+    const { user, token } = isAuthenticated() as IAuthData;
 
     const loadProducts = React.useCallback(async () => {
         setLoading(true);

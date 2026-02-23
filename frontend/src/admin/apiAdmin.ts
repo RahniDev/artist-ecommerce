@@ -45,7 +45,7 @@ export const createProduct = async (
     userId: string,
     token: string,
     product: FormData
-): Promise<ApiResponse> => {
+): Promise<ApiResponse<IProduct>> => {
     try {
         const res = await fetch(`${API}/product/create/${userId}`, {
             method: 'POST',

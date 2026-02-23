@@ -64,6 +64,7 @@ const UpdateProduct = () => {
     // as FormData does not affect the UI, only used when 
     // submitting to the API so should not cause re-render when updated.
     const formData = useRef<FormData | null>(null)
+    
     useEffect(() => {
         if (!productId) return;
         loadCategories();
@@ -105,6 +106,7 @@ const UpdateProduct = () => {
             setValues((p) => ({ ...p, error: "Failed to load product" }));
         }
     };
+
     useEffect(() => {
         return () => {
             if (imgPreview) {
@@ -119,6 +121,7 @@ const UpdateProduct = () => {
             setValues((p) => ({ ...p, categories: res.data ?? [] }));
         }
     };
+
     useEffect(() => {
         if (!createdProduct) return;
 
@@ -144,7 +147,6 @@ const UpdateProduct = () => {
                 setValues((p) => ({ ...p, [field]: value }));
             };
 
-
     const handleSelectChange =
         (field: ProductFormField) =>
             (e: SelectChangeEvent<string>) => {
@@ -154,7 +156,6 @@ const UpdateProduct = () => {
                 formData.current.set(field, value);
                 setValues((p) => ({ ...p, [field]: value }));
             };
-
 
     const handlePhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!formData.current) return;
@@ -179,7 +180,6 @@ const UpdateProduct = () => {
         setValues((p) => ({ ...p, photo: file, error: "" }));
         setImgPreview(URL.createObjectURL(file))
     };
-
 
     const clickSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -217,7 +217,6 @@ const UpdateProduct = () => {
             }));
         }
     };
-
 
     return (
         <Layout

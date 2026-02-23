@@ -111,12 +111,12 @@ export const create = async (req, res) => {
             return res.status(400).json({ error: "All fields are required" });
         }
         const product = new Product({
-            name,
-            description,
-            price,
-            category,
-            quantity,
-            shipping
+            name: nameValue,
+            description: descriptionValue,
+            price: priceValue,
+            category: categoryValue,
+            quantity: quantityValue,
+            shipping: shippingValue
         });
         const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
         if (photo) {

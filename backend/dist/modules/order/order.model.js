@@ -10,6 +10,9 @@ const OrderSchema = new Schema({
     transaction_id: {},
     amount: { type: Number },
     address: String,
+    firstName: String,
+    lastName: String,
+    phone: String,
     status: {
         type: String,
         default: "Not processed",

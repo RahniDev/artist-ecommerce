@@ -1,5 +1,4 @@
-import React, { useState } from "react";
-import type { ChangeEvent, FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { createCategory } from "./apiAdmin";
@@ -11,10 +10,10 @@ import {
   Link
 } from "@mui/material";
 
-const AddCategory: React.FC = () => {
-  const [name, setName] = useState("");
+const AddCategory = () => {
+  const [name, setName] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
+  const [success, setSuccess] = useState<boolean>(false);
   const [createdCategory, setCreatedCategory] = useState<Category | null>(null);
 
   const { user, token } = isAuthenticated() as IAuthData;

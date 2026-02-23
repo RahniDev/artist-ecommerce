@@ -1,4 +1,4 @@
-import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
+import { useState, useEffect, useRef, type ChangeEvent, type FormEvent } from "react";
 import Layout from "../core/Layout";
 import { createProduct, getCategories } from "./apiAdmin";
 import type { AddProductValues, ProductFormField } from "../types";
@@ -26,7 +26,7 @@ const AddProduct: React.FC = () => {
   // Get auth from Redux
   const auth = useSelector((state: RootState) => state.auth);
   const { user, token, isAuthenticated } = auth;
-
+  const [imgPreview, setImgPreview] = useState("");
   const [values, setValues] = useState<AddProductValues>({
     name: "",
     description: "",
@@ -38,8 +38,8 @@ const AddProduct: React.FC = () => {
     photo: "",
     loading: false,
     error: "",
-    createdProduct: "",
-    formData: null,
+    createdProduct: false,
+    createdProductName: ""
   });
 
   const {
@@ -52,9 +52,10 @@ const AddProduct: React.FC = () => {
     quantity,
     loading,
     error,
-    createdProduct,
-    formData,
+    createdProduct
   } = values;
+
+  const formData = useRef<FormData | null>(null)
 
   // Redirect if not authenticated
   useEffect(() => {
@@ -70,9 +71,9 @@ const AddProduct: React.FC = () => {
       } else {
         setValues((p) => ({
           ...p,
-          categories: data.data || [],
-          formData: new FormData(),
+          categories: data.data || []
         }));
+        formData.current = new FormData()
       }
     };
 
@@ -81,65 +82,85 @@ const AddProduct: React.FC = () => {
 
   const handleInputChange =
     (field: ProductFormField) =>
-    (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      if (!formData) return;
+      (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        if (!formData.current) return;
 
-      if (field === "photo" && event.target instanceof HTMLInputElement) {
-        const file = event.target.files?.[0];
-        if (file) {
-          formData.set("photo", file);
-          setValues((prev) => ({ ...prev, photo: file }));
+        if (field === "photo" && event.target instanceof HTMLInputElement) {
+          const file = event.target.files?.[0];
+          if (file) {
+            formData.current.set("photo", file);
+
+            setValues((prev) => ({
+              ...prev,
+              photo: file
+            }));
+
+            const previewUrl = URL.createObjectURL(file);
+            setImgPreview(previewUrl);
+          }
+        } else {
+          const value = event.target.value;
+          formData.current.set(field, value);
+          setValues((prev) => ({ ...prev, [field]: value }));
         }
-      } else {
-        const value = event.target.value;
-        formData.set(field, value);
-        setValues((prev) => ({ ...prev, [field]: value }));
-      }
-    };
+      };
 
   const handleSelectChange =
     (field: ProductFormField) =>
-    (event: SelectChangeEvent<string>) => {
-      if (!formData) return;
-      const value = event.target.value;
-      formData.set(field, value);
-      setValues((prev) => ({ ...prev, [field]: value }));
-    };
+      (event: SelectChangeEvent<string>) => {
+        if (!formData.current) return;
+        const value = event.target.value;
+        formData.current.set(field, value);
+        setValues((prev) => ({ ...prev, [field]: value }));
+      };
 
   const clickSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!formData || !user || !token) return;
+    if (!formData.current || !user || !token) return;
 
-    setValues((p) => ({ ...p, loading: true, error: "" }));
+    setValues((prev) => ({
+      ...prev,
+      loading: true,
+      error: "",
+      createdProduct: false,
+      createdProductName: "",
+    }));
 
     try {
-      const data = await createProduct(user._id, token, formData);
+      const res = await createProduct(user._id, token, formData.current);
 
-      if (data.error) {
+      if (res.error) {
         setValues((p) => ({
           ...p,
-          error: data.error || "",
+          error: res.error || "",
           loading: false,
         }));
-      } else if (data.data) {
+      } else if (res.data) {
+        const product = res.data
         setValues((p) => ({
           ...p,
+          createdProduct: true,
+          createdProductName: product.name,
+
           name: "",
           description: "",
           price: "",
           quantity: "",
           photo: "",
-          loading: false,
-          createdProduct: data.data.name,
-          formData: new FormData(),
         }));
       }
     } catch {
       setValues((p) => ({
         ...p,
         error: "Product creation failed",
-        loading: false,
+        createdProduct: false
       }));
+    }
+    finally {
+      setValues((p) => ({
+        ...p,
+        loading: false
+      }))
     }
   };
 
@@ -154,7 +175,7 @@ const AddProduct: React.FC = () => {
 
           {createdProduct && (
             <Alert severity="success" sx={{ mb: 2 }}>
-              {createdProduct} is created!
+              {values.createdProductName} is created!
             </Alert>
           )}
 
@@ -173,18 +194,38 @@ const AddProduct: React.FC = () => {
               gap: 2,
             }}
           >
-            <Typography variant="h6">Post Photo</Typography>
+            <Typography variant="h6">Product Photo</Typography>
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-around",
+                gap: 2,
+              }}
+            >
+              <Button variant="outlined" component="label">
+                Upload Image
+                <input
+                  hidden
+                  type="file"
+                  accept="image/*"
+                  onChange={handleInputChange("photo")}
+                />
+              </Button>
 
-            <Button variant="outlined" component="label">
-              Upload Image
-              <input
-                hidden
-                type="file"
-                accept="image/*"
-                onChange={handleInputChange("photo")}
-              />
-            </Button>
-
+              {imgPreview && (
+                <Box
+                  component="img"
+                  src={imgPreview}
+                  alt="Product photo preview"
+                  sx={{
+                    width: 200,
+                    borderRadius: 1,
+                    border: "1px solid #ddd",
+                  }}
+                />
+              )}
+            </Box>
             <TextField
               label="Name"
               value={name}
@@ -250,7 +291,7 @@ const AddProduct: React.FC = () => {
               fullWidth
             />
 
-            <Button type="submit" variant="contained" size="large" sx={{ mt: 2 }}>
+            <Button type="submit" variant="contained" size="large" sx={{ mt: 2 }} disabled={loading}>
               Create Product
             </Button>
           </Box>
