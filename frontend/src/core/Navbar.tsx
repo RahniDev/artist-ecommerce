@@ -21,7 +21,7 @@ import LangToggle from "./LangToggle";
 const linkStyle = {
   textDecoration: "none",
   color: "#3a3535",
-  "&.active": { color: "#ff7315" },
+  "&.active": { color: "#7a7a7a" },
 };
 
 const Navbar: React.FC = () => {
@@ -55,6 +55,7 @@ const Navbar: React.FC = () => {
         </Box>
 
         <Box display="flex" alignItems="center" gap={2}>
+          <LangToggle />
           {isAuthenticated && (
             <>
               <Button
@@ -63,6 +64,7 @@ const Navbar: React.FC = () => {
                 startIcon={<Person2OutlinedIcon />}
               >
               </Button>
+
               <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
                 {user?.role === 0 && (
                   <MenuItem onClick={() => { navigate("/user/dashboard"); handleMenuClose(); }}>
@@ -84,8 +86,6 @@ const Navbar: React.FC = () => {
               <Person2OutlinedIcon />
             </Button>
           )}
-
-          <LangToggle />
 
           <IconButton component={NavLink} to="/cart" sx={{ color: "#ff7315" }}>
             <Badge badgeContent={cartCount} color="error">

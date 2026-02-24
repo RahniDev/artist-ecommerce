@@ -1,0 +1,9 @@
+User-agent: *
+
+Disallow: /admin
+Disallow: /cart
+Disallow: /user/dashboard
+Disallow: /signin
+Disallow: /signup
+Disallow: /forgotPassword
+Disallow: /api
