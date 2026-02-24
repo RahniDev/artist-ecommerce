@@ -95,13 +95,13 @@ export const create = async (req, res) => {
         });
         let { name, description, price, category, quantity, shipping } = fields;
         const normalize = (v) => Array.isArray(v) ? v[0] : v;
-        const nameValue = normalize(fields.name);
-        const descriptionValue = normalize(fields.description);
-        const priceValue = Number(normalize(fields.price));
-        const quantityValue = Number(normalize(fields.quantity));
-        const categoryValue = normalize(fields.category);
-        const shippingValue = normalize(fields.shipping) === "1" ||
-            normalize(fields.shipping) === "true";
+        const nameValue = normalize(name);
+        const descriptionValue = normalize(description);
+        const priceValue = Number(normalize(price));
+        const quantityValue = Number(normalize(quantity));
+        const categoryValue = normalize(category);
+        const shippingValue = normalize(shipping) === "1" ||
+            normalize(shipping) === "true";
         if (nameValue == null ||
             descriptionValue == null ||
             isNaN(priceValue) ||
@@ -129,7 +129,7 @@ export const create = async (req, res) => {
             };
         }
         const result = await product.save();
-        return res.json(result);
+        return res.json({ data: result });
     }
     catch (err) {
         console.error(err);

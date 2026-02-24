@@ -86,7 +86,7 @@ const Product: React.FC = () => {
 
         <Grid container spacing={3} mt={6}>
           {related.slice(0, 4).map((p) => (
-            <Grid size={12} key={p._id}>
+            <Grid size={3} key={p._id}>
               <ProductCard product={{ ...p, count: 1 }} />
             </Grid>
           ))}

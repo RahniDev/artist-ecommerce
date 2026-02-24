@@ -6,6 +6,7 @@ import type {
   CreateOrderInput,
   IBraintreePaymentData,
   BraintreeTransaction,
+  BraintreeTokenResponse,
   FilterResponse
 } from "../types";
 import { API } from "../config";
@@ -86,71 +87,69 @@ export const list = async (
   }
 };
 
-export const createOrder = async (
-  userId: string,
-  token: string,
-  orderData: CreateOrderInput
-): Promise<ApiResponse<IOrder>> => {
+export const createOrder = async ({
+  token,
+  orderData
+}: {
+  userId?: string | null;
+  token?: string | null;
+  orderData: CreateOrderInput;
+}): Promise<ApiResponse<IOrder>> => {
   try {
-    const res = await fetch(`${API}/order/create/${userId}`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ order: orderData }), 
-    });
+    const res = await fetch(
+      `${API}/order/create`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: token ? `Bearer ${token}` : "",
+        },
+        body: JSON.stringify({
+          order: orderData
+        }),
+      }
+    );
 
     if (!res.ok) {
       const text = await res.text();
-      return { error: `API error: ${res.status} ${res.statusText} - ${text}` };
+      return { error: text };
     }
-
-    const data = await res.json();
-    return data;
-  } catch (err: any) {
-    console.error(err);
-    return { error: err.message || "Failed to create order" };
+    return await res.json();
+  }
+  catch (err: any) {
+    return { error: err.message };
   }
 };
 
-
 export async function processPayment(
-  userId: string,
-  token: string,
-  paymentData: IBraintreePaymentData
+  paymentData: IBraintreePaymentData,
+  token?: string | null
 ): Promise<ApiResponse<BraintreeTransaction>> {
   return fetchJSON<BraintreeTransaction>(
-    `${API}/braintree/payment/${userId}`,
+    `${API}/braintree/payment`,
     {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...(token && { Authorization: `Bearer ${token}`}),
       },
       body: JSON.stringify(paymentData),
     }
   );
 }
 
-export interface BraintreeTokenResponse {
-  clientToken?: string;
-  error?: string;
-}
-
 export async function getBraintreeClientToken(
-  userId: string,
-  token: string
+  token?: string | null
 ): Promise<BraintreeTokenResponse> {
   try {
-    const res = await fetch(`${API}/braintree/getToken/${userId}`, {
+    const res = await fetch(`${API}/braintree/getToken`, {
       method: "GET",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
     });
 

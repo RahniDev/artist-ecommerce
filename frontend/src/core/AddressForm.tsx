@@ -43,6 +43,7 @@ const AddressForm: React.FC<Props> = ({ value, onChange }) => {
                 onChange={(e) => handleFieldChange("number", e.target.value)}
                 fullWidth
                 sx={{ mb: 1 }}
+                required
             />
             <Autocomplete
                 freeSolo
@@ -65,6 +66,7 @@ const AddressForm: React.FC<Props> = ({ value, onChange }) => {
                         label="Street"
                         placeholder="Start typing your address..."
                         fullWidth
+                        required
                     />
                 )}
             />
@@ -74,6 +76,7 @@ const AddressForm: React.FC<Props> = ({ value, onChange }) => {
                 onChange={(e) => handleFieldChange("city", e.target.value)}
                 fullWidth
                 sx={{ mb: 1 }}
+                required
             />
             <TextField
                 label="Postcode"
@@ -81,6 +84,7 @@ const AddressForm: React.FC<Props> = ({ value, onChange }) => {
                 onChange={(e) => handleFieldChange("postcode", e.target.value)}
                 fullWidth
                 sx={{ mb: 1 }}
+                required
             />
             <TextField
                 label="Country"
@@ -88,6 +92,7 @@ const AddressForm: React.FC<Props> = ({ value, onChange }) => {
                 onChange={(e) => handleFieldChange("country", e.target.value)}
                 fullWidth
                 sx={{ mb: 2 }}
+                required
             />
         </Box>
     );

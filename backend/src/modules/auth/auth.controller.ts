@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import { User, IUser } from "../user/user.model.js"; 
+import { User, IUser } from "../user/user.model.js";
 import { errorHandler } from "../../helpers/errorHandler.js";
 
 // Custom Request type to attach user/auth
@@ -90,6 +90,32 @@ export const requireSignin = (req: AuthRequest, res: Response, next: NextFunctio
     } catch (err) {
         return res.status(401).json({ error: "Invalid or expired token" });
     }
+};
+
+export const optionalSignin = (
+    req: AuthRequest,
+    res: Response,
+    next: NextFunction
+) => {
+    const token =
+        req.cookies.token ||
+        req.headers.authorization?.split(" ")[1];
+
+    if (!token) {
+        req.auth = undefined;
+        return next();
+    }
+    try {
+        const decoded = jwt.verify(
+            token,
+            process.env.JWT_SECRET!
+        ) as { _id: string };
+        req.auth = decoded;
+
+    } catch {
+        req.auth = undefined;
+    }
+    next();
 };
 
 export const isAuth = (req: AuthRequest, res: Response, next: NextFunction) => {

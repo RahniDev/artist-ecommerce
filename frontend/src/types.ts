@@ -1,5 +1,17 @@
 import type { ReactNode } from "react";
 
+export interface CheckoutState {
+  loading: boolean;
+  success: boolean;
+  clientToken: string | null;
+  error: string;
+  address: Address;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone: string;
+}
+
 export interface ContactFormState {
   name: string;
   email: string;
@@ -34,8 +46,8 @@ export interface ListProductsProps {
 }
 
 export interface AuthCardProps {
-    title: string;
-    children: React.ReactNode;
+  title: string;
+  children: React.ReactNode;
 }
 
 export interface ManageProductRowProps {
@@ -82,11 +94,11 @@ export interface CreateOrderInput {
   address: string;
   firstName: string;
   lastName: string;
+  email: string,
   phone: string;
   status: string;
-  user: string;
+  user: string | null;
 }
-
 
 export interface ApiResponse<T = any> {
   data?: T;
@@ -174,10 +186,6 @@ export interface IBraintreePaymentData {
   amount: string | number;
 }
 
-export interface BraintreeToken {
-  clientToken: string;
-}
-
 export interface BraintreeTransaction {
   transaction: {
     id: string;
@@ -186,11 +194,11 @@ export interface BraintreeTransaction {
   };
   [key: string]: any;
 }
-export interface BraintreeError {
-  error: string;
-}
 
-export type BraintreeResponse = BraintreeToken | BraintreeError;
+export interface BraintreeTokenResponse {
+  clientToken?: string;
+  error?: string;
+}
 
 export interface IFilterParams {
   category?: string[];
@@ -228,7 +236,6 @@ export interface SignupFormState {
   error: string;
   success: boolean;
 }
-
 
 export interface Product {
   _id: string;
