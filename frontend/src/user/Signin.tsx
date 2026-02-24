@@ -6,7 +6,7 @@ import { signin, authenticate, isAuthenticated } from "../auth";
 import type { IUser, SigninState } from "../types";
 import { useTranslation } from "react-i18next";
 import Loader from "../core/Loader";
-import { Box, TextField, Button, Typography, Alert, Link } from "@mui/material";
+import { Box, TextField, Button, Alert, Link, Typography } from "@mui/material";
 import AuthCard from "./AuthCard";
 
 const Signin: React.FC = () => {
@@ -14,8 +14,8 @@ const Signin: React.FC = () => {
     const { t } = useTranslation();
 
     const [values, setValues] = useState<SigninState>({
-        email: "email@gmail.com",
-        password: "password",
+        email: "",
+        password: "",
         error: "",
         loading: false,
         redirectToReferrer: false,
@@ -31,7 +31,7 @@ const Signin: React.FC = () => {
                 setValues({ ...values, error: "", [name]: event.target.value });
             };
 
-    const clickSubmit = async (event: FormEvent) => {
+    const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
         setValues({ ...values, error: "", loading: true });
 
@@ -55,58 +55,20 @@ const Signin: React.FC = () => {
     };
 
     useEffect(() => {
-        if (redirectToReferrer && user) {
-            if (user.role === 1) {
-                navigate("/admin/dashboard");
-            } else {
-                navigate("/user/dashboard");
-            }
-        }
+        if (!redirectToReferrer) return;
 
-        if (isAuthenticated()) {
-            navigate("/");
+        if (user?.role === 1) {
+            navigate("/admin/dashboard");
+        } else {
+            navigate("/user/dashboard");
         }
     }, [redirectToReferrer, user, navigate]);
 
-    const signInForm = () => (
-    <AuthCard title={t("signin")}>
-        {error && <Alert severity="error">{error}</Alert>}
-
-        <TextField
-            label={t("email")}
-            type="email"
-            value={email}
-            onChange={handleChange("email")}
-            fullWidth
-            required
-        />
-
-        <TextField
-            label={t("password")}
-            type="password"
-            value={password}
-            onChange={handleChange("password")}
-            fullWidth
-            required
-        />
-
-        <Button
-            variant="contained"
-            size="large"
-            fullWidth
-            onClick={clickSubmit}
-        >
-            {t("signin")}
-        </Button>
-
-        <Typography variant="body2" textAlign="center">
-            {t("no_account")}{" "}
-            <Link component={RouterLink} to="/signup">
-                {t("signup")}
-            </Link>
-        </Typography>
-    </AuthCard>
-    );
+// Checks if user is already logged in
+    useEffect(() => {
+        if (isAuthenticated())
+            navigate("/");
+    }, [navigate]);
 
     return (
         <Layout title={t("signin")} description="">
@@ -118,7 +80,47 @@ const Signin: React.FC = () => {
                 minHeight="46vh"
                 px={2}
             >
-                {signInForm()}
+                <form onSubmit={handleSubmit}>
+                    <AuthCard title="">
+                        {error && <Alert severity="error">{error}</Alert>}
+
+                        <TextField
+                            label={t("email")}
+                            type="email"
+                            value={email}
+                            onChange={handleChange("email")}
+                            fullWidth
+                        />
+
+                        <TextField
+                            label={t("password")}
+                            type="password"
+                            value={password}
+                            onChange={handleChange("password")}
+                            fullWidth
+                        />
+                        <Box textAlign="right">
+                            <Link component={RouterLink} to="/forgot-password">
+                                {t("forgot_password")}
+                            </Link>
+                        </Box>
+                        <Button
+                            variant="contained"
+                            size="large"
+                            fullWidth
+                            type="submit"
+                        >
+                            {t("signin")}
+                        </Button>
+
+                        <Typography variant="body2" textAlign="center">
+                            {t("no_account")}{" "}
+                            <Link component={RouterLink} to="/signup">
+                                {t("signup")}
+                            </Link>
+                        </Typography>
+                    </AuthCard>
+                </form>
             </Box>
         </Layout>
     );

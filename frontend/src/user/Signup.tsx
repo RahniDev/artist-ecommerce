@@ -29,11 +29,11 @@ const Signup: React.FC = () => {
 
     const handleChange =
         (field: keyof SignupFormState) =>
-        (event: ChangeEvent<HTMLInputElement>) => {
-            setValues({ ...values, error: "", [field]: event.target.value });
-        };
+            (event: ChangeEvent<HTMLInputElement>) => {
+                setValues({ ...values, error: "", [field]: event.target.value });
+            };
 
-    const clickSubmit = async (event: FormEvent) => {
+    const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
         setValues({ ...values, error: "" });
 
@@ -60,75 +60,71 @@ const Signup: React.FC = () => {
         }
     };
 
-   const signUpForm = () => (
-    <AuthCard title={t("signup")}>
-        {success && (
-            <Alert severity="success">
-                {t("account_created")}{" "}
-                <Link component={RouterLink} to="/signin">
-                    {t("signin")}
-                </Link>
-            </Alert>
-        )}
-
-        {error && <Alert severity="error">{error}</Alert>}
-
-        <TextField
-            label={t("name")}
-            value={name}
-            onChange={handleChange("name")}
-            fullWidth
-            required
-        />
-
-        <TextField
-            label={t("email")}
-            type="email"
-            value={email}
-            onChange={handleChange("email")}
-            fullWidth
-            required
-        />
-
-        <TextField
-            label={t("password")}
-            type="password"
-            value={password}
-            onChange={handleChange("password")}
-            fullWidth
-            required
-        />
-
-        <Button
-            type="submit"
-            variant="contained"
-            size="large"
-            fullWidth
-            onClick={clickSubmit}
-        >
-            {t("signup")}
-        </Button>
-
-        <Typography variant="body2" textAlign="center">
-            {t("already_have_account")}{" "}
-            <Link component={RouterLink} to="/signin">
-                {t("signin")}
-            </Link>
-        </Typography>
-    </AuthCard>
-);
-
-
     return (
         <Layout title={t("signup")} description="">
             <Box
                 display="flex"
                 justifyContent="center"
                 alignItems="center"
-                minHeight="100vh"
                 px={2}
             >
-                {signUpForm()}
+                <form onSubmit={handleSubmit}>
+                    <AuthCard title={t("signup")}>
+                        {success && (
+                            <Alert severity="success">
+                                {t("account_created")}{" "}
+                                <Link component={RouterLink} to="/signin">
+                                    {t("signin")}
+                                </Link>
+                            </Alert>
+                        )}
+
+                        {error && <Alert severity="error">{error}</Alert>}
+
+                        <TextField
+                            label={t("name")}
+                            value={name}
+                            onChange={handleChange("name")}
+                            fullWidth
+                        />
+
+                        <TextField
+                            label={t("email")}
+                            type="email"
+                            value={email}
+                            onChange={handleChange("email")}
+                            fullWidth
+                        />
+
+                        <TextField
+                            label={t("password")}
+                            type="password"
+                            value={password}
+                            onChange={handleChange("password")}
+                            fullWidth
+                        />
+                        <Box textAlign="right">
+                            <Link component={RouterLink} to="/forgot-password">
+                                {t("forgot_password")}
+                            </Link>
+                        </Box>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            size="large"
+                            fullWidth
+                        >
+                            {t("signup")}
+                        </Button>
+
+                        <Typography variant="body2" textAlign="center">
+                            {t("existing_account")}{" "}
+                            <Link component={RouterLink} to="/signin">
+                                {t("signin")}
+                            </Link>
+                        </Typography>
+                    </AuthCard>
+                </form>
             </Box>
         </Layout>
     );
