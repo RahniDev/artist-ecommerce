@@ -45,7 +45,8 @@ const UpdateProduct = () => {
         photo: null,
         loading: false,
         error: "",
-        createdProduct: "",
+        updatedProduct: false,
+        updatedProductName: ""
     });
 
     const {
@@ -58,13 +59,14 @@ const UpdateProduct = () => {
         quantity,
         loading,
         error,
-        createdProduct,
+        updatedProduct,
+        updatedProductName
     } = values;
     // Using useRef instead of useState to avoid re-renders
     // as FormData does not affect the UI, only used when 
     // submitting to the API so should not cause re-render when updated.
     const formData = useRef<FormData | null>(null)
-    
+
     useEffect(() => {
         if (!productId) return;
         loadCategories();
@@ -92,7 +94,6 @@ const UpdateProduct = () => {
             fd.set("quantity", product.quantity.toString())
 
             formData.current = fd
-
             setValues((p) => ({
                 ...p,
                 name: product.name,
@@ -100,10 +101,10 @@ const UpdateProduct = () => {
                 price: product.price.toString(),
                 category: product.category._id,
                 shipping: product.shipping ? "1" : "0",
-                quantity: product.quantity.toString(),
+                quantity: product.quantity.toString()
             }));
         } catch {
-            setValues((p) => ({ ...p, error: "Failed to load product" }));
+            setValues((p) => ({ ...p, error: "Failed to load product", loading: false }));
         }
     };
 
@@ -123,20 +124,20 @@ const UpdateProduct = () => {
     };
 
     useEffect(() => {
-        if (!createdProduct) return;
+        if (!updatedProduct) return;
 
         const timer = setTimeout(() => {
             navigate("/");
 
             setValues(p => ({
                 ...p,
-                createdProduct: ""
+                updatedProductName: ""
             }))
         }, 1500)
 
 
         return () => clearTimeout(timer)
-    }, [createdProduct, navigate])
+    }, [updatedProduct, navigate])
 
     const handleInputChange =
         (field: ProductFormField) =>
@@ -206,7 +207,8 @@ const UpdateProduct = () => {
 
             setValues((prev) => ({
                 ...prev,
-                createdProduct: res.data?.name ?? "",
+                updatedProduct: true,
+                updatedProductName: res.data?.name ?? "",
                 loading: false
             }));
         } catch {
@@ -233,9 +235,9 @@ const UpdateProduct = () => {
                         </Alert>
                     )}
 
-                    {createdProduct && (
+                    {updatedProduct && (
                         <Alert severity="success" sx={{ mb: 2 }}>
-                            {createdProduct} updated successfully
+                            {updatedProductName} updated successfully
                         </Alert>
                     )}
 

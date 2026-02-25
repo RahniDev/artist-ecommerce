@@ -190,8 +190,8 @@ export const updateProduct = async (
             },
             body: productData,
         });
-        const data: ApiResponse<IProduct> = await res.json();
-        return data;
+        const product: IProduct = await res.json();
+        return { data: product };
     } catch (err) {
         return { error: "Update failed" };
     }

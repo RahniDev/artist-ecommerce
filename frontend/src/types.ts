@@ -75,16 +75,18 @@ export interface ProductFormBase {
   quantity: string;
   loading: boolean;
   error: string;
-  createdProduct: boolean;
 }
 
 export interface AddProductValues extends ProductFormBase {
   photo: File | string;
+  createdProduct: boolean;
   createdProductName?: string;
 }
 
 export interface UpdateProductValues extends ProductFormBase {
   photo: File | null;
+  updatedProduct: boolean;
+  updatedProductName?: string;
 }
 
 export interface CreateOrderInput {

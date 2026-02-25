@@ -13,6 +13,7 @@
   "description": "",
   "devDependencies": {
     "@types/braintree": "^3.4.3",
+    "@types/compression": "^1.8.1",
     "@types/cookie-parser": "^1.4.10",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.5",
@@ -31,9 +32,11 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
+    "@easypost/api": "^8.6.0",
     "@sendgrid/mail": "^8.1.6",
     "bcryptjs": "^3.0.3",
     "braintree": "^3.34.0",
+    "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",

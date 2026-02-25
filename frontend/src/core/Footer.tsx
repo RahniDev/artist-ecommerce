@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import { Box, Grid, Typography, Link, Divider, IconButton } from "@mui/material";
 import InstagramIcon from "@mui/icons-material/Instagram";
+import LinkedInIcon from "@mui/icons-material/LinkedIn";
+import FacebookIcon from "@mui/icons-material/Facebook";
 import { getCategories } from "./apiCore";
 import type { ICategory } from "../types";
 
@@ -73,12 +75,30 @@ const Footer: React.FC = () => {
                     <Grid size={4}>
                     <IconButton
                         component="a"
-                        href="https://instagram.com"
+                        href="https://instagram.com/sakari.artist"
                         target="_blank"
                         rel="noopener noreferrer"
                         color="primary"
                     >
                         <InstagramIcon />
+                    </IconButton>
+                    <IconButton
+                        component="a"
+                        href="https://linkedin.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        color="primary"
+                    >
+                        <LinkedInIcon />
+                    </IconButton>
+                     <IconButton
+                        component="a"
+                        href="https://facebook.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        color="primary"
+                    >
+                        <FacebookIcon />
                     </IconButton>
                 </Grid>
             </Grid>

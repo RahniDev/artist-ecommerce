@@ -1,40 +1,57 @@
 import React from "react";
-import ProductCard from "./ProductCard";
 import { Box, Button, Grid } from "@mui/material";
+import Masonry from "@mui/lab/Masonry";
+import ProductCard from "./ProductCard";
 import type { ListProductsProps } from "../types";
 
-const ListProducts: React.FC<ListProductsProps> = ({ products, loadMore, hasMore }) => {
-  if (!products || products.length === 0) {
+const ListProducts: React.FC<ListProductsProps> = ({
+  products,
+  loadMore,
+  hasMore,
+}) => {
+
+  if (!products?.length) {
     return <p>No products found.</p>;
   }
 
   return (
     <>
-      <Box
-        sx={{
-          display: "grid",
-          gridTemplateColumns: {
-            xs: "repeat(1, 1fr)",
-            sm: "repeat(2, 1fr)",
-            md: "repeat(3, 1fr)",
-          },
-          gap: 2,
-        }}
-      >
-        {products.map((product) => (
-          <ProductCard key={product._id} product={product} />
-        ))}
+      <Box sx={{ width: "100%" }}>
+        <Masonry
+          columns={{
+            xs: 1,
+            sm: 2,
+            md: 3,
+            lg: 3,
+          }}
+          spacing={4}
+        >
+          {products.map(product => (
+            <ProductCard
+              key={product._id}
+              product={product}
+            />
+          ))}
+        </Masonry>
       </Box>
 
+      {/* Load More */}
       {hasMore && loadMore && (
-        <Grid container justifyContent="center" sx={{ mt: 3 }}>
+        <Grid container justifyContent="center" sx={{ mt: 6 }}>
           <Button
             onClick={loadMore}
-            style={{
-              padding: "10px 20px",
-              border: "2px solid #000",
-              backgroundColor: "#fff",
-              cursor: "pointer",
+            variant="outlined"
+            sx={{
+              borderColor: "black",
+              color: "black",
+              px: 4,
+              py: 1.5,
+
+              "&:hover": {
+                borderColor: "black",
+                backgroundColor: "black",
+                color: "white",
+              },
             }}
           >
             Load More
@@ -44,5 +61,5 @@ const ListProducts: React.FC<ListProductsProps> = ({ products, loadMore, hasMore
     </>
   );
 };
-// prevents re-rendering if props have not changed
+
 export default React.memo(ListProducts);

@@ -2,7 +2,7 @@ import mongoose, { Schema, Types } from 'mongoose';
 import { IProduct } from '../product/product.model.js';
 
 // This represents one product in an order
-interface ICartItem {
+export interface ICartItem {
   product: Types.ObjectId | IProduct;
   count: number;
   name?: string;

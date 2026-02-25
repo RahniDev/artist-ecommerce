@@ -27,12 +27,10 @@ export const productById = async (
         const product = await Product.findById(id)
             .populate("category")
             .select("-photo")
-            .lean();
 
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
-
         req.product = product as any;
         return next();
     } catch (err) {
@@ -191,11 +189,17 @@ export const update = async (req: Request, res: Response) => {
                     resolve({ fields, files });
                 });
             });
+
         let product = req.product;
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
-        product = Object.assign(product, fields);
+        Object.assign(
+            product,
+            Object.fromEntries(
+                Object.entries(fields).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])
+            )
+        );
         const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
 
         if (photo) {
@@ -208,6 +212,7 @@ export const update = async (req: Request, res: Response) => {
         const result = await product.save();
         return res.json(result);
     } catch (err) {
+        console.log(err)
         return res.status(400).json({ error: errorHandler(err as MongoError) });
     }
 };
