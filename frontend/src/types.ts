@@ -22,10 +22,11 @@ export interface ContactFormState {
 }
 
 export interface Address {
-  number: Number | string;
-  street: string;
+  street1: string;
+  street2: string;
   city: string;
-  postcode: string;
+  state: string;
+  zip: string;
   country: string;
   full: string;
 }
@@ -311,7 +312,25 @@ export interface CheckboxProps {
 }
 
 export interface CartItem extends IProduct {
+  weight: number;
+  length: number;
+  width: number;
+  height: number;
   count: number;
+}
+
+export interface ShippingRatesProps {
+  cartItems: CartItem[];
+  address: Address;
+  onSelectRate: (rate: any) => void;
+}
+
+export interface IRate {
+  id: string;
+  carrier: string;
+  service: string;
+  rate: string;
+  currency: string;
 }
 
 export interface CardProps {

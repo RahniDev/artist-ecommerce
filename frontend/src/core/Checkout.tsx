@@ -8,11 +8,13 @@ import { Box, Button, TextField } from "@mui/material";
 import braintree from "braintree-web-drop-in";
 import Loader from "./Loader";
 import AddressForm from "./AddressForm";
-import type { CheckoutState } from "../types";
 import { MuiTelInput } from 'mui-tel-input'
+import type { ICartItem, Address, CheckoutState } from "../types";
+import ShippingRates from "./ShippingRates";
 
 const Checkout: React.FC = () => {
   const dispatch = useDispatch();
+  const [selectedShipping, setSelectedShipping] = useState<any>(null);
   const products = useSelector((state: RootState) => state.cart.items);
 
   const [data, setData] = useState<CheckoutState>({
@@ -20,7 +22,7 @@ const Checkout: React.FC = () => {
     success: false,
     clientToken: null as string | null,
     error: "",
-    address: { number: "", street: "", city: "", postcode: "", country: "", full: "" },
+    address: { street1: "", street2: "", city: "", state: "", zip: "", country: "", full: "" },
     email: "",
     firstName: "",
     lastName: "",
@@ -87,7 +89,14 @@ const Checkout: React.FC = () => {
       });
   }, [data.clientToken]);
 
-  const getTotal = () => products.reduce((sum, p) => sum + (p.count ?? 1) * p.price, 0);
+  const getTotal = () => {
+    const productTotal =
+      products.reduce((sum, p) => sum + (p.count ?? 1) * p.price, 0);
+
+    const shipping = Number(selectedShipping?.rate || 0);
+
+    return productTotal + shipping;
+  };
 
   const payOrder = async () => {
     if (!dropInInstance.current) return;
@@ -129,6 +138,32 @@ const Checkout: React.FC = () => {
     }
   };
 
+  const cartItems: ICartItem[] = products.map(p => ({
+    _id: p._id,
+    name: p.name,
+    price: p.price,
+    quantity: p.count ?? 1,
+    weight: p.weight ?? 500, // grams
+    length: p.length ?? 0,
+    width: p.width ?? 0,
+    height: p.height ?? 0,
+    description: p.description ?? "",
+    category: p.category ?? "",
+    shipping: p.shipping ?? false,
+    sold: p.sold ?? 0
+  }));
+
+  const address: Address | null = data?.address?.full
+    ? {
+      street1: data.address.street1,
+      street2: data.address.street2,
+      city: data.address.city,
+      state: data.address.state,
+      zip: data.address.zip,
+      country: data.address.country,
+      full: data.address.full,
+    }
+    : null;
 
   return (
     <Box>
@@ -177,11 +212,27 @@ const Checkout: React.FC = () => {
         defaultCountry="FR"
         fullWidth
       />
+      <div>
+        {/* Your checkout form */}
+        {address && (
+          <ShippingRates
+            cartItems={cartItems as any}
+            address={address}
+            onSelectRate={setSelectedShipping}
+          />
+        )}
 
+        {selectedShipping && (
+          <p>
+            Selected: {selectedShipping.carrier} - {selectedShipping.service} - {selectedShipping.rate} {selectedShipping.currency}
+          </p>
+        )}
+      </div>
       <Box ref={dropinContainer} sx={{ minHeight: 200, border: "1px solid #ddd", p: 2, borderRadius: 2, mb: 2 }} />
       <Button variant="contained" onClick={payOrder} disabled={
         !dropInInstance.current ||
-        data.loading
+        data.loading ||
+        !selectedShipping
       }>
         Pay
       </Button>

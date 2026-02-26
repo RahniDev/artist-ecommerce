@@ -7,7 +7,7 @@ export const calculateParcel = (cartItems: ICartItem[]) => {
   let totalHeight = 0;
 
   cartItems.forEach((item) => {
-    const qty = item.quantity;
+    const qty = item.count;
     totalWeight += item.weight * qty;
     maxLength = Math.max(maxLength, item.length);
     maxWidth = Math.max(maxWidth, item.width);

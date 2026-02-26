@@ -12,6 +12,10 @@ export interface IProduct {
     contentType: string;
   };
   shipping: boolean;
+  weight: number;
+  width: number;
+  height: number;
+  length: number;
 }
 
 export interface IProductDocument extends IProduct, Document { }
@@ -53,7 +57,15 @@ const productSchema = new Schema<IProductDocument>({
   shipping: {
     required: false,
     type: Boolean
-  }
+  },
+  weight: {
+    type: Number, // grams
+    required: true
+  },
+  // cm
+  width: Number,
+  height: Number,
+  length: Number,
 }, { timestamps: true });
 
 export const Product = mongoose.model<IProductDocument>("Product", productSchema);
