@@ -1,0 +1,19 @@
+export const calculateParcel = (cartItems) => {
+    let totalWeight = 0; // in ounces for EasyPost
+    let maxLength = 0;
+    let maxWidth = 0;
+    let totalHeight = 0;
+    cartItems.forEach((item) => {
+        const qty = item.count;
+        totalWeight += item.weight * qty;
+        maxLength = Math.max(maxLength, item.length);
+        maxWidth = Math.max(maxWidth, item.width);
+        totalHeight += item.height * qty; // stacking items
+    });
+    return {
+        length: maxLength,
+        width: maxWidth,
+        height: totalHeight,
+        weight: totalWeight,
+    };
+};

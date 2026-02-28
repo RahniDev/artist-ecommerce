@@ -1,9 +1,7 @@
 import { Router } from 'express';
-import { requireSignin, isAuth } from '../auth/auth.controller.js';
-import { userById } from '../user/user.controller.js';
 import { brainTreeToken, processPayment } from './braintree.controller.js';
+import { optionalSignin } from '../auth/auth.controller.js';
 const router = Router();
-router.get('/braintree/getToken/:userId', requireSignin, isAuth, brainTreeToken);
-router.post('/braintree/payment/:userId', requireSignin, isAuth, processPayment);
-router.param('userId', userById);
+router.get('/braintree/getToken', optionalSignin, brainTreeToken);
+router.post('/braintree/payment', optionalSignin, processPayment);
 export default router;

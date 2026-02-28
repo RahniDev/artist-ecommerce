@@ -69,6 +69,22 @@ export const requireSignin = (req, res, next) => {
         return res.status(401).json({ error: "Invalid or expired token" });
     }
 };
+export const optionalSignin = (req, res, next) => {
+    const token = req.cookies.token ||
+        req.headers.authorization?.split(" ")[1];
+    if (!token) {
+        req.auth = undefined;
+        return next();
+    }
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.auth = decoded;
+    }
+    catch {
+        req.auth = undefined;
+    }
+    next();
+};
 export const isAuth = (req, res, next) => {
     const sameUser = req.profile && req.auth && req.profile._id.toString() === req.auth._id;
     if (!sameUser) {

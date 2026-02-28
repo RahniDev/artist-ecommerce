@@ -10,8 +10,7 @@ export const productById = async (req, res, next, id) => {
         }
         const product = await Product.findById(id)
             .populate("category")
-            .select("-photo")
-            .lean();
+            .select("-photo");
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
@@ -166,7 +165,7 @@ export const update = async (req, res) => {
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
-        product = Object.assign(product, fields);
+        Object.assign(product, Object.fromEntries(Object.entries(fields).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])));
         const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
         if (photo) {
             if (photo.size > 1000000) {
@@ -179,6 +178,7 @@ export const update = async (req, res) => {
         return res.json(result);
     }
     catch (err) {
+        console.log(err);
         return res.status(400).json({ error: errorHandler(err) });
     }
 };

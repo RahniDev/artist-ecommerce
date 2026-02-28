@@ -327,10 +327,13 @@ export interface ShippingRatesProps {
 
 export interface IRate {
   id: string;
+  type: string;
   carrier: string;
   service: string;
   rate: string;
   currency: string;
+  insuranceValue: string;
+  deliveryEstimate: string;
 }
 
 export interface CardProps {

@@ -36,6 +36,14 @@ const productSchema = new Schema({
     shipping: {
         required: false,
         type: Boolean
-    }
+    },
+    weight: {
+        type: Number, // grams
+        required: true
+    },
+    // cm
+    width: Number,
+    height: Number,
+    length: Number,
 }, { timestamps: true });
 export const Product = mongoose.model("Product", productSchema);

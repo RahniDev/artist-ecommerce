@@ -32,8 +32,9 @@
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@easypost/api": "^8.6.0",
+    "@easypost/api": "^8.7.0",
     "@sendgrid/mail": "^8.1.6",
+    "axios": "^1.13.5",
     "bcryptjs": "^3.0.3",
     "braintree": "^3.34.0",
     "compression": "^1.8.1",
@@ -46,6 +47,7 @@
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.19.2",
     "morgan": "^1.10.1",
+    "node-fetch": "^3.3.2",
     "ts-node": "^10.9.2"
   }
 }
