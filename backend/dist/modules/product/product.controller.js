@@ -75,6 +75,11 @@ export const photo = async (req, res) => {
             return res.status(404).send("No image");
         }
         res.set("Content-Type", product.photo.contentType);
+       // Caches images for 2 weeks 
+        res.set(
+            "Cache-Control",
+            "public, max-age=1209600, must-revalidate"
+        );
         return res.send(product.photo.data);
     }
     catch (err) {

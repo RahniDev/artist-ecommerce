@@ -41,6 +41,7 @@ const ListProducts: React.FC<ListProductsProps> = ({
           <Button
             onClick={loadMore}
             variant="outlined"
+            aria-label="Load more"
             sx={{
               borderColor: "black",
               color: "black",

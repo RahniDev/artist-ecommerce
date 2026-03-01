@@ -77,6 +77,7 @@ const Product: React.FC = () => {
                       <AddToCartButton
                         product={{ ...product, count: 1 }}
                         redirect={false}
+                        aria-label="Add to cart"
                       />  </>)}
                 </Grid>
               </Grid>

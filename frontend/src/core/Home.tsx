@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Layout from "./Layout";
 import { getProducts } from "./apiCore";
-import Search from "./Search";
 import Hero from "./Hero";
 import type { IProduct, ApiResponse } from "../types";
 import ListProducts from './ListProducts'
@@ -44,7 +43,6 @@ const Home: React.FC = () => {
       <Container maxWidth="lg">
         <Stack spacing={4}>
           <Hero />
-          <Search />
           {error && (
             <Alert severity="error">
               {error}

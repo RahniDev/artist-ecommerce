@@ -11,10 +11,10 @@ import { Link } from "react-router-dom";
 import { API } from "../config";
 
 const ForgotPassword: React.FC = () => {
-    const [email, setEmail] = useState("");
-    const [showError, setShowError] = useState(false);
+    const [email, setEmail] = useState<string>("");
+    const [showError, setShowError] = useState<boolean>(false);
     const [messageFromServer, setMessageFromServer] = useState("");
-    const [showNullError, setShowNullError] = useState(false);
+    const [showNullError, setShowNullError] = useState<boolean | string>(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setEmail(e.target.value);

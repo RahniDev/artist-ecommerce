@@ -7,8 +7,6 @@ import {
   setCategory,
   setSearch,
 } from "../redux/slices/searchSlice";
-
-import Card from "./ProductCard";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
@@ -18,13 +16,12 @@ import {
   Button,
   InputLabel,
   FormControl,
-  Grid,
   Typography,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { useTranslation } from "react-i18next";
 
-const Search: React.FC = () => {
+const Search = () => {
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
 
@@ -34,7 +31,6 @@ const Search: React.FC = () => {
     search,
     results,
     searched,
-    // loading
   } = useSelector((state: RootState) => state.search);
 
   useEffect(() => {
@@ -55,66 +51,72 @@ const Search: React.FC = () => {
   };
 
   return (
-    <Grid container spacing={2}>
-      {/* Search form */}
-      <Grid size={12} sx={{ display: "flex", justifyContent: "center" }}>
-        <Box
-          component="form"
-          onSubmit={searchSubmit}
-          sx={{
-            display: "flex",
-            gap: 1,
-            mt: 4,
-            flexWrap: "wrap",
-          }}
+    <Box
+      component="form"
+      onSubmit={searchSubmit}
+      sx={{
+        display: "flex",
+        alignItems: "center",
+        flexWrap: "nowrap",
+        width: "100%",
+      }}
+    >
+      <FormControl
+        size="small"
+        sx={{
+          minWidth: 150,
+          "& .MuiOutlinedInput-root": {
+            borderTopRightRadius: 0,
+            borderBottomRightRadius: 0,
+          },
+        }}
+      >
+        <InputLabel>{t("category")}</InputLabel>
+        <Select
+          value={category}
+          label={t("category")}
+          onChange={(e: SelectChangeEvent) =>
+            dispatch(setCategory(e.target.value))
+          }
         >
-          <FormControl sx={{ minWidth: 160 }}>
-            <InputLabel>{t("category")}</InputLabel>
-            <Select
-              value={category}
-              onChange={(e: SelectChangeEvent) =>
-                dispatch(setCategory(e.target.value))
-              }
-            >
-              <MenuItem value="">All</MenuItem>
-              {categories.map(c => (
-                <MenuItem key={c._id} value={c._id}>
-                  {c.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <TextField
-            label={t("search")}
-            value={search}
-            onChange={e => dispatch(setSearch(e.target.value))}
-            sx={{ minWidth: 250 }}
-          />
-
-          <Button type="submit" variant="contained">
-            <SearchIcon />
-          </Button>
-        </Box>
-      </Grid>
-
-      {/* Results */}
-      <Grid size={12}>
-        {searched && (
-          <Typography variant="h6" align="center">
-            {searchMessage()}
-          </Typography>
-        )}
-
-        <Grid container spacing={2} mt={2}>
-          {results.map(product => (
-            <Grid size={4} key={product._id}>
-              <Card product={product} />
-            </Grid>
+          <MenuItem value="">All</MenuItem>
+          {categories.map(c => (
+            <MenuItem key={c._id} value={c._id}>
+              {c.name}
+            </MenuItem>
           ))}
-        </Grid>
-      </Grid>
-    </Grid>
+        </Select>
+      </FormControl>
+
+      <TextField
+        size="small"
+        label={t("search")}
+        value={search}
+        onChange={e => dispatch(setSearch(e.target.value))}
+        sx={{
+          flex: 1,
+          minWidth: 190,
+          "& .MuiOutlinedInput-root": {
+            borderRadius: 0,
+          },
+        }}
+      />
+
+      <Button
+        type="submit"
+        variant="contained"
+        size="large"
+        sx={{
+          minWidth: 48,
+          borderTopLeftRadius: 0,
+          borderBottomLeftRadius: 0,
+          boxShadow: "none",
+        }}
+      >
+        <SearchIcon />
+      </Button>
+      <Typography variant="h6">{searchMessage()}</Typography>
+    </Box>
   );
 };
 

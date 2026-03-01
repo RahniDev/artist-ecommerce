@@ -18,7 +18,7 @@ import AdminStats from "./AdminStats";
 const AdminDashboard: React.FC = () => {
   const auth = isAuthenticated();
 
-  if (!auth) {
+  if (!auth || auth.user.role !== 1) {
     return (
       <Layout title="Admin Dashboard" description="Please sign in">
         <Typography variant="h4" align="center">
@@ -28,15 +28,15 @@ const AdminDashboard: React.FC = () => {
     );
   }
 
-  const { user } = auth as { user: IUser };
-  const { name, email } = user;
+  const { user } = auth;
+  const { name, email } = user as IUser;
 
   return (
     <Layout title="Admin Dashboard" description={`Hi ${name}!`}>
       <Grid container spacing={3} sx={{ pl: { xs: 2, md: 4 } }}>
         <Grid size={{ xs: 12, md: 6, lg: 4 }}>
           <Stack spacing={2}>
-            <Card sx={{ width: 360 }}>
+            <Card>
               <CardHeader title="Manage Shop" />
               {/* Admin Links */}
               <List disablePadding>
@@ -55,7 +55,7 @@ const AdminDashboard: React.FC = () => {
               </List>
             </Card>
 
-            <Card sx={{ width: 360 }}>
+            <Card>
               <CardHeader title="Admin Info" />
               <List>
                 <ListItem>

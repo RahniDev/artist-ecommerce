@@ -5,7 +5,6 @@ import {
   Toolbar,
   Box,
   IconButton,
-  Button,
   Badge,
   Menu,
   MenuItem,
@@ -17,6 +16,7 @@ import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../redux/store";
 import { clearAuth } from "../redux/slices/authSlice";
 import LangToggle from "./LangToggle";
+import Search from "./Search";
 
 const linkStyle = {
   textDecoration: "none",
@@ -47,47 +47,76 @@ const Navbar: React.FC = () => {
 
   return (
     <AppBar position="static" elevation={1} sx={{ backgroundColor: "#fff" }}>
-      <Toolbar sx={{ display: "flex", justifyContent: "space-between" }}>
-        <Box display="flex" alignItems="center">
-          <NavLink to="/">
-            {/* <img src={logo} width="40" height="40" alt="Logo" /> */}
+      <Toolbar sx={{ display: "flex", alignItems: "center" }}>
+
+        {/* LEFT */}
+        <Box sx={{ display: "flex", alignItems: "center", minWidth: 120 }}>
+          <NavLink to="/" id="logo">
+            SK
           </NavLink>
         </Box>
 
-        <Box display="flex" alignItems="center" gap={2}>
-          <LangToggle />
-          {isAuthenticated && (
-            <>
-              <Button
-                onClick={handleMenuOpen}
-                sx={{ textTransform: "none", color: "#3a3535" }}
-                startIcon={<Person2OutlinedIcon />}
-              >
-              </Button>
+        {/* CENTER (Search) */}
+        <Box
+          sx={{
+            flex: 1,
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <Box sx={{ width: { xs: "100%", sm: "60%", md: "40%" } }}>
+            <Search />
+          </Box>
+        </Box>
 
+        {/* RIGHT */}
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            gap: 2,
+            minWidth: 120,
+            justifyContent: "flex-end",
+          }}
+        >
+          <LangToggle />
+
+          {isAuthenticated ? (
+            <>
+              <IconButton component={NavLink} to="/signin" sx={{ color: "#3a3535" }}>
+                <Person2OutlinedIcon fontSize="medium" />
+              </IconButton>
               <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
                 {user?.role === 0 && (
-                  <MenuItem onClick={() => { navigate("/user/dashboard"); handleMenuClose(); }}>
+                  <MenuItem
+                    onClick={() => {
+                      navigate("/user/dashboard");
+                      handleMenuClose();
+                    }}
+                  >
                     Dashboard
                   </MenuItem>
                 )}
                 {user?.role === 1 && (
-                  <MenuItem onClick={() => { navigate("/admin/dashboard"); handleMenuClose(); }}>
+                  <MenuItem
+                    onClick={() => {
+                      navigate("/admin/dashboard");
+                      handleMenuClose();
+                    }}
+                  >
                     Admin
                   </MenuItem>
                 )}
                 <MenuItem onClick={handleSignout}>Sign Out</MenuItem>
               </Menu>
             </>
+          ) : (
+            <IconButton component={NavLink} to="/signin" sx={{ color: linkStyle }}>
+              <Person2OutlinedIcon fontSize="medium" />
+            </IconButton>
           )}
 
-          {!isAuthenticated && (
-            <Button component={NavLink} to="/signin" sx={linkStyle}>
-              <Person2OutlinedIcon />
-            </Button>
-          )}
-
-          <IconButton component={NavLink} to="/cart" sx={{ color: "#ff7315" }}>
+          <IconButton component={NavLink} to="/cart" sx={{ color: linkStyle }}>
             <Badge badgeContent={cartCount} color="error">
               <ShoppingCartOutlinedIcon />
             </Badge>
