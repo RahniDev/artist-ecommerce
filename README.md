@@ -20,3 +20,4 @@ Using React Compiler for optimal performance
 - Related products section on product page
 - Product breadcrumbs
 - React multi-language translation using I18n
+- Newsletter signup form - Mailchimp
