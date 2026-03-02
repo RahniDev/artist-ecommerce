@@ -6,6 +6,7 @@ import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import { getCategories } from "./apiCore";
 import type { ICategory } from "../types";
+import Newsletter from "../user/Newsletter";
 
 const Footer: React.FC = () => {
     const [categories, setCategories] = useState<ICategory[]>([]);
@@ -27,6 +28,7 @@ const Footer: React.FC = () => {
         <Box component="footer" sx={{ bgcolor: "#f5f5f5", mt: 4, p: 4 }}>
             <Grid container size={24} spacing={8} alignItems="flex-start">
                 <Grid container>
+                    <Newsletter />
                     <Grid size={6}>
                         <Typography variant="h6" gutterBottom>
                             Shop

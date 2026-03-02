@@ -25,9 +25,9 @@ const AddressForm: React.FC<Props> = ({ value, onChange }) => {
     };
 
     const handleSelectSuggestion = (place: PhotonPlace) => {
-        const { name, city, postcode, country } = place.properties;
-        const full = [name, city, postcode, country].filter(Boolean).join(", ");
-        onChange({ number: value.number, street: name ?? "", city: city ?? "", postcode: postcode ?? "", country: country ?? "", full });
+        const { name, city, zip, country } = place.properties;
+        const full = [name, city, zip, country].filter(Boolean).join(", ");
+        onChange({ street1: name ?? "", city: city ?? "", zip: zip ?? "", country: country ?? "", full });
         setSuggestions([]);
     };
 
@@ -37,14 +37,6 @@ const AddressForm: React.FC<Props> = ({ value, onChange }) => {
 
     return (
         <Box sx={{ mb: 2 }}>
-            <TextField
-                label="House Number / Name"
-                value={value.number}
-                onChange={(e) => handleFieldChange("number", e.target.value)}
-                fullWidth
-                sx={{ mb: 1 }}
-                required
-            />
             <Autocomplete
                 freeSolo
                 options={suggestions}
@@ -80,8 +72,8 @@ const AddressForm: React.FC<Props> = ({ value, onChange }) => {
             />
             <TextField
                 label="Postcode"
-                value={value.postcode}
-                onChange={(e) => handleFieldChange("postcode", e.target.value)}
+                value={value.zip}
+                onChange={(e) => handleFieldChange("zip", e.target.value)}
                 fullWidth
                 sx={{ mb: 1 }}
                 required

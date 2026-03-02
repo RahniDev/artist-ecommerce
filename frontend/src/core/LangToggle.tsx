@@ -67,14 +67,15 @@ export default function LangToggle() {
             <LanguageIcon
               sx={{
                 fontSize: 20,
-                display: "flex",
+                display: "block",
               }}
             />
             <Box
               component="span"
               sx={{
-                display: "flex",
-                alignItems: "center",
+                display: "block",
+                lineHeight: "14px",
+                fontSize: 14
               }}
             >
               {(selected as string).toUpperCase()}
