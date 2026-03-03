@@ -34,15 +34,15 @@ const Navbar: React.FC = () => {
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
+  const handleDropdownOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
   };
-  const handleMenuClose = () => setAnchorEl(null);
+  const handleDropdownClose = () => setAnchorEl(null);
 
   const handleSignout = () => {
     dispatch(clearAuth());
     navigate("/");
-    handleMenuClose();
+    handleDropdownClose();
   };
 
   return (
@@ -55,7 +55,7 @@ const Navbar: React.FC = () => {
             SK
           </NavLink>
         </Box>
-
+        
         {/* CENTER (Search) */}
         <Box
           sx={{
@@ -80,18 +80,18 @@ const Navbar: React.FC = () => {
           }}
         >
           <LangToggle />
-
           {isAuthenticated ? (
             <>
-              <IconButton component={NavLink} to="/signin" sx={{ color: "#3a3535" }}>
+
+              <IconButton onClick={handleDropdownOpen} sx={{ color: "#3a3535" }}>
                 <Person2OutlinedIcon fontSize="medium" />
               </IconButton>
-              <Menu anchorEl={anchorEl} open={open} onClose={handleMenuClose}>
+              <Menu anchorEl={anchorEl} open={open} onClose={handleDropdownClose}>
                 {user?.role === 0 && (
                   <MenuItem
                     onClick={() => {
                       navigate("/user/dashboard");
-                      handleMenuClose();
+                      handleDropdownClose();
                     }}
                   >
                     Dashboard
@@ -101,7 +101,7 @@ const Navbar: React.FC = () => {
                   <MenuItem
                     onClick={() => {
                       navigate("/admin/dashboard");
-                      handleMenuClose();
+                      handleDropdownClose();
                     }}
                   >
                     Admin

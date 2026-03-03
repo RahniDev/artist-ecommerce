@@ -111,6 +111,7 @@ export interface ApiResponse<T = any> {
 export interface Category {
   _id: string;
   name: string;
+ parent?: string | Category | null;
 }
 
 export interface CategoryInput {
