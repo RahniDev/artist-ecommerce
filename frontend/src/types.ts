@@ -1,5 +1,16 @@
 import type { ReactNode } from "react";
 
+export interface Subcategory {
+  _id: string;
+  name: string;
+}
+
+export interface CategoryData {
+  _id: string;
+  name: string;
+  subcategories: Subcategory[];
+}
+
 export interface CheckoutState {
   loading: boolean;
   success: boolean;

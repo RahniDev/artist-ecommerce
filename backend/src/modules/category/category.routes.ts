@@ -3,7 +3,7 @@ import { requireSignin, isAuth, isAdmin } from '../auth/auth.controller.js';
 import {
   create,
   categoryById,
-  read,
+  getCategory,
   update,
   remove,
   list,
@@ -14,7 +14,7 @@ import { userById } from '../user/user.controller.js';
 const router = Router();
 
 // Public routes
-router.get('/category/:categoryId', read);
+router.get('/category/:categoryId', getCategory);
 router.get('/categories', list);
 router.get('/categories/nested', listNested);
 

@@ -38,7 +38,7 @@ const Footer: React.FC = () => {
                                 <li key={c._id}>
                                     <Link
                                         component={RouterLink}
-                                        to={`/shop/category/${c._id}`}
+                                        to={`/category/${c._id}`}
                                         underline="hover"
                                         color="textPrimary"
                                     >

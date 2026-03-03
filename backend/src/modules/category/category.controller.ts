@@ -55,10 +55,17 @@ export const create = async (req: Request, res: Response) => {
   }
 };
 
-export const read = (req: CustomRequest, res: Response) => {
-  res.json(req.category);
-};
+export const getCategory = async (req: CustomRequest, res: Response) => {
+  try {
+    const subcategories = await Category.find({ parent: req.category!._id })
+      .select('_id name')
+      .lean();
 
+    res.json({ ...req.category!.toObject(), subcategories });
+  } catch (err) {
+    res.status(400).json({ error: 'Failed to load category' });
+  }
+};
 export const update = async (req: CustomRequest, res: Response) => {
   try {
     if (!req.category) {

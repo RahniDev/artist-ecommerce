@@ -9,6 +9,7 @@ import AdminDashboard from "./user/AdminDashboard";
 import AddCategory from "./admin/AddCategory";
 import AddProduct from "./admin/AddProduct";
 import Product from "./core/Product";
+import Category from "./core/Category";
 import Cart from "./core/Cart";
 import Orders from './admin/Orders';
 import Profile from "./user/Profile";
@@ -36,6 +37,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/product/:productId" element={<Product />} />
+        <Route path="/category/:categoryId" element={<Category />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/about" element={<About />} />
