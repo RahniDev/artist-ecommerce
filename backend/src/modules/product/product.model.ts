@@ -5,6 +5,7 @@ export interface IProduct {
   description: string;
   price: number;
   category: Types.ObjectId;
+  subcategory: Types.ObjectId | null;
   quantity: number;
   sold: number;
   photo: {
@@ -42,6 +43,11 @@ const productSchema = new Schema<IProductDocument>({
     type: Schema.Types.ObjectId,
     ref: "Category",
     required: true
+  },
+  subcategory: {
+    type: Schema.Types.ObjectId,
+    ref: 'Category',
+    default: null,
   },
   quantity: {
     type: Number

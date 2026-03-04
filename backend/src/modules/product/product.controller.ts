@@ -110,7 +110,7 @@ export const create = async (req: Request, res: Response) => {
             });
         });
 
-        let { name, description, price, category, quantity, shipping } = fields;
+        let { name, description, price, category, subcategory, quantity, shipping, weight, width, height, length } = fields;
 
         const normalize = (v: string | string[] | undefined) => Array.isArray(v) ? v[0] : v;
 
@@ -122,6 +122,10 @@ export const create = async (req: Request, res: Response) => {
         const shippingValue =
             normalize(shipping) === "1" ||
             normalize(shipping) === "true";
+        const weightValue = Number(normalize(weight));
+        const widthValue = normalize(width) ? Number(normalize(width)) : undefined;
+        const heightValue = normalize(height) ? Number(normalize(height)) : undefined;
+        const lengthValue = normalize(length) ? Number(normalize(length)) : undefined;
 
         if (
             nameValue == null ||
@@ -139,8 +143,14 @@ export const create = async (req: Request, res: Response) => {
             description: descriptionValue,
             price: priceValue,
             category: categoryValue,
+            subcategory: normalize(subcategory) || null,
             quantity: quantityValue,
-            shipping: shippingValue
+            shipping: shippingValue,
+            weight: weightValue,
+            width: widthValue,
+            height: heightValue,
+            length: lengthValue,
+
         });
         const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
         if (photo) {

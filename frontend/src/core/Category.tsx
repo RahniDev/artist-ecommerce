@@ -38,7 +38,7 @@ const Category = () => {
             {category.subcategories.map(sub => (
               <Grid size={3} key={sub._id}>
                 <Link href={`/category/${sub._id}`}
-                  // style={{ backgroundImage: `url(${coverImage})` }}
+                 style={{ backgroundImage: `url(/api/product/photo/${sub.products[0]?._id})` }}
                   underline="hover">
                   <Typography variant="h3">{sub.name}</Typography>
                   <span>View series</span>

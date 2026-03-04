@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 
 export interface Subcategory {
+  products: any;
   _id: string;
   name: string;
 }
@@ -67,22 +68,31 @@ export interface ManageProductRowProps {
   onDelete: (id: string) => void;
 }
 
-export type ProductFormField =
+  export type ProductFormField =
   | "name"
   | "description"
   | "price"
   | "category"
+  | "subcategory"
   | "shipping"
   | "quantity"
-  | "photo";
-
+  | "photo"
+  | "weight"
+  | "width"
+  | "height"
+  | "length";
 
 export interface ProductFormBase {
   name: string;
   description: string;
   price: string;
-  categories: ICategory[];
+  weight: string;
+  width: string;
+  height: string;
+  length: string;
+  categories: Category[];
   category: string;
+  subcategory: string;
   shipping: string;
   quantity: string;
   loading: boolean;
@@ -91,6 +101,7 @@ export interface ProductFormBase {
 
 export interface AddProductValues extends ProductFormBase {
   photo: File | string;
+  subcategory: string;
   createdProduct: boolean;
   createdProductName?: string;
 }
@@ -122,7 +133,7 @@ export interface ApiResponse<T = any> {
 export interface Category {
   _id: string;
   name: string;
- parent?: string | Category | null;
+  parent?: string | Category | null;
 }
 
 export interface CategoryInput {
@@ -149,13 +160,6 @@ export interface IPriceRange {
   _id: number;
   name: string;
   array: number[];
-}
-
-export interface ICategory {
-  _id: string;
-  name: string;
-  createdAt?: string;
-  updatedAt?: string;
 }
 
 export interface SignInInput {
@@ -222,7 +226,7 @@ export interface IFilterParams {
 }
 
 export interface SearchState {
-  categories: ICategory[];
+  categories: Category[];
   category: string;
   search: string;
   results: IProduct[];
@@ -300,7 +304,7 @@ export interface LayoutProps {
 }
 
 export interface FooterData {
-  categories: ICategory[];
+  categories: Category[];
   category?: string;
 }
 
@@ -319,7 +323,7 @@ export interface CheckoutData {
 }
 
 export interface CheckboxProps {
-  categories: ICategory[];
+  categories: Category[];
   handleFilters: (selected: string[]) => void;
 }
 

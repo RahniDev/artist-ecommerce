@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, type ChangeEvent, type FormEvent } from "react";
 import Layout from "../core/Layout";
 import { createProduct, getCategories } from "./apiAdmin";
-import type { AddProductValues, ProductFormField } from "../types";
+import type { AddProductValues, ProductFormField, Category } from "../types";
 import Loader from "../core/Loader";
 import {
   Box,
@@ -22,17 +22,22 @@ import { useNavigate } from "react-router-dom";
 
 const AddProduct: React.FC = () => {
   const navigate = useNavigate();
-
-  // Get auth from Redux
   const auth = useSelector((state: RootState) => state.auth);
   const { user, token, isAuthenticated } = auth;
+
   const [imgPreview, setImgPreview] = useState("");
+  const [subcategories, setSubcategories] = useState<Category[]>([]);
   const [values, setValues] = useState<AddProductValues>({
     name: "",
     description: "",
     price: "",
+    weight: "",
+    width: "",
+    height: "",
+    length: "",
     categories: [],
     category: "",
+    subcategory: "",
     shipping: "",
     quantity: "",
     photo: "",
@@ -48,6 +53,11 @@ const AddProduct: React.FC = () => {
     price,
     categories,
     category,
+    subcategory,
+    weight,
+    width,
+    height,
+    length,
     shipping,
     quantity,
     loading,
@@ -55,28 +65,22 @@ const AddProduct: React.FC = () => {
     createdProduct
   } = values;
 
-  const formData = useRef<FormData | null>(null)
+  const formData = useRef<FormData | null>(null);
 
-  // Redirect if not authenticated
   useEffect(() => {
     if (!isAuthenticated) navigate("/signin");
   }, [isAuthenticated, navigate]);
 
-  // Load categories
   useEffect(() => {
     const init = async () => {
       const data = await getCategories();
       if (data.error) {
-        setValues((p) => ({ ...p, error: data.error || "" }));
+        setValues(p => ({ ...p, error: data.error || "" }));
       } else {
-        setValues((p) => ({
-          ...p,
-          categories: data.data || []
-        }));
-        formData.current = new FormData()
+        setValues(p => ({ ...p, categories: data.data || [] }));
+        formData.current = new FormData();
       }
     };
-
     init();
   }, []);
 
@@ -89,19 +93,13 @@ const AddProduct: React.FC = () => {
           const file = event.target.files?.[0];
           if (file) {
             formData.current.set("photo", file);
-
-            setValues((prev) => ({
-              ...prev,
-              photo: file
-            }));
-
-            const previewUrl = URL.createObjectURL(file);
-            setImgPreview(previewUrl);
+            setValues(prev => ({ ...prev, photo: file }));
+            setImgPreview(URL.createObjectURL(file));
           }
         } else {
           const value = event.target.value;
           formData.current.set(field, value);
-          setValues((prev) => ({ ...prev, [field]: value }));
+          setValues(prev => ({ ...prev, [field]: value }));
         }
       };
 
@@ -111,14 +109,39 @@ const AddProduct: React.FC = () => {
         if (!formData.current) return;
         const value = event.target.value;
         formData.current.set(field, value);
-        setValues((prev) => ({ ...prev, [field]: value }));
+        setValues(prev => ({ ...prev, [field]: value }));
       };
+
+  const handleCategoryChange = (event: SelectChangeEvent<string>) => {
+    if (!formData.current) return;
+    const value = event.target.value;
+    formData.current.set("category", value);
+    formData.current.delete("subcategory");
+
+    const subs = categories.filter(c =>
+      c.parent && (typeof c.parent === "object" ? c.parent._id === value : c.parent === value)
+    );
+
+    setSubcategories(subs);
+    setValues(prev => ({ ...prev, category: value, subcategory: "" }));
+  };
+
+  const handleSubcategoryChange = (event: SelectChangeEvent<string>) => {
+    if (!formData.current) return;
+    const value = event.target.value;
+    if (value) {
+      formData.current.set("subcategory", value);
+    } else {
+      formData.current.delete("subcategory");
+    }
+    setValues(prev => ({ ...prev, subcategory: value }));
+  };
 
   const clickSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (!formData.current || !user || !token) return;
 
-    setValues((prev) => ({
+    setValues(prev => ({
       ...prev,
       loading: true,
       error: "",
@@ -130,37 +153,33 @@ const AddProduct: React.FC = () => {
       const res = await createProduct(user._id, token, formData.current);
 
       if (res.error) {
-        setValues((p) => ({
-          ...p,
-          error: res.error || "",
-          loading: false,
-        }));
+        setValues(p => ({ ...p, error: res.error || "", loading: false }));
       } else if (res.data) {
-        const product = res.data
-        setValues((p) => ({
+        setValues(p => ({
           ...p,
           createdProduct: true,
-          createdProductName: product.name,
-
+          createdProductName: res.data?.name,
           name: "",
           description: "",
           price: "",
+          category: "",
+          subcategory: "",
+          weight: "",
+          width: "",
+          height: "",
+          length: "",
+          shipping: "",
           quantity: "",
           photo: "",
         }));
+        setSubcategories([]);
+        setImgPreview("");
+        formData.current = new FormData();
       }
     } catch {
-      setValues((p) => ({
-        ...p,
-        error: "Product creation failed",
-        createdProduct: false
-      }));
-    }
-    finally {
-      setValues((p) => ({
-        ...p,
-        loading: false
-      }))
+      setValues(p => ({ ...p, error: "Product creation failed", createdProduct: false }));
+    } finally {
+      setValues(p => ({ ...p, loading: false }));
     }
   };
 
@@ -188,11 +207,7 @@ const AddProduct: React.FC = () => {
           <Box
             component="form"
             onSubmit={clickSubmit}
-            sx={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
-            }}
+            sx={{ display: "flex", flexDirection: "column", gap: 2 }}
           >
             <Typography variant="h6">Product Photo</Typography>
             <Box
@@ -218,14 +233,11 @@ const AddProduct: React.FC = () => {
                   component="img"
                   src={imgPreview}
                   alt="Product photo preview"
-                  sx={{
-                    width: 200,
-                    borderRadius: 1,
-                    border: "1px solid #ddd",
-                  }}
+                  sx={{ width: 200, borderRadius: 1, border: "1px solid #ddd" }}
                 />
               )}
             </Box>
+
             <TextField
               label="Name"
               value={name}
@@ -250,34 +262,68 @@ const AddProduct: React.FC = () => {
               fullWidth
             />
 
+            {/* Category — top-level only */}
             <FormControl fullWidth>
               <InputLabel>Category</InputLabel>
-              <Select
-                value={category}
-                label="Category"
-                onChange={handleSelectChange("category")}
-              >
-                <MenuItem value="">
-                  <em>Please select</em>
-                </MenuItem>
-                {categories.map((c) => (
-                  <MenuItem key={c._id} value={c._id}>
-                    {c.name}
-                  </MenuItem>
-                ))}
+              <Select value={category} label="Category" onChange={handleCategoryChange}>
+                <MenuItem value=""><em>Please select</em></MenuItem>
+                {categories
+                  .filter(c => !c.parent)
+                  .map(c => (
+                    <MenuItem key={c._id} value={c._id}>{c.name}</MenuItem>
+                  ))}
               </Select>
             </FormControl>
 
+            {/* Subcategory */}
+            {subcategories.length > 0 && (
+              <FormControl fullWidth>
+                <InputLabel>Subcategory</InputLabel>
+                <Select
+                  value={subcategory}
+                  label="Subcategory"
+                  onChange={handleSubcategoryChange}
+                >
+                  <MenuItem value=""><em>None</em></MenuItem>
+                  {subcategories.map(sub => (
+                    <MenuItem key={sub._id} value={sub._id}>{sub.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            )}
+            <TextField
+              label="Weight (grams)"
+              type="number"
+              value={values.weight}
+              onChange={handleInputChange("weight")}
+              fullWidth
+            />
+            <TextField
+              label="Width (cm)"
+              type="number"
+              value={values.width}
+              onChange={handleInputChange("width")}
+              fullWidth
+            />
+            <TextField
+              label="Height (cm)"
+              type="number"
+              value={values.height}
+              onChange={handleInputChange("height")}
+              fullWidth
+            />
+            <TextField
+              label="Length (cm)"
+              type="number"
+              value={values.length}
+              onChange={handleInputChange("length")}
+              fullWidth
+            />
+
             <FormControl fullWidth>
               <InputLabel>Shipping</InputLabel>
-              <Select
-                value={shipping}
-                label="Shipping"
-                onChange={handleSelectChange("shipping")}
-              >
-                <MenuItem value="">
-                  <em>Please select</em>
-                </MenuItem>
+              <Select value={shipping} label="Shipping" onChange={handleSelectChange("shipping")}>
+                <MenuItem value=""><em>Please select</em></MenuItem>
                 <MenuItem value="0">No</MenuItem>
                 <MenuItem value="1">Yes</MenuItem>
               </Select>
@@ -291,7 +337,13 @@ const AddProduct: React.FC = () => {
               fullWidth
             />
 
-            <Button type="submit" variant="contained" size="large" sx={{ mt: 2 }} disabled={loading}>
+            <Button
+              type="submit"
+              variant="contained"
+              size="large"
+              sx={{ mt: 2 }}
+              disabled={loading}
+            >
               Create Product
             </Button>
           </Box>

@@ -61,7 +61,19 @@ export const getCategory = async (req: CustomRequest, res: Response) => {
       .select('_id name')
       .lean();
 
-    res.json({ ...req.category!.toObject(), subcategories });
+    const subcategoriesWithProducts = await Promise.all(
+      subcategories.map(async (sub) => {
+        const products = await Product.find({ subcategory: sub._id })
+          .select('-photo')
+          .lean();
+        return {
+          ...sub,
+          products,
+        };
+      })
+    );
+
+    res.json({ ...req.category!.toObject(), subcategories: subcategoriesWithProducts });
   } catch (err) {
     res.status(400).json({ error: 'Failed to load category' });
   }
