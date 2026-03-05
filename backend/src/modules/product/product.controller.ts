@@ -227,6 +227,16 @@ export const update = async (req: Request, res: Response) => {
     }
 };
 
+export const listBySubcategory = async (req: Request, res: Response) => {
+  try {
+    const products = await Product.find({ subcategory: req.params.subcategoryId })
+      .select("-photo")
+      .lean();
+    return res.json({ data: products });
+  } catch (err) {
+    return res.status(400).json({ error: "Products not found" });
+  }
+};
 
 export const listSearch = async (req: Request, res: Response) => {
     const search = typeof req.query.search === "string" ? req.query.search : "";

@@ -3,6 +3,8 @@ import { useParams } from "react-router-dom";
 import { getCategory } from "../admin/apiAdmin";
 import type { CategoryData } from "../types";
 import { Box, Typography, Grid, Link } from "@mui/material";
+import { SubcategoryProducts } from "./SubcategoryProducts";
+import { API } from "../config";
 
 const Category = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
@@ -15,7 +17,6 @@ const Category = () => {
     if (categoryId) {
       getCategory(categoryId)
         .then(data => {
-          console.log(data)
           if (data.error) setError(data.error);
           else setCategory(data as unknown as CategoryData);
         })
@@ -28,25 +29,39 @@ const Category = () => {
   if (loading) return <div>Loading...</div>;
   if (!category) return null;
 
+  const isSubcategory = !!category.parent;
+
   return (
     <Box>
       <Typography variant="h1">{category.name}</Typography>
-      {category.subcategories.length > 0 && (
-        <Box>
-          <Typography variant="h2">Collections</Typography>
-          <Grid container spacing={2}>
-            {category.subcategories.map(sub => (
-              <Grid size={3} key={sub._id}>
-                <Link href={`/category/${sub._id}`}
-                 style={{ backgroundImage: `url(/api/product/photo/${sub.products[0]?._id})` }}
-                  underline="hover">
-                  <Typography variant="h3">{sub.name}</Typography>
-                  <span>View series</span>
-                </Link>
-              </Grid>
-            ))}
-          </Grid>
-        </Box>
+
+      {isSubcategory ? (
+        <SubcategoryProducts />
+      ) : (
+        category.subcategories.length > 0 && (
+          <Box>
+            <Typography variant="h2">Collections</Typography>
+            <Grid container spacing={2}>
+              {category.subcategories.map(sub => (
+                <Grid size={3} key={sub._id}>
+                  <Link
+                    href={`/category/${sub._id}`}
+                    style={{
+                      backgroundImage: `url(${API}/product/photo/${sub.products[0]?._id})`,                      display: "block",
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      height: 300,
+                    }}
+                    underline="hover"
+                  >
+                    <Typography variant="h3">{sub.name}</Typography>
+                    <span>View series</span>
+                  </Link>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        )
       )}
     </Box>
   );

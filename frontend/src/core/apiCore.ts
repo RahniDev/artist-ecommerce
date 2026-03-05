@@ -1,6 +1,6 @@
 import type {
   IProduct,
-  ICategory,
+  Category,
   IFilterParams,
   IOrder,
   CreateOrderInput,
@@ -48,14 +48,14 @@ export async function listRelated(
   );
 }
 
-export async function getCategories(): Promise<ApiResponse<ICategory[]>> {
+export async function getCategories(): Promise<ApiResponse<Category[]>> {
   try {
     const res = await fetch(`${API}/categories`);
     if (!res.ok) {
       const text = await res.text();
       return { error: `API error: ${res.status} ${res.statusText} - ${text}` };
     }
-    const data: ICategory[] = await res.json();
+    const data: Category[] = await res.json();
     return { data };
   } catch (err: any) {
     return { error: err.message || "Network error" };

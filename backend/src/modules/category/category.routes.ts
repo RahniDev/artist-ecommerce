@@ -10,11 +10,13 @@ import {
   listNested,
 } from './category.controller.js';
 import { userById } from '../user/user.controller.js';
+import { listBySubcategory } from '../product/product.controller.js';
 
 const router = Router();
 
 // Public routes
 router.get('/category/:categoryId', getCategory);
+router.get('/products/subcategory/:subcategoryId', listBySubcategory);
 router.get('/categories', list);
 router.get('/categories/nested', listNested);
 

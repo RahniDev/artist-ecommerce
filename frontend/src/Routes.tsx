@@ -21,6 +21,7 @@ import Contact from "./core/Contact";
 import { useDispatch } from "react-redux";
 import { loadAuthFromStorage } from "./redux/slices/authSlice";
 import About from "./core/About";
+import { SubcategoryProducts } from "./core/SubcategoryProducts";
 
 const AppRoutes: React.FC = () => {
     const dispatch = useDispatch();

@@ -7,6 +7,7 @@ export interface Subcategory {
 }
 
 export interface CategoryData {
+  parent: any;
   _id: string;
   name: string;
   subcategories: Subcategory[];
