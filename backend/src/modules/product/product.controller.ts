@@ -51,7 +51,7 @@ export const list = async (req: Request, res: Response) => {
         const products = await Product.find()
             .select("-photo")
             .sort({ createdAt: -1 })
-            .limit(6)
+            .limit(20)
             .lean();
 
         return res.status(200).json({ data: products });

@@ -7,7 +7,6 @@ const About = () => {
 
   return (
     <Box
-      component="section"
       sx={{
         display: "flex",
         alignItems: "center",
@@ -15,6 +14,7 @@ const About = () => {
         flexDirection: { xs: "column", md: "row" },
         textAlign: { xs: "center", md: "left" },
         py: 6,
+        color: "#555",
       }}
     >
       <Box sx={{ display: "flex", width: "30%", justifyContent: "center" }}>

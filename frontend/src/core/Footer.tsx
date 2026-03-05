@@ -5,11 +5,11 @@ import InstagramIcon from "@mui/icons-material/Instagram";
 import LinkedInIcon from "@mui/icons-material/LinkedIn";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import { getCategories } from "./apiCore";
-import type { ICategory } from "../types";
+import type { Category } from "../types";
 import Newsletter from "../user/Newsletter";
 
 const Footer: React.FC = () => {
-    const [categories, setCategories] = useState<ICategory[]>([]);
+    const [categories, setCategories] = useState<Category[]>([]);
 
     const loadCategories = async () => {
         const res = await getCategories();

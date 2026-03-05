@@ -6,6 +6,7 @@ import ListProducts from './ListProducts'
 import { Box, Container, Typography, Alert, Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Loader from "./Loader";
+import Search from "./Search";
 
 const Home: React.FC = () => {
   const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
@@ -40,6 +41,9 @@ const Home: React.FC = () => {
   return (
     <Layout title="" description="">
       <Container maxWidth="lg">
+        <Box sx={{ width: { xs: "100%", sm: "60%", md: "40%" } }}>
+          <Search />
+        </Box>
         <Stack spacing={4}>
           {error && (
             <Alert severity="error">
