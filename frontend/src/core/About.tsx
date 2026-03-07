@@ -29,11 +29,12 @@ const About = () => {
       </Box>
 
       <Box sx={{ width: "50%", mx: "auto" }}>
-        <Typography variant="h3" component="h1" gutterBottom>
+        <Typography fontFamily={"Playfair Display, serif"} fontSize="50px" textAlign="center" variant="h1" component="h1" gutterBottom>
           {t("about_title")}
         </Typography>
 
-        <Typography variant="h5" component="h2" gutterBottom>
+        <Typography fontFamily={"Playfair Display, serif"} textAlign="center"
+          variant="h2" component="h2" padding='40px' fontSize='32px' gutterBottom>
           Sakari De-Meis
         </Typography>
 

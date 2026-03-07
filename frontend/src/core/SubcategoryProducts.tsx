@@ -17,11 +17,9 @@ export const SubcategoryProducts = () => {
 
     fetch(`${API}/products/subcategory/${categoryId}`)
       .then(res => {
-        console.log("status:", res.status, "url:", res.url);
         return res.json();
       })
       .then(data => {
-        console.log("data:", data.data);
         if (data.error) setError(data.error);
         else setProducts(data.data);
       })

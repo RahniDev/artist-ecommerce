@@ -41,8 +41,10 @@ const Home: React.FC = () => {
   return (
     <Layout title="" description="">
       <Container maxWidth="lg">
-        <Box sx={{ width: { xs: "100%", sm: "60%", md: "40%" } }}>
-          <Search />
+        <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
+          <Box sx={{ width: { xs: "100%", sm: "60%", md: "40%" }, mb: 6  }}>
+            <Search />
+          </Box>
         </Box>
         <Stack spacing={4}>
           {error && (

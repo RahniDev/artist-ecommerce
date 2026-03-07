@@ -38,12 +38,11 @@ const ProductCard: React.FC<CardProps> = ({
                     pt: 1,
                     pb: 0
                 }}>
-                    <Stack spacing={1} alignItems="center">
+                    <Stack spacing={1} alignItems="left">
                         <Typography
                             variant="subtitle1"
                             component="div"
-                            fontWeight={600}
-                        >
+                            fontWeight={600}>
                             {product.name}
                         </Typography>
                         <Typography color="#6c757d">{product.description}</Typography>
@@ -51,13 +50,9 @@ const ProductCard: React.FC<CardProps> = ({
 
                         {product.quantity > 0 && (
                             <>
-                                <Typography>
+                                <Typography fontWeight={700}>
                                     € {product.price}
                                 </Typography>
-
-                                <Box sx={{ mt: 1 }}>
-                                    <AddToCartButton product={product} />
-                                </Box>
                             </>
                         )}
                     </Stack>

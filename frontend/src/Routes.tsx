@@ -21,10 +21,11 @@ import Contact from "./core/Contact";
 import { useDispatch } from "react-redux";
 import { loadAuthFromStorage } from "./redux/slices/authSlice";
 import About from "./core/About";
-import { SubcategoryProducts } from "./core/SubcategoryProducts";
+import ShippingReturns from "./core/ShippingReturns";
+import PrivacyPolicy from "./core/PrivacyPolicy";
 
 const AppRoutes: React.FC = () => {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   useEffect(() => {
     dispatch(loadAuthFromStorage());
@@ -41,73 +42,75 @@ const AppRoutes: React.FC = () => {
         <Route path="/category/:categoryId" element={<Category />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/shipping-returns" element={<ShippingReturns />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
         <Route path="/about" element={<About />} />
         {/* Private Routes */}
-        <Route 
-          path="/user/dashboard" 
+        <Route
+          path="/user/dashboard"
           element={
             <PrivateRoute>
               <Dashboard />
             </PrivateRoute>
-          } 
+          }
         />
-        <Route 
-          path="/profile/:userId" 
+        <Route
+          path="/profile/:userId"
           element={
             <PrivateRoute>
               <Profile />
             </PrivateRoute>
-          } 
+          }
         />
 
         {/* Admin Routes */}
-        <Route 
-          path="/admin/dashboard" 
+        <Route
+          path="/admin/dashboard"
           element={
             <AdminRoute>
               <AdminDashboard />
             </AdminRoute>
-          } 
+          }
         />
-        <Route 
-          path="/create/category" 
+        <Route
+          path="/create/category"
           element={
             <AdminRoute>
               <AddCategory />
             </AdminRoute>
-          } 
+          }
         />
-        <Route 
-          path="/create/product" 
+        <Route
+          path="/create/product"
           element={
             <AdminRoute>
               <AddProduct />
             </AdminRoute>
-          } 
+          }
         />
-        <Route 
-          path="/admin/orders" 
+        <Route
+          path="/admin/orders"
           element={
             <AdminRoute>
               <Orders />
             </AdminRoute>
-          } 
+          }
         />
-        <Route 
-          path="/admin/products" 
+        <Route
+          path="/admin/products"
           element={
             <AdminRoute>
               <ManageProducts />
             </AdminRoute>
-          } 
+          }
         />
-        <Route 
-          path="/admin/product/update/:productId" 
+        <Route
+          path="/admin/product/update/:productId"
           element={
             <AdminRoute>
               <UpdateProduct />
             </AdminRoute>
-          } 
+          }
         />
       </Routes>
     </BrowserRouter>
