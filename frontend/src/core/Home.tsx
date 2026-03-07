@@ -7,6 +7,7 @@ import { Box, Container, Typography, Alert, Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Loader from "./Loader";
 import Search from "./Search";
+import CollectionSlider from "./CollectionSlider";
 
 const Home: React.FC = () => {
   const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
@@ -40,9 +41,9 @@ const Home: React.FC = () => {
 
   return (
     <Layout title="" description="">
-      <Container maxWidth="lg">
+     
         <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
-          <Box sx={{ width: { xs: "100%", sm: "60%", md: "40%" }, mb: 6  }}>
+          <Box sx={{ width: { xs: "100%", sm: "60%", md: "40%" }, mb: 6 }}>
             <Search />
           </Box>
         </Box>
@@ -54,9 +55,9 @@ const Home: React.FC = () => {
           )}
 
           <Loader loading={loading} />
-
+          <CollectionSlider subcategoryId="69a6d38a38bf6fdd8d8b84e9" />
           {/* New Arrivals */}
-          <Typography variant="h4" component="h2" textAlign="center">
+          <Typography variant="h2" component="h2" textAlign="center">
             {t("latest_originals")}
           </Typography>
 
@@ -79,7 +80,7 @@ const Home: React.FC = () => {
             <ListProducts products={productsByArrival} />
           </Box>
         </Stack>
-      </Container>
+ 
     </Layout>
   );
 };

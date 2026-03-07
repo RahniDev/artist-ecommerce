@@ -16,7 +16,8 @@ const theme = createTheme({
       fontFamily: "playfair-display, serif"
     },
     h2: {
-      fontFamily: "playfair-display, serif"
+      fontFamily: "playfair-display, serif",
+      fontSize: "2rem"
     },
    h3: {
       fontFamily: "playfair-display, serif"

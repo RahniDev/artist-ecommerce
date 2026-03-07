@@ -26,12 +26,12 @@ const Footer: React.FC = () => {
             <Grid container spacing={4} alignItems="flex-start">
 
                 {/* Newsletter */}
-                <Grid size={6}>
+                <Grid size={{xs: 12, md: 6}}>
                     <Newsletter />
                 </Grid>
 
                 {/* Shop */}
-                <Grid size={2}>
+                <Grid size={{xs: 4, md: 2}}>
                     <Typography variant="h6" gutterBottom>Shop</Typography>
                     <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
                         {topLevel.map(c => (
@@ -45,7 +45,7 @@ const Footer: React.FC = () => {
                 </Grid>
 
                 {/* Help */}
-                <Grid size={2}>
+                <Grid size={{ xs: 4, md: 2 }}>
                     <Typography variant="h6" gutterBottom>Help</Typography>
                     <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
                         <li><Link component={RouterLink} to="/contact" underline="hover">Contact</Link></li>
@@ -58,7 +58,7 @@ const Footer: React.FC = () => {
                 </Grid>
 
                 {/* Social */}
-                <Grid size={2}>
+                <Grid size={{ xs: 4, md: 2 }}>
                     <IconButton component="a" href="https://instagram.com/sakari.artist" target="_blank" rel="noopener noreferrer" color="primary">
                         <InstagramIcon />
                     </IconButton>
