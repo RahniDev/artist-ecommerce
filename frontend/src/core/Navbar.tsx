@@ -33,7 +33,6 @@ import type { Category } from "../types";
 import { getCategories } from "./apiCore";
 
 const linkStyle = {
-  textDecoration: "none",
   color: "#3a3535",
 };
 
@@ -77,7 +76,6 @@ const Navbar: React.FC = () => {
       c.parent && (typeof c.parent === "object" ? c.parent._id === parentId : c.parent === parentId)
     );
 
-  // ── Mobile Drawer ─────────────────────────────────────────────
   const MobileDrawer = () => (
     <Drawer
       anchor="left"
@@ -155,7 +153,6 @@ const Navbar: React.FC = () => {
     </Drawer>
   );
 
-  // ── Desktop Nav Links ──────────────────────────────────────────
   const DesktopLinks = () => (
     <Box sx={{ flexGrow: 1, display: "flex", justifyContent: "center", gap: 3, fontWeight: 500 }}>
       <NavLink to="/about" style={linkStyle}>About</NavLink>

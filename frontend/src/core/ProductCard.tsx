@@ -3,7 +3,6 @@ import ShowImage from "./ShowImage";
 import type { CardProps } from "../types";
 import { Card, CardContent, Typography, Box, Stack } from "@mui/material";
 import SoldBadge from "./SoldBadge";
-import AddToCartButton from "./AddToCartButton";
 
 const ProductCard: React.FC<CardProps> = ({
     product

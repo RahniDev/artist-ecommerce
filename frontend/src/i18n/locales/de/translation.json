@@ -1,5 +1,6 @@
 {
-  "add_to_cart": "In den Warenkorb",
+  "add_to_cart": "Original sammeln",
+  "similar_paintings": "Ähnliche Gemälde",
   "cart_items_count": "Ihr Warenkorb enthält {{count}} Artikel",
   "empty_cart": "Ihr Warenkorb ist leer",
   "continue_shopping": "Weiter einkaufen",

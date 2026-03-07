@@ -13,8 +13,15 @@ const theme = createTheme({
       fontSize: "1.5rem",
       fontWeight: "400",
       textAlign: "center",
+      fontFamily: "playfair-display, serif"
     },
-  },
+    h2: {
+      fontFamily: "playfair-display, serif"
+    },
+   h3: {
+      fontFamily: "playfair-display, serif"
+    }
+  }
 });
 
 const root = ReactDOM.createRoot(
