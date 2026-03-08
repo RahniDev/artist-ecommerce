@@ -3,11 +3,12 @@ import Layout from "./Layout";
 import { getProducts } from "./apiCore";
 import type { IProduct, ApiResponse } from "../types";
 import ListProducts from './ListProducts'
-import { Box, Container, Typography, Alert, Stack } from "@mui/material";
+import { Box, Typography, Alert, Stack } from "@mui/material";
 import { useTranslation } from "react-i18next";
 import Loader from "./Loader";
 import Search from "./Search";
 import CollectionSlider from "./CollectionSlider";
+import FeaturedPainting from "./FeaturedPainting";
 
 const Home: React.FC = () => {
   const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
@@ -41,46 +42,47 @@ const Home: React.FC = () => {
 
   return (
     <Layout title="" description="">
-     
-        <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
-          <Box sx={{ width: { xs: "100%", sm: "60%", md: "40%" }, mb: 6 }}>
-            <Search />
-          </Box>
+
+      <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
+        <Box sx={{ width: { xs: "100%", sm: "60%", md: "40%" }, mb: 6 }}>
+          <Search />
         </Box>
-        <Stack spacing={4}>
-          {error && (
-            <Alert severity="error">
-              {error}
-            </Alert>
-          )}
+      </Box>
+      <Stack spacing={4}>
+        {error && (
+          <Alert severity="error">
+            {error}
+          </Alert>
+        )}
 
-          <Loader loading={loading} />
-          <CollectionSlider subcategoryId="69a6d38a38bf6fdd8d8b84e9" />
-          {/* New Arrivals */}
-          <Typography variant="h2" component="h2" textAlign="center">
-            {t("latest_originals")}
-          </Typography>
+        <Loader loading={loading} />
+        <CollectionSlider subcategoryId="69a6d38a38bf6fdd8d8b84e9" />
+        <FeaturedPainting />
 
-          {productsByArrival.length === 0 && !loading && !error && (
-            <Typography
-              variant="body1"
-              color="text.secondary"
-              textAlign="center"
-            >
-              {t("no_new_arrivals")}
-            </Typography>
-          )}
-
-          <Box
-            sx={{
-              display: "flex",
-              justifyContent: "center",
-            }}
+        {/* New Arrivals */}
+        <Typography variant="h2" component="h2" textAlign="center">
+          {t("latest_originals")}
+        </Typography>
+        {productsByArrival.length === 0 && !loading && !error && (
+          <Typography
+            variant="body1"
+            color="text.secondary"
+            textAlign="center"
           >
-            <ListProducts products={productsByArrival} />
-          </Box>
-        </Stack>
- 
+            {t("no_new_arrivals")}
+          </Typography>
+        )}
+
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+          }}
+        >
+          <ListProducts products={productsByArrival} />
+        </Box>
+      </Stack>
+
     </Layout>
   );
 };

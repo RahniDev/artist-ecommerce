@@ -23,22 +23,27 @@ const CollectionSlider = ({ subcategoryId }: { subcategoryId: string }) => {
   return (
     <>
       <Typography variant="h2" textAlign="center">{collectionTitle}</Typography>
-<Box sx={{ position: "relative", mx: 6, overflow: "visible !important" }}>        <Swiper
-          modules={[Navigation]}
-          navigation
-          spaceBetween={16}
-          breakpoints={{
-            600: { slidesPerView: 2 },
-            900: { slidesPerView: 3 },
-            1200: { slidesPerView: 4 },
-          }}
-        >
-          {products.map(p => (
-            <SwiperSlide key={p._id}>
-              <ProductCard product={{ ...p, count: 1 }} />
-            </SwiperSlide>
-          ))}
-        </Swiper>
+      <Typography variant="subtitle1" textAlign="center" 
+      fontFamily="playfair display"
+      fontStyle="italic"
+      sx={{ mt: "2px !important", color: "#222" }}>
+        Series </Typography>
+      <Box sx={{ position: "relative", mx: 6, overflow: "visible !important" }}>        <Swiper
+        modules={[Navigation]}
+        navigation
+        spaceBetween={16}
+        breakpoints={{
+          600: { slidesPerView: 2 },
+          900: { slidesPerView: 3 },
+          1200: { slidesPerView: 4 },
+        }}
+      >
+        {products.map(p => (
+          <SwiperSlide key={p._id}>
+            <ProductCard product={{ ...p, count: 1 }} />
+          </SwiperSlide>
+        ))}
+      </Swiper>
       </Box>
     </>
   );
