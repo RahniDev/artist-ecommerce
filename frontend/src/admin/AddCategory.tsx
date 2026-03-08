@@ -158,7 +158,7 @@ const AddCategory = () => {
   return (
     <Layout title="" description="">
       <Typography variant="h1" gutterBottom>
-        Add a new category
+        Add a new collection
       </Typography>
       <Box>
         {goBack()}

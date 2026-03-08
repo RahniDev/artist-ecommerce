@@ -2,6 +2,10 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import type { IProduct } from "../types";
 import { API } from "../config";
+import { Grid, Typography } from "@mui/material";
+import Layout from "./Layout";
+import ShowImage from "./ShowImage";
+import Masonry from "@mui/lab/Masonry";
 
 export const SubcategoryProducts = () => {
   const { categoryId } = useParams<{ categoryId: string }>();
@@ -35,14 +39,29 @@ export const SubcategoryProducts = () => {
   if (!products.length) return <div>No products found</div>;
 
   return (
-    <div>
-      {products.map(product => (
-        <div key={product._id}>
-          <img src={`${API}/product/photo/${product._id}`} width="200px" alt={product.name} />
-          <p>{product.name}</p>
-          <p>{product.price}</p>
-        </div>
-      ))}
-    </div>
+    <Layout title="" description="">
+      <Masonry
+        columns={{
+          xs: 1,
+          sm: 2,
+          md: 3,
+          lg: 3,
+        }}
+        spacing={4}
+      >
+        {products.map(product => (
+          <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={product._id}>
+            <ShowImage item={product} url='product' width="200px" />
+            <Typography variant="h3" fontSize="24px">
+              {product.name}
+            </Typography>
+            <Typography variant="body1" color='grey.600'>
+              {product.description}
+            </Typography>
+            <Typography variant="body1">€{product.price}</Typography>
+          </Grid>
+        ))}
+      </Masonry>
+    </Layout>
   );
 };
