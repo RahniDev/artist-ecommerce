@@ -11,6 +11,7 @@ import AddToCartButton from "./AddToCartButton";
 import ProductBreadcrumbs from "./ProductBreadcrumbs";
 import ShowImage from "./ShowImage";
 import { Box, Typography, Grid } from "@mui/material";
+import { useLocalizedDescription } from "../hooks/useLocalizedDescription";
 
 const Product: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -20,6 +21,7 @@ const Product: React.FC = () => {
   const { product, related, loading, error } = useSelector(
     (state: RootState) => state.product
   );
+  const { description: localizedDescription } = useLocalizedDescription(product);
 
   useEffect(() => {
     if (!productId) return;
@@ -58,7 +60,7 @@ const Product: React.FC = () => {
                   </Typography>
 
                   <Typography variant="body1" color="text.secondary">
-                    {product.description}
+                    {localizedDescription}
                   </Typography>
 
                   <Typography variant="body2" color="text.secondary">
@@ -85,9 +87,9 @@ const Product: React.FC = () => {
             </Box>
           )}
         </Grid>
-          <Typography variant="h5" mt={4}>
-            {t("similar_paintings")}
-          </Typography>
+        <Typography variant="h5" mt={4}>
+          {t("similar_paintings")}
+        </Typography>
         <Grid container spacing={3} mt={2}>
           {related.slice(0, 4).map((p) => (
             <Grid size={{ xs: 12, sm: 6, md: 3 }} key={p._id}>

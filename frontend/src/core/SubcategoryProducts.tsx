@@ -8,11 +8,10 @@ import ShowImage from "./ShowImage";
 import Masonry from "@mui/lab/Masonry";
 import { useLocalizedDescription } from "../hooks/useLocalizedDescription";
 
-// Separate component for each product
 const ProductItem = ({ product }: { product: IProduct }) => {
   try {
     const { description: localizedDescription } = useLocalizedDescription(product);
-    
+
     return (
       <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
         <ShowImage item={product} url='product' width="200px" />
@@ -50,23 +49,20 @@ export const SubcategoryProducts = () => {
 
     const fetchProducts = async () => {
       try {
-        console.log('Fetching from:', `${API}/products/subcategory/${categoryId}`);
-        
         const response = await fetch(`${API}/products/subcategory/${categoryId}`);
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-        
+
         const data = await response.json();
-        
+
         if (data.error) {
           setError(data.error);
         } else {
           setProducts(data.data || []);
         }
       } catch (err) {
-        console.error("Error fetching products:", err);
         setError(err instanceof Error ? err.message : "Failed to load products");
       } finally {
         setLoading(false);

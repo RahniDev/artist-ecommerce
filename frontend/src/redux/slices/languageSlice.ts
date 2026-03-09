@@ -1,9 +1,8 @@
-// store/slices/languageSlice.js
 import { createSlice } from '@reduxjs/toolkit';
-import i18n from '../../i18n'; // Import your i18n instance
+import i18n from '../../i18n';
 
 const initialState = {
-  currentLanguage: i18n.language || 'en', // Get initial language from i18n
+  currentLanguage: i18n.language || 'en',
   availableLanguages: ['en', 'fr', 'es', 'it', 'de'],
 };
 
@@ -13,7 +12,7 @@ const languageSlice = createSlice({
   reducers: {
     setLanguage: (state, action) => {
       state.currentLanguage = action.payload;
-      // Also update i18n when Redux changes
+      // Update i18n when Redux changes
       i18n.changeLanguage(action.payload);
     },
   },

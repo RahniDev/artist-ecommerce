@@ -5,15 +5,18 @@ import {
   Box,
   MenuItem,
 } from "@mui/material";
+import { useDispatch } from "react-redux";
 import LanguageIcon from "@mui/icons-material/Language";
 import type {
   SelectChangeEvent,
 } from "@mui/material";
+import { setLanguage } from "../redux/slices/languageSlice";
 
 type Lang = "en" | "fr" | "de" | "es" | "it";
 
 export default function LangToggle() {
   const { i18n } = useTranslation();
+    const dispatch = useDispatch();
 
   const currentLang: Lang =
     i18n.language.startsWith("fr")
@@ -26,10 +29,13 @@ export default function LangToggle() {
             ? "it"
             : "en";
 
-  const handleChange = (event: SelectChangeEvent) => {
-    i18n.changeLanguage(event.target.value as Lang);
+ const handleChange = (event: SelectChangeEvent) => {
+    const newLang = event.target.value as Lang;
+    
+    i18n.changeLanguage(newLang);
+    
+    dispatch(setLanguage(newLang));
   };
-
   return (
     <FormControl size="small" variant="standard">
       <Select

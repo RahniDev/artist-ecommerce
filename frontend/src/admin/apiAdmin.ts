@@ -1,5 +1,23 @@
 import { API } from '../config';
 import type { IOrder, IProduct, CategoryInput, Category, ApiResponse, Product } from '../types';
+import { store } from '../redux/store';
+
+const getCurrentLanguage = (): string => {
+    try {
+        const state = store.getState();
+        return state.language?.currentLanguage || 'en';
+    } catch (error) {
+        console.warn('Could not get language from Redux, defaulting to en');
+        return 'en';
+    }
+};
+
+// Add language parameter to URL
+const addLanguageParam = (url: string): string => {
+    const lang = getCurrentLanguage();
+    const separator = url.includes('?') ? '&' : '?';
+    return `${url}${separator}lang=${lang}`;
+};
 
 export const createCategory = async (
     userId: string,
@@ -146,7 +164,8 @@ export const updateOrderStatus = async (
 
 export const getProducts = async (): Promise<ApiResponse<Product[]>> => {
     try {
-        const res = await fetch(`${API}/products?limit=undefined`);
+        const url = addLanguageParam(`${API}/products?limit=undefined`);
+        const res = await fetch(url);
         const data = await res.json();
         return data;
     } catch (err) {

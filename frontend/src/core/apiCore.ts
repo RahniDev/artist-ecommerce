@@ -7,19 +7,33 @@ import type {
   IBraintreePaymentData,
   BraintreeTransaction,
   BraintreeTokenResponse,
-  FilterResponse
+  FilterResponse,
+  ApiResponse
 } from "../types";
 import { API } from "../config";
-import type { ApiResponse } from "../types";
-import { store } from '../redux/store';
+import { store } from "../redux/store";
 
-const getCurrentLanguage = () => {
-  return store.getState().language.currentLanguage || 'en';
+const getCurrentLanguage = (): string => {
+  try {
+    const state = store.getState();
+    return state.language?.currentLanguage || 'en';
+  } catch (error) {
+    console.warn('Could not get language from Redux, defaulting to en');
+    return 'en';
+  }
 };
-
+// Add language parameter to url
+const addLanguageParam = (url: string): string => {
+  const lang = getCurrentLanguage();
+  const separator = url.includes('?') ? '&' : '?';
+  return `${url}${separator}lang=${lang}`;
+};
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<ApiResponse<T>> {
   try {
-    const res = await fetch(url, { ...options, credentials: "include" });
+    // Add language parameter to the URL
+    const urlWithLang = addLanguageParam(url);
+
+    const res = await fetch(urlWithLang, { ...options, credentials: "include" });
     if (!res.ok) {
       const text = await res.text();
       return { error: `API error: ${res.status} ${res.statusText} - ${text}` };
@@ -42,7 +56,6 @@ export async function getProducts(
 export async function getProduct(
   productId: string
 ): Promise<ApiResponse<IProduct>> {
-  
   return fetchJSON<IProduct>(`${API}/product/${productId}`);
 }
 
@@ -55,8 +68,10 @@ export async function listRelated(
 }
 
 export async function getCategories(): Promise<ApiResponse<Category[]>> {
+  // For non-fetchJSON functions, manually add language
   try {
-    const res = await fetch(`${API}/categories`);
+    const url = addLanguageParam(`${API}/categories`);
+    const res = await fetch(url);
     if (!res.ok) {
       const text = await res.text();
       return { error: `API error: ${res.status} ${res.statusText} - ${text}` };
@@ -85,7 +100,9 @@ export const list = async (
 ): Promise<ApiResponse<IProduct[]>> => {
   try {
     const query = new URLSearchParams(params as any).toString();
-    const res = await fetch(`${API}/products/search?${query}`);
+    const baseUrl = `${API}/products/search?${query}`;
+    const url = addLanguageParam(baseUrl);
+    const res = await fetch(url);
     const data = await res.json();
     return { data: Array.isArray(data) ? data : [] };
   } catch (err) {
@@ -102,8 +119,9 @@ export const createOrder = async ({
   orderData: CreateOrderInput;
 }): Promise<ApiResponse<IOrder>> => {
   try {
+    const url = addLanguageParam(`${API}/order/create`);
     const res = await fetch(
-      `${API}/order/create`,
+      url,
       {
         method: "POST",
         headers: {
@@ -132,8 +150,9 @@ export async function processPayment(
   paymentData: IBraintreePaymentData,
   token?: string | null
 ): Promise<ApiResponse<BraintreeTransaction>> {
+  const url = addLanguageParam(`${API}/braintree/payment`);
   return fetchJSON<BraintreeTransaction>(
-    `${API}/braintree/payment`,
+    url,
     {
       method: "POST",
       headers: {
@@ -150,7 +169,8 @@ export async function getBraintreeClientToken(
   token?: string | null
 ): Promise<BraintreeTokenResponse> {
   try {
-    const res = await fetch(`${API}/braintree/getToken`, {
+    const url = addLanguageParam(`${API}/braintree/getToken`);
+    const res = await fetch(url, {
       method: "GET",
       headers: {
         Accept: "application/json",
