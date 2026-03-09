@@ -11,11 +11,11 @@ import type {
 } from "../types";
 import { API } from "../config";
 import type { ApiResponse } from "../types";
-// import { store } from '../redux/store';
+import { store } from '../redux/store';
 
-// const getCurrentLanguage = () => {
-//   return store.getState().language.currentLanguage || 'en';
-// };
+const getCurrentLanguage = () => {
+  return store.getState().language.currentLanguage || 'en';
+};
 
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<ApiResponse<T>> {
   try {

@@ -145,6 +145,11 @@ export interface Product {
   [key: string]: any;
 }
 
+export interface LocalizedDescriptionOptions {
+  fallbackToEnglish?: boolean;
+  fallbackString?: string;
+}
+
 export interface IProduct {
   _id: string;
   name: string;

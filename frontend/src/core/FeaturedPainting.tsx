@@ -12,14 +12,14 @@ const FeaturedPainting = () => {
     (state: RootState) => state.product
   );
 
-  // const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
+  const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
 
   useEffect(() => {
     // Get this ID from props, another Redux state, or a constant
     dispatch(fetchProduct('69ab648c2be06ad0f2e25a0e'));
-  }, [dispatch]);
+  }, [dispatch, currentLanguage]);
 
-  // Show loading state
+
   if (loading) {
     return (
       <Box bgcolor="#e8e8e8" p={4} textAlign="center">
@@ -28,7 +28,6 @@ const FeaturedPainting = () => {
     );
   }
 
-  // Show error state
   if (error) {
     return (
       <Box bgcolor="#e8e8e8" p={4}>
@@ -37,18 +36,31 @@ const FeaturedPainting = () => {
     );
   }
 
-  // Show message if no product
+   // Show message if no product
   if (!product) {
     return (
       <Box bgcolor="#e8e8e8" p={4}>
         <Typography variant="h2" textAlign="center">
           Featured Painting
         </Typography>
-        <Typography textAlign="center">No featured product available</Typography>
+        <Typography textAlign="center">No featured painting available</Typography>
       </Box>
     );
   }
 
+  const getLocalizedDescription = () => {
+    if (!product.description) return '';
+    
+    // If description is an object with language keys
+    if (typeof product.description === 'object') {
+      return product.description[currentLanguage as keyof typeof product.description] || 
+             product.description.en || 
+             '';
+    }
+     // If description is already a string (fallback)
+    return product.description;
+  };
+ 
   return (
     <Box style={{ backgroundColor: "#e7e7e7", padding: "20px", display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
       <Box style={{ width: "50%" }}>
@@ -56,7 +68,7 @@ const FeaturedPainting = () => {
           {product.name}
         </Typography>
         <Typography variant="body1" textAlign="center" color="grey.700" fontSize="1.1rem" fontFamily='Playfair Display, serif' mt={2}>
-          {/* {product.description} */}
+          {getLocalizedDescription()}
         </Typography>
       </Box>
       <Box style={{ width: "50%" }}>
