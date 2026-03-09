@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "translate": "node scripts/langbly-translate.js",
     "build": "tsc",
     "start": "node dist/server.js"
   },
@@ -34,7 +35,7 @@
   "dependencies": {
     "@easypost/api": "^8.7.0",
     "@sendgrid/mail": "^8.1.6",
-    "axios": "^1.13.5",
+    "axios": "^1.13.6",
     "bcryptjs": "^3.0.3",
     "braintree": "^3.34.0",
     "compression": "^1.8.1",
