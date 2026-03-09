@@ -11,6 +11,11 @@ import type {
 } from "../types";
 import { API } from "../config";
 import type { ApiResponse } from "../types";
+// import { store } from '../redux/store';
+
+// const getCurrentLanguage = () => {
+//   return store.getState().language.currentLanguage || 'en';
+// };
 
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<ApiResponse<T>> {
   try {
@@ -37,6 +42,7 @@ export async function getProducts(
 export async function getProduct(
   productId: string
 ): Promise<ApiResponse<IProduct>> {
+  
   return fetchJSON<IProduct>(`${API}/product/${productId}`);
 }
 
@@ -133,7 +139,7 @@ export async function processPayment(
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
-        ...(token && { Authorization: `Bearer ${token}`}),
+        ...(token && { Authorization: `Bearer ${token}` }),
       },
       body: JSON.stringify(paymentData),
     }

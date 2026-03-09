@@ -2,7 +2,13 @@ import mongoose, { Schema, Types, Document } from "mongoose";
 
 export interface IProduct {
   name: string;
-  description: string;
+  description: {
+    en: { type: String, required: true },
+    de: { type: String, default: '' }
+    es: { type: String, default: '' },
+    it: { type: String, default: '' },
+    fr: { type: String, default: '' },
+  },
   price: number;
   category: Types.ObjectId;
   subcategory: Types.ObjectId | null;

@@ -3,13 +3,15 @@ import cartReducer from './slices/cartSlice.ts';
 import productReducer from './slices/productSlice.ts';
 import searchReducer from './slices/searchSlice.ts';
 import authReducer from './slices/authSlice.ts';
+import languageReducer from './slices/languageSlice.ts';
 
 export const store = configureStore({
   reducer: {
     cart: cartReducer,
     product: productReducer,
     search: searchReducer,
-    auth: authReducer
+    auth: authReducer,
+    language: languageReducer
   },
 });
 

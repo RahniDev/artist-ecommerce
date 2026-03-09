@@ -7,13 +7,15 @@ import ShowImage from "./ShowImage";
 
 const FeaturedPainting = () => {
   const dispatch = useDispatch<AppDispatch>();
+  
   const { product, loading, error } = useSelector(
     (state: RootState) => state.product
   );
 
+  // const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
+
   useEffect(() => {
-    // Fetch a specific product - replace 'product-id-here' with actual ID
-    // You might get this ID from props, another Redux state, or a constant
+    // Get this ID from props, another Redux state, or a constant
     dispatch(fetchProduct('69ab648c2be06ad0f2e25a0e'));
   }, [dispatch]);
 
@@ -50,12 +52,12 @@ const FeaturedPainting = () => {
   return (
     <Box style={{ backgroundColor: "#e7e7e7", padding: "20px", display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
       <Box style={{ width: "50%" }}>
-      <Typography variant="h2" textAlign="center">
-        {product.name}
-      </Typography>
-       <Typography variant="body1" textAlign="center" color="textSecondary">
-        {product.description}
-      </Typography>
+        <Typography variant="h2" textAlign="center">
+          {product.name}
+        </Typography>
+        <Typography variant="body1" textAlign="center" color="grey.700" fontSize="1.1rem" fontFamily='Playfair Display, serif' mt={2}>
+          {/* {product.description} */}
+        </Typography>
       </Box>
       <Box style={{ width: "50%" }}>
         <ShowImage item={product} url='product' />

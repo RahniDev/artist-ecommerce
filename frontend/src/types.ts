@@ -148,7 +148,13 @@ export interface Product {
 export interface IProduct {
   _id: string;
   name: string;
-  description: string;
+  description: {
+    en: string;
+    de: string;
+    es: string;
+    it: string;
+    fr: string;
+  }
   price: number;
   category: any;
   quantity: number;
