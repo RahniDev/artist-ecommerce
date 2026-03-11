@@ -11,7 +11,8 @@ listRelated,
 listCategories,
 listBySearch,
 photo,
-listSearch
+listSearch,
+createprod
 } from './product.controller.js';
 import { userById } from '../user/user.controller.js'
 
@@ -21,6 +22,8 @@ router.get('/products/search', listSearch);
 router.get('/products/categories', listCategories);
 router.get('/products', list);
 router.post('/products/by/search', listBySearch);
+// Add this temporary test route
+router.post('/api/test/create-product', createprod) 
 
 // param declarations
 router.param('userId', userById);

@@ -43,20 +43,80 @@ export const read = (req: Request, res: Response): Response => {
     if (!req.product) {
         return res.status(404).json({ error: "Product not loaded" })
     }
-    return res.json(req.product)
+    
+    const { lang = 'en' } = req.query;
+    
+    const product = req.product.toObject();
+    
+    // Safe access with type checking
+    let description = '';
+    if (product.description && typeof product.description === 'object') {
+        const desc = product.description as any;
+        description = desc[lang as string] || desc.en || '';
+    } else {
+        description = product.description as string || '';
+    }
+    
+    const response = {
+        ...product,
+        description
+    };
+    
+    return res.json(response);
 }
 
 export const list = async (req: Request, res: Response) => {
     try {
+        const { lang = 'en' } = req.query;
+        
         const products = await Product.find()
             .select("-photo")
             .sort({ createdAt: -1 })
             .limit(6)
             .lean();
 
-        return res.status(200).json({ data: products });
+        // Transform each product with safe type checking
+        const transformedProducts = products.map(product => {
+            let description = '';
+            if (product.description && typeof product.description === 'object') {
+                const desc = product.description as any;
+                description = desc[lang as string] || desc.en || '';
+            } else {
+                description = product.description as string || '';
+            }
+            
+            return {
+                ...product,
+                description
+            };
+        });
+
+        return res.status(200).json({ data: transformedProducts });
     } catch (err) {
         return res.status(400).json({ error: "Products not found" });
+    }
+};
+export const createprod = async (req: Request, res: Response) => {
+    try {
+        const testProduct = new Product({
+            name: "Test Product",
+            description: {
+                en: "Test Description"
+            },
+            price: 99.99,
+            category: new mongoose.Types.ObjectId(), // You'll need a real category ID
+            quantity: 10,
+            shipping: true,
+            weight: 100
+        });
+        
+        const result = await testProduct.save();
+        console.log("Test product saved:", result._id);
+        res.json({ success: true, id: result._id });
+    } catch (error) {
+        console.error("Test product error:", error);
+        const errorMessage = error instanceof Error ? error.message : "Unknown error";
+        res.status(500).json({ error: errorMessage });
     }
 };
 
@@ -110,6 +170,9 @@ export const create = async (req: Request, res: Response) => {
             });
         });
 
+        console.log("Fields received:", fields); // LOG 1: See what fields are coming in
+        console.log("Files received:", files);   // LOG 2: See if file is coming in
+
         let { name, description, price, category, subcategory, quantity, shipping, weight, width, height, length } = fields;
 
         const normalize = (v: string | string[] | undefined) => Array.isArray(v) ? v[0] : v;
@@ -127,6 +190,16 @@ export const create = async (req: Request, res: Response) => {
         const heightValue = normalize(height) ? Number(normalize(height)) : undefined;
         const lengthValue = normalize(length) ? Number(normalize(length)) : undefined;
 
+        console.log("Parsed values:", { // LOG 3: See parsed values
+            nameValue,
+            descriptionValue,
+            priceValue,
+            categoryValue,
+            quantityValue,
+            shippingValue,
+            weightValue
+        });
+
         if (
             nameValue == null ||
             descriptionValue == null ||
@@ -140,7 +213,13 @@ export const create = async (req: Request, res: Response) => {
 
         const product = new Product({
             name: nameValue,
-            description: descriptionValue,
+            description: {
+                en: descriptionValue,
+                de: "",
+                es: "",
+                fr: "",
+                it: ""
+            },
             price: priceValue,
             category: categoryValue,
             subcategory: normalize(subcategory) || null,
@@ -152,6 +231,9 @@ export const create = async (req: Request, res: Response) => {
             length: lengthValue,
 
         });
+
+        console.log("Product before save:", product); // LOG 4: See the product object before saving
+
         const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
         if (photo) {
             if (photo.size > 1_000_000) {
@@ -164,10 +246,12 @@ export const create = async (req: Request, res: Response) => {
         }
 
         const result = await product.save();
+        console.log("Product saved with ID:", result._id); // LOG 5: See the saved product ID
+        
         return res.json({ data: result });
 
     } catch (err) {
-        console.error(err);
+        console.error("ERROR in create:", err); // LOG 6: See any errors
         return res.status(400).json({ error: "Product creation failed" });
     }
 };
@@ -204,12 +288,41 @@ export const update = async (req: Request, res: Response) => {
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
-        Object.assign(
-            product,
-            Object.fromEntries(
-                Object.entries(fields).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])
-            )
-        );
+
+      if (fields.description) {
+    // Handle the read-only fields correctly
+    const descriptionField = fields.description;
+    const descriptionValue = Array.isArray(descriptionField) 
+        ? descriptionField[0] 
+        : descriptionField;
+    
+    if (descriptionValue && typeof descriptionValue === 'string') {
+        product.description = {
+            ...product.description,  // Keep existing translations
+            en: descriptionValue      // Update English
+        };
+    }
+    
+    // We can't delete from fields, so we'll skip it in the Object.assign
+    // by creating a new object without description
+    const otherFields = Object.entries(fields)
+        .filter(([key]) => key !== 'description')
+        .reduce((acc, [key, value]) => {
+            acc[key] = Array.isArray(value) ? value[0] : value;
+            return acc;
+        }, {} as Record<string, any>);
+    
+    Object.assign(product, otherFields);
+} else {
+    // Process all fields normally if no description
+    Object.assign(
+        product,
+        Object.fromEntries(
+            Object.entries(fields).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])
+        )
+    );
+}
+
         const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
 
         if (photo) {
@@ -229,10 +342,29 @@ export const update = async (req: Request, res: Response) => {
 
 export const listBySubcategory = async (req: Request, res: Response) => {
   try {
+    const { lang = 'en' } = req.query;
+    
     const products = await Product.find({ subcategory: req.params.subcategoryId })
       .select("-photo")
       .lean();
-    return res.json({ data: products });
+      
+    // Transform each product with safe type checking
+    const transformedProducts = products.map(product => {
+        let description = '';
+        if (product.description && typeof product.description === 'object') {
+            const desc = product.description as any;
+            description = desc[lang as string] || desc.en || '';
+        } else {
+            description = product.description as string || '';
+        }
+        
+        return {
+            ...product,
+            description
+        };
+    });
+    
+    return res.json({ data: transformedProducts });
   } catch (err) {
     return res.status(400).json({ error: "Products not found" });
   }
@@ -241,6 +373,7 @@ export const listBySubcategory = async (req: Request, res: Response) => {
 export const listSearch = async (req: Request, res: Response) => {
     const search = typeof req.query.search === "string" ? req.query.search : "";
     const category = typeof req.query.category === "string" ? req.query.category : "";
+    const { lang = 'en' } = req.query;
 
     if (!search) {
         return res.json([]);
@@ -259,7 +392,23 @@ export const listSearch = async (req: Request, res: Response) => {
             .select("-photo")
             .lean();
 
-        return res.json(products);
+        // Transform each product with safe type checking
+        const transformedProducts = products.map(product => {
+            let description = '';
+            if (product.description && typeof product.description === 'object') {
+                const desc = product.description as any;
+                description = desc[lang as string] || desc.en || '';
+            } else {
+                description = product.description as string || '';
+            }
+            
+            return {
+                ...product,
+                description
+            };
+        });
+
+        return res.json(transformedProducts);
     } catch (err) {
         res.status(400).json({ error: errorHandler(err as MongoError) });
     }
@@ -288,26 +437,45 @@ export const listBySearch = async (req: Request, res: Response) => {
     const sortBy = req.body.sortBy ? req.body.sortBy : "_id";
     const limit = req.body.limit ? Number(req.body.limit) : 100;
     const skip = req.body.skip ? Number(req.body.skip) : 0;
+    const { lang = 'en' } = req.query;
+    
     const findArgs: Record<string, any> = {};
     for (let key in req.body.filters) {
         if (req.body.filters[key].length > 0) {
             if (key === "price") {
-                // gte - greater than price [0-10]
-                // lte - less than
                 findArgs[key] = { $gte: req.body.filters[key][0], $lte: req.body.filters[key][1] };
             } else {
                 findArgs[key] = req.body.filters[key];
             }
         }
-    } try {
+    } 
+    
+    try {
         const data = await Product.find(findArgs)
             .select("-photo")
             .populate("category")
             .sort({ [sortBy]: order })
             .skip(skip)
             .limit(limit)
-            .lean()
-        return res.json({ size: data.length, data });
+            .lean();
+            
+        // Transform each product with safe type checking
+        const transformedData = data.map(product => {
+            let description = '';
+            if (product.description && typeof product.description === 'object') {
+                const desc = product.description as any;
+                description = desc[lang as string] || desc.en || '';
+            } else {
+                description = product.description as string || '';
+            }
+            
+            return {
+                ...product,
+                description
+            };
+        });
+        
+        return res.json({ size: transformedData.length, data: transformedData });
     } catch (err) {
         return res.status(400).json({ error: "Products not found" });
     }

@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/server.ts",
-    "translate": "node scripts/langbly-translate.js",
+    "translate": "node src/scripts/langbly-translate.js",
     "build": "tsc",
     "start": "node dist/server.js"
   },
