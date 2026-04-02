@@ -14,9 +14,7 @@ const ShowImage: React.FC<ShowImageProps> = ({
       component="img"
       src={`${API}/${url}/photo/${item._id}`}
       alt={item.name ?? "Product Image"}
-      sx={{
-        width: "100%",
-        height: "auto",
+      sx={{        height: "auto",
         transition: "transform 0.3s ease",
         "&:hover": {
           transform: "scale(1.02)"

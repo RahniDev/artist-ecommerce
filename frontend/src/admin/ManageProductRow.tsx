@@ -7,6 +7,7 @@ import {
     Chip,
     Typography
 } from "@mui/material";
+import ShowImage from "../core/ShowImage";
 
 const ManageProductRow: React.FC<ManageProductRowProps> = ({ product, onDelete }) => (
     <ListItem
@@ -17,6 +18,10 @@ const ManageProductRow: React.FC<ManageProductRowProps> = ({ product, onDelete }
             alignItems: "center",
         }}
     >
+        <ShowImage item={product}
+            url="product"
+            width={380}
+            height={380} />
         <ListItemText
             primary={
                 <Typography fontWeight={600}>
