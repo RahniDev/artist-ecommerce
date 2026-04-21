@@ -8,7 +8,6 @@ import { useTranslation } from "react-i18next";
 import Loader from "./Loader";
 import Search from "./Search";
 import CollectionSlider from "./CollectionSlider";
-import FeaturedPainting from "./FeaturedPainting";
 
 const Home: React.FC = () => {
   const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
@@ -57,7 +56,7 @@ const Home: React.FC = () => {
 
         <Loader loading={loading} />
         <CollectionSlider subcategoryId="69a6d38a38bf6fdd8d8b84e9" />
-        <FeaturedPainting />
+        {/* <FeaturedPainting /> */}
 
         {/* New Arrivals */}
         <Typography variant="h2" component="h2" textAlign="center">

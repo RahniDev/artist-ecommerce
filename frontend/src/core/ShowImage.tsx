@@ -5,16 +5,16 @@ import Box from "@mui/material/Box";
 
 const ShowImage: React.FC<ShowImageProps> = ({
   item,
-  url,
-  width = "100%",
-  objectFit = "contain"
+  url
 }) => {
   return (
     <Box
       component="img"
       src={`${API}/${url}/photo/${item._id}`}
       alt={item.name ?? "Product Image"}
-      sx={{        height: "auto",
+      sx={{     
+        width: "80px",   
+        height: "90px",
         transition: "transform 0.3s ease",
         "&:hover": {
           transform: "scale(1.02)"
