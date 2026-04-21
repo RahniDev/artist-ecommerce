@@ -31,7 +31,7 @@ const ProductCard: React.FC<CardProps> = ({
                 <ShowImage
                     item={product}
                     url="product"
-
+                    width="400px"
                 />
 
                 <CardContent sx={{

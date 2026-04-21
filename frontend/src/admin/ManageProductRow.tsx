@@ -19,7 +19,8 @@ const ManageProductRow: React.FC<ManageProductRowProps> = ({ product, onDelete }
         }}
     >
         <ShowImage item={product}
-            url="product" />
+            url="product"
+            width="100px" />
         <ListItemText
             primary={
                 <Typography fontWeight={600} px="15px">

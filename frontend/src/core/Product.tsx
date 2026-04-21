@@ -87,17 +87,19 @@ const Product: React.FC = () => {
             </Box>
           )}
         </Grid>
+         <Grid container spacing={3} mt={2}>
+           <Grid size={12}>
         <Typography variant="h5" mt={4}>
           {t("similar_paintings")}
         </Typography>
-        <Grid container spacing={3} mt={2}>
+        </Grid>
           {related.slice(0, 4).map((p) => (
             <Grid size={{ xs: 12, sm: 6, md: 3 }} key={p._id}>
               <ProductCard product={{ ...p, count: 1 }} />
             </Grid>
           ))}
-        </Grid>
-      </Grid>
+          </Grid>
+          </Grid>
     </Layout>
   );
 };
