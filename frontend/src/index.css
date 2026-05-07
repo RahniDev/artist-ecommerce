@@ -18,16 +18,13 @@ body {
   background-position: center center;
 }
 
-.swiper-button-prev,
-.swiper-button-next {
-  z-index: 10;
-  color: #3a3535 !important;
+.swiper-prev,
+.swiper-next {
+  color: #111 !important;
 }
 
-.swiper-button-prev {
-  left: -10px !important;
+.swiper-prev svg,
+.swiper-next svg {
+ font-size: 64px;
 }
 
-.swiper-button-next {
-  right: -10px !important;
-}

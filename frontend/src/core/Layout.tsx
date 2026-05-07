@@ -12,7 +12,6 @@ const Layout: React.FC<LayoutProps> = ({
 }) => {
     return (
     <Box display="flex" flexDirection="column" minHeight="100vh">
-      {/* Navbar */}
       <Navbar />
 
       {/* Page header */}
