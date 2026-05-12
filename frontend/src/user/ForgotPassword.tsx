@@ -13,7 +13,7 @@ import { API } from "../config";
 const ForgotPassword: React.FC = () => {
     const [email, setEmail] = useState<string>("");
     const [showError, setShowError] = useState<boolean>(false);
-    const [messageFromServer, setMessageFromServer] = useState("");
+    const [messageFromServer, setMessageFromServer] = useState<string>("");
     const [showNullError, setShowNullError] = useState<boolean | string>(false);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

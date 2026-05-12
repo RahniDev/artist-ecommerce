@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { getPurchaseHistory } from "./apiUser";
-import type { Order, AuthResponse } from '../types'
+import type { Order, IAuthData } from '../types'
 import {
     Box,
     Card,
@@ -24,7 +24,7 @@ import {
 const UserDashboard = () => {
     const [history, setHistory] = useState<Order[]>([]);
     const { t } = useTranslation();
-    const auth = isAuthenticated() as AuthResponse | false;
+    const auth = isAuthenticated() as IAuthData | false;
     if (!auth) {
         // Safety guard — should never happen due to PrivateRoute
         return <></>;

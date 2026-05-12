@@ -67,11 +67,11 @@ const Contact: React.FC = () => {
   };
 
   return (
-    <Layout title="Contact" description="If you're interested in purchasing my artwork, please contact me below.">
+    <Layout title="Contact" description="">
       <Box
         component="form"
         onSubmit={handleSubmit}
-        sx={{ display: "flex", flexDirection: "column", gap: 2, maxWidth: 500, mx: "auto", mt: 4 }}
+        sx={{ display: "flex", flexDirection: "column", gap: 2, maxWidth: 500, mx: "auto"}}
       >
         {form.success && <Alert severity="success">Message sent successfully!</Alert>}
         {form.success === false && <Alert severity="error">{form.error}</Alert>}

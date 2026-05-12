@@ -14,7 +14,6 @@ const ProductCard: React.FC<CardProps> = ({
     return (
         <Card elevation={0}
             sx={{
-                width: "100%",
                 boxShadow: "none",
                 border: "none",
                 backgroundColor: "transparent"
@@ -25,13 +24,16 @@ const ProductCard: React.FC<CardProps> = ({
                 sx={{
                     textDecoration: "none",
                     color: "inherit",
-                    display: "block"
-                }}
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center"
+                    }}
             >
                 <ShowImage
                     item={product}
                     url="product"
-                    width="400px"
+                    width="300px"
                 />
 
                 <CardContent sx={{

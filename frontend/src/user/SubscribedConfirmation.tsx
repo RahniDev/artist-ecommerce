@@ -1,4 +1,4 @@
-export default function Subscribed() {
+const Subscribed = () => {
   return (
     <section className="subscribed">
       <div className="subscribed-card">
@@ -12,3 +12,5 @@ export default function Subscribed() {
     </section>
   );
 }
+
+export default Subscribed;

@@ -19,6 +19,7 @@ import { setAuth } from "../redux/slices/authSlice";
 
 const Profile: React.FC = () => {
   const { userId } = useParams<{ userId: string }>();
+  
   const dispatch = useDispatch<AppDispatch>();
 
   const { user, token, isAuthenticated } = useSelector(

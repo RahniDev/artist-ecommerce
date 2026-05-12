@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 import Loader from "./Loader";
 import Search from "./Search";
 import CollectionSlider from "./CollectionSlider";
-import Navbar from "./Navbar";
+import Layout from "./Layout";
 
 
 const Home: React.FC = () => {
@@ -41,8 +41,7 @@ const Home: React.FC = () => {
   }, []);
 
   return (
-    <>
-      <Navbar />
+    <Layout title="" description="">
       <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
         <Box sx={{ width: { xs: "100%", sm: "60%", md: "40%" }, mb: 6, pt: 5 }}>
           <Search />
@@ -56,13 +55,13 @@ const Home: React.FC = () => {
       )}
 
       <Loader loading={loading} />
-  
+
       <CollectionSlider subcategoryId="69a6d38a38bf6fdd8d8b84e9" />
-    
+
       {/* <FeaturedPainting /> */}
 
       {/* New Arrivals */}
-      <Typography variant="h2" component="h2" textAlign="center">
+      <Typography sx={{pb: 4}} variant="h2" component="h2" textAlign="center">
         {t("latest_originals")}
       </Typography>
       {productsByArrival.length === 0 && !loading && !error && (
@@ -70,21 +69,14 @@ const Home: React.FC = () => {
           variant="body1"
           color="text.secondary"
           textAlign="center"
+          sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
         >
           {t("no_new_arrivals")}
         </Typography>
       )}
-
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-        }}
-      >
         <ListProducts products={productsByArrival} />
-      </Box>
       {/* </Stack> */}
-    </>
+    </Layout>
   );
 };
 

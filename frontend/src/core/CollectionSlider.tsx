@@ -28,7 +28,7 @@ const CollectionSlider = ({ subcategoryId }: { subcategoryId: string }) => {
       <Typography variant="subtitle1" textAlign="center"
         fontFamily="playfair display"
         fontStyle="italic"
-        sx={{ mt: "2px !important", color: "#222" }}>
+        sx={{ pb: 4, color: "#222" }}>
         Series </Typography>
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <SlidePrevButton onClick={() => swiperRef.current?.slidePrev()} />

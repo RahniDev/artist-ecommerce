@@ -5,7 +5,7 @@ import {
   Typography,
 } from "@mui/material";
 
-export default function Newsletter() {
+const Newsletter = () => {
   return (
    <Box>
       <Typography variant="h6" gutterBottom>
@@ -34,3 +34,5 @@ export default function Newsletter() {
     </Box>
   );
 }
+
+export default Newsletter
