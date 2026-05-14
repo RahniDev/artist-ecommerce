@@ -157,9 +157,11 @@ const Checkout: React.FC = () => {
       {data.error && <Box sx={{ color: "red" }}>{data.error}</Box>}
 
       <TextField label="Email" value={data.email} onChange={e => setData(prev => ({ ...prev, email: e.target.value }))} fullWidth required sx={{ mb: 1 }} />
-      <TextField label="First name" value={data.firstName} onChange={e => setData(prev => ({ ...prev, firstName: e.target.value }))} sx={{ mb: 1, width: "48%" }} required />
-      <TextField label="Last name" value={data.lastName} onChange={e => setData(prev => ({ ...prev, lastName: e.target.value }))} sx={{ mb: 1, width: "48%" }} required />
 
+      <Box sx={{ display: "flex", justifyContent: "space-between" }}>
+        <TextField label="First name" value={data.firstName} onChange={e => setData(prev => ({ ...prev, firstName: e.target.value }))} sx={{ mb: 1, width: "48%" }} required />
+        <TextField label="Last name" value={data.lastName} onChange={e => setData(prev => ({ ...prev, lastName: e.target.value }))} sx={{ mb: 1, width: "48%" }} required />
+      </Box>
       <AddressForm value={data.address} onChange={addr => setData(prev => ({ ...prev, address: addr }))} />
       <MuiTelInput label="Phone number" value={data.phone} onChange={value => setData(prev => ({ ...prev, phone: value }))} defaultCountry="FR" fullWidth />
 

@@ -43,7 +43,7 @@ const Cart: React.FC = () => {
             {items.map((product) => (
                 <Card key={product._id} sx={{ mb: 2 }}>
                     <CardContent>
-                        <Grid container spacing={2} alignItems="center">
+                        <Grid container spacing={2} alignItems="center" justifyContent="space-around">
                             <Grid>
                                 <Link
                                     component={RouterLink}
@@ -76,9 +76,7 @@ const Cart: React.FC = () => {
                             </Grid>
 
                             {/* Controls */}
-                            <Grid
-                                sx={{ display: "flex", justifyContent: { sm: "flex-end" } }}
-                            >
+                            <Grid>
                                 <CartItemControls
                                     productId={product._id}
                                     initialCount={product.count ?? 1}

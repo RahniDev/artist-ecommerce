@@ -115,7 +115,7 @@ const Search = () => {
       >
         <SearchIcon />
       </Button>
-      <Typography variant="h6">{searchMessage()}</Typography>
+      <Typography variant="h6" aria-live="polite" aria-atomic="true">{searchMessage()}</Typography>
     </Box>
   );
 };

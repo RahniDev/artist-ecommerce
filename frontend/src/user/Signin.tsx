@@ -60,7 +60,7 @@ const Signin: React.FC = () => {
         if (user?.role === 1) {
             navigate("/admin/dashboard");
         } else {
-            navigate("/user/dashboard");
+            navigate("/");
         }
     }, [redirectToReferrer, user, navigate]);
 
