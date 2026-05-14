@@ -4,7 +4,7 @@ import type { Address, PhotonPlace } from '../types';
 
 interface Props {
     value: Address;
-    
+
     onChange: (address: Address) => void;
 }
 
@@ -25,9 +25,9 @@ const AddressForm: React.FC<Props> = ({ value, onChange }) => {
     };
 
     const handleSelectSuggestion = (place: PhotonPlace) => {
-        const { name, city, zip, country } = place.properties;
-        const full = [name, city, zip, country].filter(Boolean).join(", ");
-        onChange({ street1: name ?? "", city: city ?? "", zip: zip ?? "", country: country ?? "", full });
+        const { name, city, zip, state, country } = place.properties;
+        const full = [name, city, zip, state, country].filter(Boolean).join(", ");
+        onChange({ street1: name ?? "", city: city ?? "", zip: zip ?? "", state: state, country: country ?? "", full });
         setSuggestions([]);
     };
 
@@ -41,9 +41,9 @@ const AddressForm: React.FC<Props> = ({ value, onChange }) => {
                 freeSolo
                 options={suggestions}
                 getOptionLabel={(option) => {
-                    if (typeof option === "string") return option; // freeSolo string
-                    const { name, city, postcode, country } = option.properties;
-                    return [name, city, postcode, country].filter(Boolean).join(", ");
+                    if (typeof option === "string") return option;
+                    const { name, city, zip, state, country } = option.properties;
+                    return [name, city, zip, state, country].filter(Boolean).join(", ");
                 }}
                 onInputChange={(_, value) => handleAutocompleteInput(value)}
                 onChange={(_, value) => {
@@ -58,6 +58,7 @@ const AddressForm: React.FC<Props> = ({ value, onChange }) => {
                         label="Street"
                         placeholder="Start typing your address..."
                         fullWidth
+                        sx={{ mb: 1 }}
                         required
                     />
                 )}
@@ -74,6 +75,14 @@ const AddressForm: React.FC<Props> = ({ value, onChange }) => {
                 label="Postcode"
                 value={value.zip}
                 onChange={(e) => handleFieldChange("zip", e.target.value)}
+                fullWidth
+                sx={{ mb: 1 }}
+                required
+            />
+            <TextField
+                label="State"
+                value={value.state}
+                onChange={(e) => handleFieldChange("state", e.target.value)}
                 fullWidth
                 sx={{ mb: 1 }}
                 required

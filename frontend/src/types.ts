@@ -36,7 +36,7 @@ export interface ContactFormState {
 
 export interface Address {
   street1: string;
-  street2: string;
+  street2?: string;
   city: string;
   state: string;
   zip: string;
@@ -48,7 +48,8 @@ export interface PhotonPlace {
   properties: {
     name?: string;
     city?: string;
-    postcode?: string;
+    zip?: string;
+    state: string,
     country?: string;
   };
 }
