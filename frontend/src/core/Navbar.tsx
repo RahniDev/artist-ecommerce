@@ -81,7 +81,7 @@ const Navbar: React.FC = () => {
       anchor="left"
       open={drawerOpen}
       onClose={() => setDrawerOpen(false)}
-      PaperProps={{ sx: { width: 280 } }}
+      slotProps={{ paper: { sx: { width: 280 } } }}
     >
       <Box sx={{ display: "flex", justifyContent: "flex-end", p: 1 }}>
         <IconButton onClick={() => setDrawerOpen(false)}>
@@ -130,7 +130,7 @@ const Navbar: React.FC = () => {
                     >
                       <ListItemText
                         primary={`All ${c.name}`}
-                        primaryTypographyProps={{ sx: { fontStyle: "italic", color: "#777" } }}
+                        slotProps={{ primary: { sx: { fontStyle: "italic", color: "#777" } } }}
                       />
                     </ListItemButton>
                   </ListItem>

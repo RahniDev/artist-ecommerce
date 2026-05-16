@@ -49,7 +49,7 @@ const ProductCard: React.FC<CardProps> = ({
                             fontWeight={600}>
                             {product.name}
                         </Typography>
-                        <Typography color="#6c757d">{localizedDescription}</Typography>
+                        <Typography  sx={{whiteSpace: "pre-wrap"}} color="#6c757d">{localizedDescription}</Typography>
                         <SoldBadge quantity={product.quantity} />
 
                         {product.quantity > 0 && (

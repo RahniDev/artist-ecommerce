@@ -43,7 +43,7 @@ const Category = () => {
             <Box py={6}>
               <Grid container spacing={2}>
                 {category.subcategories.map(sub => (
-                  <Grid size={3} key={sub._id}>
+                  <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }} key={sub._id}>
                     <Link href={`/category/${sub._id}`} underline="none">
                       <Box
                         sx={{

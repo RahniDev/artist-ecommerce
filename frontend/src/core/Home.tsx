@@ -19,7 +19,6 @@ const Home: React.FC = () => {
   const loadProducts = async () => {
     setLoading(true);
     setError(null);
-
     try {
       const arrivalRes: ApiResponse<{ data: IProduct[] }> =
         await getProducts("createdAt");
@@ -43,11 +42,11 @@ const Home: React.FC = () => {
   return (
     <Layout title="" description="">
       <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
-        <Box sx={{ width: { xs: "100%", sm: "60%", md: "40%" }, mb: 6, pt: 5 }}>
+        <Box>
           <Search />
         </Box>
       </Box>
-      {/* <Stack spacing={4}> */}
+
       {error && (
         <Alert severity="error">
           {error}
@@ -60,8 +59,8 @@ const Home: React.FC = () => {
 
       {/* <FeaturedPainting /> */}
 
-      {/* New Arrivals */}
-      <Typography sx={{pb: 4}} variant="h2" component="h2" textAlign="center">
+      {/* No new arrivals */}
+      <Typography sx={{ pb: 4 }} variant="h2" component="h2" textAlign="center">
         {t("latest_originals")}
       </Typography>
       {productsByArrival.length === 0 && !loading && !error && (
@@ -74,8 +73,10 @@ const Home: React.FC = () => {
           {t("no_new_arrivals")}
         </Typography>
       )}
+      {/* New arrivals */}
+      {productsByArrival.length > 0 && !loading && !error && (
         <ListProducts products={productsByArrival} />
-      {/* </Stack> */}
+      )}
     </Layout>
   );
 };

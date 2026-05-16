@@ -20,6 +20,7 @@ import {
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { useTranslation } from "react-i18next";
+import ProductCard from "./ProductCard";
 
 const Search = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -51,72 +52,88 @@ const Search = () => {
   };
 
   return (
-    <Box
-      component="form"
-      onSubmit={searchSubmit}
-      sx={{
-        display: "flex",
-        alignItems: "center",
-        flexWrap: "nowrap",
-        width: "100%",
-      }}
-    >
-      <FormControl
-        size="small"
+    <>
+      <Box
+        component="form"
+        onSubmit={searchSubmit}
         sx={{
-          minWidth: 150,
-          "& .MuiOutlinedInput-root": {
-            borderTopRightRadius: 0,
-            borderBottomRightRadius: 0,
-          },
+          display: "flex",
+          m: "auto",
+          flexWrap: "nowrap",
+          mb: 6, 
+          pt: 5
         }}
       >
-        <InputLabel>{t("category")}</InputLabel>
-        <Select
-          value={category}
-          label={t("category")}
-          onChange={(e: SelectChangeEvent) =>
-            dispatch(setCategory(e.target.value))
-          }
+        <FormControl
+          size="small"
+          sx={{
+            minWidth: 150,
+            "& .MuiOutlinedInput-root": {
+              borderTopRightRadius: 0,
+              borderBottomRightRadius: 0,
+            },
+          }}
         >
-          <MenuItem value="">All</MenuItem>
-          {categories.map(c => (
-            <MenuItem key={c._id} value={c._id}>
-              {c.name}
-            </MenuItem>
+          <InputLabel>{t("category")}</InputLabel>
+          <Select
+            value={category}
+            label={t("category")}
+            onChange={(e: SelectChangeEvent) =>
+              dispatch(setCategory(e.target.value))
+            }
+          >
+            <MenuItem value="">All</MenuItem>
+            {categories.map(c => (
+              <MenuItem key={c._id} value={c._id}>
+                {c.name}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        <TextField
+          size="small"
+          label={t("search")}
+          value={search}
+          onChange={e => dispatch(setSearch(e.target.value))}
+          sx={{
+            flex: 1,
+            minWidth: 190,
+            "& .MuiOutlinedInput-root": {
+              borderRadius: 0,
+            },
+          }}
+        />
+
+        <Button
+          type="submit"
+          variant="contained"
+          size="large"
+          sx={{
+            minWidth: 48,
+            borderTopLeftRadius: 0,
+            borderBottomLeftRadius: 0,
+            boxShadow: "none",
+          }}
+        >
+          <SearchIcon />
+        </Button>
+      </Box>
+      <Box>
+        <Typography variant="h6" aria-live="polite"
+          sx={{ textAlign: "center", mt: 3 }}
+          aria-atomic="true">
+          {searchMessage()}</Typography>
+        <Box sx={{ width: "100%", display: "flex", justifyContent: "center"}}>
+          {results.map(product => (
+            <ProductCard
+              key={product._id}
+              product={product}
+            />
           ))}
-        </Select>
-      </FormControl>
-
-      <TextField
-        size="small"
-        label={t("search")}
-        value={search}
-        onChange={e => dispatch(setSearch(e.target.value))}
-        sx={{
-          flex: 1,
-          minWidth: 190,
-          "& .MuiOutlinedInput-root": {
-            borderRadius: 0,
-          },
-        }}
-      />
-
-      <Button
-        type="submit"
-        variant="contained"
-        size="large"
-        sx={{
-          minWidth: 48,
-          borderTopLeftRadius: 0,
-          borderBottomLeftRadius: 0,
-          boxShadow: "none",
-        }}
-      >
-        <SearchIcon />
-      </Button>
-      <Typography variant="h6" aria-live="polite" aria-atomic="true">{searchMessage()}</Typography>
-    </Box>
+        </Box>
+      </Box>
+    </>
   );
 };
 
