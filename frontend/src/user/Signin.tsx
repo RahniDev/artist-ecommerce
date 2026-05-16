@@ -66,9 +66,9 @@ const Signin: React.FC = () => {
 
 // Checks if user is already logged in
     useEffect(() => {
-        if (isAuthenticated())
+        if (auth)
             navigate("/");
-    }, [navigate]);
+    }, []);
 
     return (
         <Layout title={t("signin")} description="">

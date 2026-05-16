@@ -47,7 +47,7 @@ const Navbar: React.FC = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
 
-  const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
+  const { user } = useSelector((state: RootState) => state.auth);
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const cartCount = cartItems.reduce((total, item) => total + (item.count ?? 1), 0);
 
@@ -122,7 +122,6 @@ const Navbar: React.FC = () => {
 
               {subs.length > 0 && (
                 <Collapse in={isExpanded} timeout="auto" unmountOnExit>
-                  {/* Tapping the category name navigates to it */}
                   <ListItem disablePadding>
                     <ListItemButton
                       sx={{ pl: 4 }}
@@ -228,7 +227,7 @@ const Navbar: React.FC = () => {
         {/* RIGHT */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 2, minWidth: 120, justifyContent: "flex-end" }}>
           <LangToggle />
-          {isAuthenticated ? (
+          {user ? (
             <>
               <IconButton onClick={handleDropdownOpen} sx={{ color: "#3a3535" }}>
                 <Person2OutlinedIcon fontSize="medium" />
@@ -247,7 +246,7 @@ const Navbar: React.FC = () => {
                 <MenuItem onClick={handleSignout}>Sign Out</MenuItem>
               </Menu>
             </>
-          ) : (
+         ) : (
             <IconButton component={NavLink} to="/signin" sx={{ color: "#3a3535" }}>
               <Person2OutlinedIcon fontSize="medium" />
             </IconButton>
