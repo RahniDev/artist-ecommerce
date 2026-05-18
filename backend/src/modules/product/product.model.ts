@@ -3,21 +3,21 @@ import mongoose, { Schema, Types, Document } from "mongoose";
 export interface IProduct {
   name: string;
   description: {
-    en: string;  // This should be string, NOT { type: String, required: true }
-    de: string;  // This should be string
-    es: string;  // This should be string
-    it: string;  // This should be string
-    fr: string;  // This should be string
+    en: string;
+    de: string;
+    es: string;
+    it: string;
+    fr: string;
   };
   price: number;
   category: Types.ObjectId;
   subcategory: Types.ObjectId | null;
   quantity: number;
   sold: number;
-  photo: {
-    data: Buffer;
-    contentType: string;
-  };
+  photos: {
+    data: Buffer,
+    contentType: string
+  }[];
   shipping: boolean;
   weight: number;
   width: number;
@@ -35,7 +35,7 @@ const productSchema = new Schema<IProductDocument>({
     maxlength: 60
   },
   description: {
-    en: { type: String, required: true },  // Schema definition - this is CORRECT here
+    en: { type: String, required: true },
     de: { type: String, default: '' },
     es: { type: String, default: '' },
     it: { type: String, default: '' },
@@ -64,10 +64,10 @@ const productSchema = new Schema<IProductDocument>({
     type: Number,
     default: 0
   },
-  photo: {
+  photos: [{
     data: Buffer,
     contentType: String
-  },
+  }],
   shipping: {
     required: false,
     type: Boolean

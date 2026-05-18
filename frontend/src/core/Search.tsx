@@ -58,9 +58,8 @@ const Search = () => {
         onSubmit={searchSubmit}
         sx={{
           display: "flex",
-          m: "auto",
           flexWrap: "nowrap",
-          mb: 6, 
+          mb: 6,
           pt: 5
         }}
       >
@@ -78,6 +77,7 @@ const Search = () => {
           <Select
             value={category}
             label={t("category")}
+            sx={{ minWidth: 150 }}
             onChange={(e: SelectChangeEvent) =>
               dispatch(setCategory(e.target.value))
             }
@@ -97,7 +97,6 @@ const Search = () => {
           value={search}
           onChange={e => dispatch(setSearch(e.target.value))}
           sx={{
-            flex: 1,
             minWidth: 190,
             "& .MuiOutlinedInput-root": {
               borderRadius: 0,
@@ -124,7 +123,7 @@ const Search = () => {
           sx={{ textAlign: "center", mt: 3 }}
           aria-atomic="true">
           {searchMessage()}</Typography>
-        <Box sx={{ width: "100%", display: "flex", justifyContent: "center"}}>
+        <Box sx={{ width: "100%", display: "flex", flexWrap: "wrap", justifyContent: "center", gap: 2, mt: 3 }}>
           {results.map(product => (
             <ProductCard
               key={product._id}

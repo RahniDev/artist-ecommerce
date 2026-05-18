@@ -26,7 +26,7 @@ export const productById = async (
 
         const product = await Product.findById(id)
             .populate("category")
-            .select("-photo")
+            .select("-photos")
 
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
@@ -43,11 +43,11 @@ export const read = (req: Request, res: Response): Response => {
     if (!req.product) {
         return res.status(404).json({ error: "Product not loaded" })
     }
-    
+
     const { lang = 'en' } = req.query;
-    
+
     const product = req.product.toObject();
-    
+
     // Safe access with type checking
     let description = '';
     if (product.description && typeof product.description === 'object') {
@@ -56,21 +56,21 @@ export const read = (req: Request, res: Response): Response => {
     } else {
         description = product.description as string || '';
     }
-    
+
     const response = {
         ...product,
         description
     };
-    
+
     return res.json(response);
 }
 
 export const list = async (req: Request, res: Response) => {
     try {
         const { lang = 'en' } = req.query;
-        
+
         const products = await Product.find()
-            .select("-photo")
+            .select("-photos")
             .sort({ createdAt: -1 })
             .limit(6)
             .lean();
@@ -84,7 +84,7 @@ export const list = async (req: Request, res: Response) => {
             } else {
                 description = product.description as string || '';
             }
-            
+
             return {
                 ...product,
                 description
@@ -94,29 +94,6 @@ export const list = async (req: Request, res: Response) => {
         return res.status(200).json({ data: transformedProducts });
     } catch (err) {
         return res.status(400).json({ error: "Products not found" });
-    }
-};
-export const createprod = async (req: Request, res: Response) => {
-    try {
-        const testProduct = new Product({
-            name: "Test Product",
-            description: {
-                en: "Test Description"
-            },
-            price: 99.99,
-            category: new mongoose.Types.ObjectId(), // You'll need a real category ID
-            quantity: 10,
-            shipping: true,
-            weight: 100
-        });
-        
-        const result = await testProduct.save();
-        console.log("Test product saved:", result._id);
-        res.json({ success: true, id: result._id });
-    } catch (error) {
-        console.error("Test product error:", error);
-        const errorMessage = error instanceof Error ? error.message : "Unknown error";
-        res.status(500).json({ error: errorMessage });
     }
 };
 
@@ -146,21 +123,24 @@ export const listCategories = async (req: Request, res: Response) => {
 export const photo = async (req: Request, res: Response) => {
     try {
         const product = await Product.findById(req.params.productId)
-            .select("photo");
+            .select("photos");
 
-        if (!product || !product.photo?.data) {
+        const index = Number(req.query.index) || 0;
+        const img = product?.photos?.[index];
+
+        if (!product || !img?.data) {
             return res.status(404).send("No image");
         }
 
-        res.set("Content-Type", product.photo.contentType);
-        return res.send(product.photo.data);
+        res.set("Content-Type", img.contentType);
+        return res.send(img.data);
     } catch (err) {
         return res.status(500).send("Image error");
     }
 };
 
 export const create = async (req: Request, res: Response) => {
-    const form = formidable();
+    const form = formidable({multiples: true});
 
     try {
         const { fields, files } = await new Promise<{ fields: Fields; files: Files }>((resolve, reject) => {
@@ -169,9 +149,6 @@ export const create = async (req: Request, res: Response) => {
                 else resolve({ fields, files });
             });
         });
-
-        console.log("Fields received:", fields); // LOG 1: See what fields are coming in
-        console.log("Files received:", files);   // LOG 2: See if file is coming in
 
         let { name, description, price, category, subcategory, quantity, shipping, weight, width, height, length } = fields;
 
@@ -189,16 +166,6 @@ export const create = async (req: Request, res: Response) => {
         const widthValue = normalize(width) ? Number(normalize(width)) : undefined;
         const heightValue = normalize(height) ? Number(normalize(height)) : undefined;
         const lengthValue = normalize(length) ? Number(normalize(length)) : undefined;
-
-        console.log("Parsed values:", { // LOG 3: See parsed values
-            nameValue,
-            descriptionValue,
-            priceValue,
-            categoryValue,
-            quantityValue,
-            shippingValue,
-            weightValue
-        });
 
         if (
             nameValue == null ||
@@ -232,26 +199,34 @@ export const create = async (req: Request, res: Response) => {
 
         });
 
-        console.log("Product before save:", product); // LOG 4: See the product object before saving
+        console.log("Product before save:", product);
 
-        const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
-        if (photo) {
-            if (photo.size > 1_000_000) {
-                return res.status(400).json({ error: "Image should be less than 1MB" });
+        const uploadedPhotos = Array.isArray(files.photos)
+            ? files.photos
+            : files.photos
+                ? [files.photos]
+                : [];
+
+        if (uploadedPhotos.length > 0) {
+            for (const photo of uploadedPhotos) {
+                if (photo.size > 1_000_000) {
+                    return res.status(400).json({ error: "Each image must be less than 1MB" });
+                }
             }
-            product.photo = {
-                data: await fs.promises.readFile(photo.filepath),
-                contentType: photo.mimetype || "application/octet-stream"
-            };
+            product.photos = await Promise.all(
+                uploadedPhotos.map(async (photo) => ({
+                    data: await fs.promises.readFile(photo.filepath),
+                    contentType: photo.mimetype || "application/octet-stream"
+                }))
+            );
         }
-
         const result = await product.save();
-        console.log("Product saved with ID:", result._id); // LOG 5: See the saved product ID
-        
+        console.log("Product saved with ID:", result._id);
+
         return res.json({ data: result });
 
     } catch (err) {
-        console.error("ERROR in create:", err); // LOG 6: See any errors
+        console.error("ERROR in create:", err);
         return res.status(400).json({ error: "Product creation failed" });
     }
 };
@@ -274,11 +249,12 @@ export const deleteProduct = async (req: Request, res: Response) => {
 };
 
 export const update = async (req: Request, res: Response) => {
-    const form = formidable();
+    const form = formidable({ multiples: true });
     try {
         const { fields, files } = await new Promise<{ fields: formidable.Fields; files: formidable.Files }>
             ((resolve, reject) => {
                 form.parse(req, (err, fields, files) => {
+                    console.log(files)
                     if (err) return reject(err);
                     resolve({ fields, files });
                 });
@@ -289,39 +265,39 @@ export const update = async (req: Request, res: Response) => {
             return res.status(404).json({ error: "Product not found" });
         }
 
-      if (fields.description) {
-    // Handle the read-only fields correctly
-    const descriptionField = fields.description;
-    const descriptionValue = Array.isArray(descriptionField) 
-        ? descriptionField[0] 
-        : descriptionField;
-    
-    if (descriptionValue && typeof descriptionValue === 'string') {
-        product.description = {
-            ...product.description,  // Keep existing translations
-            en: descriptionValue      // Update English
-        };
-    }
-    
-    // We can't delete from fields, so we'll skip it in the Object.assign
-    // by creating a new object without description
-    const otherFields = Object.entries(fields)
-        .filter(([key]) => key !== 'description')
-        .reduce((acc, [key, value]) => {
-            acc[key] = Array.isArray(value) ? value[0] : value;
-            return acc;
-        }, {} as Record<string, any>);
-    
-    Object.assign(product, otherFields);
-} else {
-    // Process all fields normally if no description
-    Object.assign(
-        product,
-        Object.fromEntries(
-            Object.entries(fields).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])
-        )
-    );
-}
+        if (fields.description) {
+
+            const descriptionField = fields.description;
+            const descriptionValue = Array.isArray(descriptionField)
+                ? descriptionField[0]
+                : descriptionField;
+
+            if (descriptionValue && typeof descriptionValue === 'string') {
+                product.description = {
+                    ...product.description,  // Keep existing translations
+                    en: descriptionValue      // Update English
+                };
+            }
+
+            // We can't delete from fields, so we'll skip it in the Object.assign
+            // by creating a new object without description
+            const otherFields = Object.entries(fields)
+                .filter(([key]) => key !== 'description')
+                .reduce((acc, [key, value]) => {
+                    acc[key] = Array.isArray(value) ? value[0] : value;
+                    return acc;
+                }, {} as Record<string, any>);
+
+            Object.assign(product, otherFields);
+        } else {
+            // Process all fields normally if no description
+            Object.assign(
+                product,
+                Object.fromEntries(
+                    Object.entries(fields).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])
+                )
+            );
+        }
 
         const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
 
@@ -330,7 +306,7 @@ export const update = async (req: Request, res: Response) => {
                 return res.status(400).json({ error: "Image should be less than 1MB" });
             }
             const photoBuffer = await fs.promises.readFile(photo.filepath);
-            product.photo = { data: photoBuffer, contentType: photo.mimetype || "application/octet-stream" };
+            product.photos = [{ data: photoBuffer, contentType: photo.mimetype || "application/octet-stream" }];
         }
         const result = await product.save();
         return res.json(result);
@@ -341,33 +317,33 @@ export const update = async (req: Request, res: Response) => {
 };
 
 export const listBySubcategory = async (req: Request, res: Response) => {
-  try {
-    const { lang = 'en' } = req.query;
-    
-    const products = await Product.find({ subcategory: req.params.subcategoryId })
-      .select("-photo")
-      .lean();
-      
-    // Transform each product with safe type checking
-    const transformedProducts = products.map(product => {
-        let description = '';
-        if (product.description && typeof product.description === 'object') {
-            const desc = product.description as any;
-            description = desc[lang as string] || desc.en || '';
-        } else {
-            description = product.description as string || '';
-        }
-        
-        return {
-            ...product,
-            description
-        };
-    });
-    
-    return res.json({ data: transformedProducts });
-  } catch (err) {
-    return res.status(400).json({ error: "Products not found" });
-  }
+    try {
+        const { lang = 'en' } = req.query;
+
+        const products = await Product.find({ subcategory: req.params.subcategoryId })
+            .select("-photos")
+            .lean();
+
+        // Transform each product with safe type checking
+        const transformedProducts = products.map(product => {
+            let description = '';
+            if (product.description && typeof product.description === 'object') {
+                const desc = product.description as any;
+                description = desc[lang as string] || desc.en || '';
+            } else {
+                description = product.description as string || '';
+            }
+
+            return {
+                ...product,
+                description
+            };
+        });
+
+        return res.json({ data: transformedProducts });
+    } catch (err) {
+        return res.status(400).json({ error: "Products not found" });
+    }
 };
 
 export const listSearch = async (req: Request, res: Response) => {
@@ -401,7 +377,7 @@ export const listSearch = async (req: Request, res: Response) => {
             } else {
                 description = product.description as string || '';
             }
-            
+
             return {
                 ...product,
                 description
@@ -438,7 +414,7 @@ export const listBySearch = async (req: Request, res: Response) => {
     const limit = req.body.limit ? Number(req.body.limit) : 100;
     const skip = req.body.skip ? Number(req.body.skip) : 0;
     const { lang = 'en' } = req.query;
-    
+
     const findArgs: Record<string, any> = {};
     for (let key in req.body.filters) {
         if (req.body.filters[key].length > 0) {
@@ -448,17 +424,17 @@ export const listBySearch = async (req: Request, res: Response) => {
                 findArgs[key] = req.body.filters[key];
             }
         }
-    } 
-    
+    }
+
     try {
         const data = await Product.find(findArgs)
-            .select("-photo")
+            .select("-photos")
             .populate("category")
             .sort({ [sortBy]: order })
             .skip(skip)
             .limit(limit)
             .lean();
-            
+
         // Transform each product with safe type checking
         const transformedData = data.map(product => {
             let description = '';
@@ -468,13 +444,13 @@ export const listBySearch = async (req: Request, res: Response) => {
             } else {
                 description = product.description as string || '';
             }
-            
+
             return {
                 ...product,
                 description
             };
         });
-        
+
         return res.json({ size: transformedData.length, data: transformedData });
     } catch (err) {
         return res.status(400).json({ error: "Products not found" });

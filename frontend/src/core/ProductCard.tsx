@@ -26,8 +26,6 @@ const ProductCard: React.FC<CardProps> = ({
                     color: "inherit",
                     display: "flex",
                     flexDirection: "column",
-                    alignItems: "center",
-                    justifyContent: "center"
                     }}
             >
                 <ShowImage
@@ -45,11 +43,10 @@ const ProductCard: React.FC<CardProps> = ({
                     <Stack spacing={1} alignItems="left">
                         <Typography
                             variant="subtitle1"
-                            component="div"
-                            fontWeight={600}>
+                            component="div">
                             {product.name}
                         </Typography>
-                        <Typography  sx={{whiteSpace: "pre-wrap"}} color="#6c757d">{localizedDescription}</Typography>
+                        <Typography sx={{whiteSpace: "pre-wrap"}} color="#6c757d">{localizedDescription}</Typography>
                         <SoldBadge quantity={product.quantity} />
 
                         {product.quantity > 0 && (

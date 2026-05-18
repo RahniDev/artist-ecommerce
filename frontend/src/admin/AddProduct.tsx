@@ -25,7 +25,7 @@ const AddProduct: React.FC = () => {
   const auth = useSelector((state: RootState) => state.auth);
   const { user, token, isAuthenticated } = auth;
 
-  const [imgPreview, setImgPreview] = useState("");
+  const [imgPreviews, setImgPreviews] = useState<string[]>([]);
   const [subcategories, setSubcategories] = useState<Category[]>([]);
   const [values, setValues] = useState<AddProductValues>({
     name: "",
@@ -40,7 +40,7 @@ const AddProduct: React.FC = () => {
     subcategory: "",
     shipping: "",
     quantity: "",
-    photo: "",
+    photos: [],
     loading: false,
     error: "",
     createdProduct: false,
@@ -85,12 +85,13 @@ const AddProduct: React.FC = () => {
       (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         if (!formData.current) return;
 
-        if (field === "photo" && event.target instanceof HTMLInputElement) {
-          const file = event.target.files?.[0];
-          if (file) {
-            formData.current.set("photo", file);
-            setValues(prev => ({ ...prev, photo: file }));
-            setImgPreview(URL.createObjectURL(file));
+        if (field === "photo" && event.target instanceof HTMLInputElement && event.target.files) {
+          const files = Array.from(event.target.files);
+          if (files.length > 0) {
+
+            files.forEach((file) => formData.current!.append("photos", file));
+            setValues(prev => ({ ...prev, photos: files }));
+            setImgPreviews(files.map(file => URL.createObjectURL(file)));
           }
         } else {
           const value = event.target.value;
@@ -166,10 +167,10 @@ const AddProduct: React.FC = () => {
           length: "",
           shipping: "",
           quantity: "",
-          photo: "",
+          photos: [],
         }));
         setSubcategories([]);
-        setImgPreview("");
+        setImgPreviews([]);
         formData.current = new FormData();
       }
     } catch {
@@ -219,19 +220,21 @@ const AddProduct: React.FC = () => {
                 <input
                   hidden
                   type="file"
+                  multiple={true}
                   accept="image/*"
                   onChange={handleInputChange("photo")}
                 />
               </Button>
 
-              {imgPreview && (
+              {imgPreviews.map((src, i) => (
                 <Box
+                  key={i}
                   component="img"
-                  src={imgPreview}
+                  src={src}
                   alt="Product photo preview"
                   sx={{ width: 200, borderRadius: 1, border: "1px solid #ddd" }}
                 />
-              )}
+              ))}
             </Box>
 
             <TextField

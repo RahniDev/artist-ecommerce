@@ -102,14 +102,14 @@ export interface ProductFormBase {
 }
 
 export interface AddProductValues extends ProductFormBase {
-  photo: File | string;
+  photos: File[] | [];
   subcategory: string;
   createdProduct: boolean;
   createdProductName?: string;
 }
 
 export interface UpdateProductValues extends ProductFormBase {
-  photo: File | null;
+  photos: File[] | [];
   updatedProduct: boolean;
   updatedProductName?: string;
 }
