@@ -36,7 +36,7 @@ const Product: React.FC = () => {
   return (
     <Layout title="" description="">
       <Grid container spacing={2} p={3}>
-        <Grid>
+        <Grid width="100%">
           {loading && <Typography>Loading...</Typography>}
           {error && <Typography color="error">{error}</Typography>}
 
@@ -44,7 +44,7 @@ const Product: React.FC = () => {
             <Box>
               <ProductBreadcrumbs product={product} />
 
-              <Grid container alignItems="center" mt={1}>
+              <Grid container mt={1} width="100%">
                 <Grid size={{ xs: 12, md: 6 }} mb={2}>
                   <ShowImage
                     item={product}
@@ -55,17 +55,18 @@ const Product: React.FC = () => {
                   />
                 </Grid>
 
-                <Grid size={{ xs: 12, md: 6 }} pl={{ md: 6 }}>
+                <Grid display="flex" flexDirection="column" justifyContent="flex-start" alignItems="center"
+                  size={{ xs: 12, md: 6 }} pl={{ md: 6 }}>
                   <Typography variant="h4" fontWeight="bold">
                     {product.name}
                   </Typography>
 
-                  <Typography variant="body1" color="text.secondary">
-                    {localizedDescription}
-                  </Typography>
-
                   <Typography variant="body2" color="text.secondary">
                     {product.category?.name ?? "Uncategorized"}
+                  </Typography>
+
+                  <Typography sx={{ whiteSpace: "pre-wrap", my: 2 }} variant="body1" color="text.primary">
+                    {localizedDescription}
                   </Typography>
 
                   <SoldBadge quantity={product.quantity} />
@@ -75,6 +76,7 @@ const Product: React.FC = () => {
                         variant="h5"
                         color="success.main"
                         fontWeight="bold"
+                        mb="10px"
                       >
                         € {product.price}
                       </Typography>
@@ -88,19 +90,19 @@ const Product: React.FC = () => {
             </Box>
           )}
         </Grid>
-         <Grid container spacing={3} mt={2}>
-           <Grid size={12}>
-        <Typography variant="h5" mt={4}>
-          {t("similar_paintings")}
-        </Typography>
-        </Grid>
+        <Grid container size={12} spacing={3} mt={2}>
+          <Grid size={12}>
+            <Typography variant="h5" mt={4}>
+              {t("similar_paintings")}
+            </Typography>
+          </Grid>
           {related.slice(0, 4).map((p) => (
             <Grid size={{ xs: 12, sm: 6, md: 3 }} key={p._id}>
               <ProductCard product={{ ...p, count: 1 }} />
             </Grid>
           ))}
-          </Grid>
-          </Grid>
+        </Grid>
+      </Grid>
     </Layout>
   );
 };
