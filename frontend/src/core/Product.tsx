@@ -51,6 +51,7 @@ const Product: React.FC = () => {
                     url="product"
                     width={380}
                     height={380}
+                    showAll={true}
                   />
                 </Grid>
 

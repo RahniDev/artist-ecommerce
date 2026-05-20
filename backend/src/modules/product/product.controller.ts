@@ -39,31 +39,40 @@ export const productById = async (
     }
 };
 
-export const read = (req: Request, res: Response): Response => {
+export const read = async (req: Request, res: Response): Promise<Response> => {
     if (!req.product) {
         return res.status(404).json({ error: "Product not loaded" })
     }
 
     const { lang = 'en' } = req.query;
 
-    const product = req.product.toObject();
+    // Re-fetch with photos (but strip binary data manually)
+    const fullProduct = await Product.findById(req.product._id)
+        .populate("category")
+        .lean();
 
-    // Safe access with type checking
-    let description = '';
-    if (product.description && typeof product.description === 'object') {
-        const desc = product.description as any;
-        description = desc[lang as string] || desc.en || '';
-    } else {
-        description = product.description as string || '';
+    if (!fullProduct) {
+        return res.status(404).json({ error: "Product not found" });
     }
 
-    const response = {
-        ...product,
-        description
-    };
+    let description = '';
+    if (fullProduct.description && typeof fullProduct.description === 'object') {
+        const desc = fullProduct.description as any;
+        description = desc[lang as string] || desc.en || '';
+    } else {
+        description = fullProduct.description as string || '';
+    }
 
-    return res.json(response);
-}
+    // Strip binary data but keep rest of each photo object
+    const photos = (fullProduct.photos ?? []).map(({ data, ...rest }: any) => rest);
+
+    return res.json({
+        ...fullProduct,
+        description,
+        photos,
+        photoCount: photos.length
+    });
+};
 
 export const list = async (req: Request, res: Response) => {
     try {
@@ -279,7 +288,7 @@ export const update = async (req: Request, res: Response) => {
                 };
             }
 
-            // We can't delete from fields, so we'll skip it in the Object.assign
+            // You can't delete from fields, so skip it in the Object.assign
             // by creating a new object without description
             const otherFields = Object.entries(fields)
                 .filter(([key]) => key !== 'description')
@@ -365,7 +374,7 @@ export const listSearch = async (req: Request, res: Response) => {
 
     try {
         const products = await Product.find(query)
-            .select("-photo")
+            .select("-photos")
             .lean();
 
         // Transform each product with safe type checking

@@ -32,6 +32,7 @@ const ProductCard: React.FC<CardProps> = ({
                     item={product}
                     url="product"
                     width="300px"
+                    showAll={false}
                 />
 
                 <CardContent sx={{

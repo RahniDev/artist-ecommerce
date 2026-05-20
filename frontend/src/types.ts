@@ -70,7 +70,7 @@ export interface ManageProductRowProps {
   onDelete: (id: string) => void;
 }
 
-  export type ProductFormField =
+export type ProductFormField =
   | "name"
   | "description"
   | "price"
@@ -166,7 +166,8 @@ export interface IProduct {
   quantity: number;
   shipping: boolean;
   sold: number;
-  photo?: any;
+  photos?: any;
+  photoCount?: number;
 }
 
 export interface IPriceRange {
@@ -297,11 +298,13 @@ export interface ShowImageProps {
   item: {
     _id: string;
     name?: string;
+    photos?: any[];
+    photoCount?: number;
   };
   url: string;
   width?: number | string;
   height?: number | string;
-  objectFit?: React.CSSProperties["objectFit"];
+  showAll?: boolean;
 }
 
 export interface RadioBoxProps {
