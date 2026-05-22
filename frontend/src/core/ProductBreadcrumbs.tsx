@@ -13,14 +13,13 @@ const ProductBreadcrumbs: React.FC<ProductBreadcrumbsProps> = ({ product }) => {
   const { t } = useTranslation();
 
   const breadcrumbItems: { name: string; url: string }[] = [
-    { name: t("home"), url: "/" },
-    { name: t("shop"), url: "/shop" },
+    { name: t("home"), url: "/" }
   ];
 
   if (product.category) {
     breadcrumbItems.push({
       name: product.category.name,
-      url: `/shop?category=${product.category._id}`,
+      url: `/category/${product.category._id}`,
     });
   }
 
