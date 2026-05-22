@@ -46,8 +46,7 @@ async function fetchJSON<T>(url: string, options?: RequestInit): Promise<ApiResp
 }
 
 export async function getProducts(
-  sortBy: string
-): Promise<ApiResponse<{ data: IProduct[] }>> {
+sortBy: string): Promise<ApiResponse<{ data: IProduct[] }>> {
   return fetchJSON<{ data: IProduct[] }>(
     `${API}/products?sortBy=${sortBy}&order=desc&limit=6`
   );

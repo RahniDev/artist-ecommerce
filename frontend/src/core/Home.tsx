@@ -8,9 +8,12 @@ import Loader from "./Loader";
 import Search from "./Search";
 import CollectionSlider from "./CollectionSlider";
 import Layout from "./Layout";
+import { useSelector } from "react-redux";
+import type { RootState } from "../redux/store";
 
 
 const Home: React.FC = () => {
+  const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
   const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
@@ -37,7 +40,7 @@ const Home: React.FC = () => {
 
   useEffect(() => {
     loadProducts();
-  }, []);
+  }, [currentLanguage]);
 
   return (
     <Layout title="" description="">
