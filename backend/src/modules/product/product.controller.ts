@@ -4,6 +4,7 @@ import { Product } from './product.model.js'
 import { errorHandler, MongoError } from '../../helpers/errorHandler.js'
 import { NextFunction, Request, Response } from 'express'
 import mongoose from 'mongoose'
+import { translateToAll } from './translate.js'
 
 declare global {
     namespace Express {
@@ -149,7 +150,7 @@ export const photo = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
-    const form = formidable({multiples: true});
+    const form = formidable({ multiples: true });
 
     try {
         const { fields, files } = await new Promise<{ fields: Fields; files: Files }>((resolve, reject) => {
@@ -187,14 +188,13 @@ export const create = async (req: Request, res: Response) => {
             return res.status(400).json({ error: "All fields are required" });
         }
 
+        const translations = await translateToAll(descriptionValue);
+
         const product = new Product({
             name: nameValue,
             description: {
                 en: descriptionValue,
-                de: "",
-                es: "",
-                fr: "",
-                it: ""
+                ...translations
             },
             price: priceValue,
             category: categoryValue,
@@ -282,9 +282,13 @@ export const update = async (req: Request, res: Response) => {
                 : descriptionField;
 
             if (descriptionValue && typeof descriptionValue === 'string') {
+                const translations = await translateToAll(descriptionValue);
                 product.description = {
-                    ...product.description,  // Keep existing translations
-                    en: descriptionValue      // Update English
+                    en: descriptionValue,
+                    de: translations.de ?? '',
+                    es: translations.es ?? '',
+                    it: translations.it ?? '',
+                    fr: translations.fr ?? ''
                 };
             }
 

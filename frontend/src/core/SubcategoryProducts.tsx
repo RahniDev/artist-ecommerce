@@ -2,7 +2,8 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import type { IProduct } from "../types";
 import { API } from "../config";
-import { Grid, Typography, Box, Alert, CircularProgress } from "@mui/material";
+import { Grid, Typography, Box, Alert, CircularProgress, Link as MuiLink } from "@mui/material";
+import { Link } from "react-router-dom";
 import Layout from "./Layout";
 import ShowImage from "./ShowImage";
 import Masonry from "@mui/lab/Masonry";
@@ -14,6 +15,7 @@ const ProductItem = ({ product }: { product: IProduct }) => {
 
     return (
       <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
+      <MuiLink component={Link} to={`/product/${product._id}`} style={{ textDecoration: "none", color: "inherit" }}>
         <ShowImage item={product} url='product' width="200px" />
         <Typography variant="h3" fontSize="24px">
           {product.name}
@@ -22,6 +24,7 @@ const ProductItem = ({ product }: { product: IProduct }) => {
           {localizedDescription}
         </Typography>
         <Typography variant="body1">€{product.price}</Typography>
+        </MuiLink>
       </Grid>
     );
   } catch (error) {
