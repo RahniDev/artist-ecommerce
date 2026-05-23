@@ -23,7 +23,7 @@ const ProductCard: React.FC<CardProps> = ({
                     color: "inherit",
                     display: "flex",
                     flexDirection: "column",
-                    }}
+                }}
             >
                 <ShowImage
                     item={product}
@@ -42,9 +42,13 @@ const ProductCard: React.FC<CardProps> = ({
                         <Typography
                             variant="subtitle1"
                             component="div">
-                            {product.name}
+                            {product.nameEn}
                         </Typography>
-                        <Typography sx={{whiteSpace: "pre-wrap"}} color="#6c757d">{product.description}</Typography>
+                        {product.nameEn !== product.name && (
+                            <Typography variant="body1" color="text.primary" fontStyle="italic">
+                                {product.name}
+                            </Typography>)}
+                        <Typography sx={{ whiteSpace: "pre-wrap" }} color="#6c757d">{product.description}</Typography>
                         <SoldBadge quantity={product.quantity} />
 
                         {product.quantity > 0 && (

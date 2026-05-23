@@ -19,11 +19,16 @@ const applyLang = (product: any, lang: string) => {
         ? product.description[lang] || product.description.en || ''
         : product.description || '';
 
+
     const name = typeof product.name === 'object'
         ? product.name[lang] || product.name.en || ''
         : product.name || '';
 
-    return { ...product, name, description };
+    const nameEn = typeof product.name === 'object'
+        ? product.name.en || ''
+        : product.name || '';
+
+    return { ...product, name, nameEn, description };
 };
 
 export const productById = async (

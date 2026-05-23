@@ -21,7 +21,7 @@ const Product: React.FC = () => {
     (state: RootState) => state.product
   );
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
-  
+
   useEffect(() => {
     if (!productId) return;
 
@@ -57,8 +57,12 @@ const Product: React.FC = () => {
                 <Grid display="flex" flexDirection="column" justifyContent="flex-start" alignItems="center"
                   size={{ xs: 12, md: 6 }} pl={{ md: 6 }}>
                   <Typography variant="h4" fontWeight="bold">
-                    {product.name}
+                    {product.nameEn}
                   </Typography>
+                  {product.nameEn !== product.name && (
+                    <Typography variant="body1" color="text.primary" fontStyle="italic">
+                      {product.name}
+                    </Typography>)}
 
                   <Typography variant="body2" color="text.secondary">
                     {product.category?.name ?? "Uncategorized"}

@@ -47,19 +47,6 @@ const FeaturedPainting = () => {
       </Box>
     );
   }
-
-  const getLocalizedDescription = () => {
-    if (!product.description) return '';
-    
-    // If description is an object with language keys
-    if (typeof product.description === 'object') {
-      return product.description[currentLanguage as keyof typeof product.description] || 
-             product.description.en || 
-             '';
-    }
-     // If description is already a string (fallback)
-    return product.description;
-  };
  
   return (
     <Box style={{ backgroundColor: "#e7e7e7", padding: "20px", display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
@@ -68,7 +55,7 @@ const FeaturedPainting = () => {
           {product.name}
         </Typography>
         <Typography variant="body1" textAlign="center" color="grey.700" fontSize="1.1rem" fontFamily='Playfair Display, serif' mt={2}>
-          {getLocalizedDescription()}
+          {product.description}
         </Typography>
       </Box>
       <Box style={{ width: "50%" }}>

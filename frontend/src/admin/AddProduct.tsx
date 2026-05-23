@@ -148,14 +148,14 @@ const AddProduct: React.FC = () => {
 
     try {
       const res = await createProduct(user._id, token, formData.current);
-
+      const rawName = res.data?.name as any;
       if (res.error) {
         setValues(p => ({ ...p, error: res.error || "", loading: false }));
       } else if (res.data) {
         setValues(p => ({
           ...p,
           createdProduct: true,
-          createdProductName: res.data?.name,
+          createdProductName: typeof rawName === 'object' ? rawName?.en : rawName ?? "",
           name: "",
           description: "",
           price: "",

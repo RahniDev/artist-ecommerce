@@ -21,3 +21,4 @@ Using React Compiler for optimal performance
 - Product breadcrumbs
 - React multi-language translation using I18n
 - Newsletter signup form - Mailchimp
+- Translation of product names & descriptions using DeepL
