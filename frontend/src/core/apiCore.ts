@@ -30,7 +30,6 @@ const addLanguageParam = (url: string): string => {
 };
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<ApiResponse<T>> {
   try {
-    // Add language parameter to the URL
     const urlWithLang = addLanguageParam(url);
 
     const res = await fetch(urlWithLang, { ...options, credentials: "include" });

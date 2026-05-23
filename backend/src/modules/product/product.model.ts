@@ -1,7 +1,13 @@
 import mongoose, { Schema, Types, Document } from "mongoose";
 
 export interface IProduct {
-  name: string;
+    name: {
+    en: string;
+    de: string;
+    es: string;
+    it: string;
+    fr: string;
+  };
   description: {
     en: string;
     de: string;
@@ -29,11 +35,12 @@ export interface IProductDocument extends IProduct, Document { }
 
 const productSchema = new Schema<IProductDocument>({
   name: {
-    type: String,
-    trim: true,
-    required: true,
-    maxlength: 60
-  },
+    en: { type: String, required: true, trim: true},
+    de: { type: String, default: '' },
+    es: { type: String, default: '' },
+    it: { type: String, default: '' },
+    fr: { type: String, default: '' }
+},
   description: {
     en: { type: String, required: true },
     de: { type: String, default: '' },

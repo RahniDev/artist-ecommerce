@@ -154,13 +154,7 @@ export interface LocalizedDescriptionOptions {
 export interface IProduct {
   _id: string;
   name: string;
-  description: {
-    en: string;
-    de: string;
-    es: string;
-    it: string;
-    fr: string;
-  }
+  description: string;
   price: number;
   category: any;
   quantity: number;

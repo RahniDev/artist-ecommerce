@@ -14,6 +14,18 @@ declare global {
     }
 }
 
+const applyLang = (product: any, lang: string) => {
+    const description = typeof product.description === 'object'
+        ? product.description[lang] || product.description.en || ''
+        : product.description || '';
+
+    const name = typeof product.name === 'object'
+        ? product.name[lang] || product.name.en || ''
+        : product.name || '';
+
+    return { ...product, name, description };
+};
+
 export const productById = async (
     req: Request,
     res: Response,
@@ -55,25 +67,15 @@ export const read = async (req: Request, res: Response): Promise<Response> => {
     if (!fullProduct) {
         return res.status(404).json({ error: "Product not found" });
     }
-
-    let description = '';
-    if (fullProduct.description && typeof fullProduct.description === 'object') {
-        const desc = fullProduct.description as any;
-        description = desc[lang as string] || desc.en || '';
-    } else {
-        description = fullProduct.description as string || '';
-    }
-
     // Strip binary data but keep rest of each photo object
     const photos = (fullProduct.photos ?? []).map(({ data, ...rest }: any) => rest);
 
     return res.json({
-        ...fullProduct,
-        description,
+        ...applyLang(fullProduct, lang as string),
         photos,
         photoCount: photos.length
     });
-};
+}
 
 export const list = async (req: Request, res: Response) => {
     try {
@@ -85,21 +87,7 @@ export const list = async (req: Request, res: Response) => {
             .limit(6)
             .lean();
 
-        // Transform each product with safe type checking
-        const transformedProducts = products.map(product => {
-            let description = '';
-            if (product.description && typeof product.description === 'object') {
-                const desc = product.description as any;
-                description = desc[lang as string] || desc.en || '';
-            } else {
-                description = product.description as string || '';
-            }
-
-            return {
-                ...product,
-                description
-            };
-        });
+        const transformedProducts = products.map(p => applyLang(p, lang as string));
 
         return res.status(200).json({ data: transformedProducts });
     } catch (err) {
@@ -111,6 +99,8 @@ export const list = async (req: Request, res: Response) => {
 export const listRelated = async (req: Request, res: Response) => {
     let limit = req.query.limit ? Number(req.query.limit) : 6
     try {
+        const { lang = 'en' } = req.query;
+
         const products = await Product.find(
             {
                 _id: { $ne: req.product?._id },
@@ -119,7 +109,8 @@ export const listRelated = async (req: Request, res: Response) => {
             .limit(limit)
             .populate('category', '_id name')
             .lean()
-        return res.json({ data: products });
+        const transformedProducts = products.map(p => applyLang(p, lang as string));
+        return res.json({ data: transformedProducts });
     } catch (err) { return res.status(400).json({ error: 'Products not found' }) }
 }
 
@@ -188,14 +179,14 @@ export const create = async (req: Request, res: Response) => {
             return res.status(400).json({ error: "All fields are required" });
         }
 
-        const translations = await translateToAll(descriptionValue);
+        const [nameTranslations, descTranslations] = await Promise.all([
+            translateToAll(nameValue),
+            translateToAll(descriptionValue)
+        ]);
 
         const product = new Product({
-            name: nameValue,
-            description: {
-                en: descriptionValue,
-                ...translations
-            },
+            name: { en: nameValue, ...nameTranslations },
+            description: { en: descriptionValue, ...descTranslations },
             price: priceValue,
             category: categoryValue,
             subcategory: normalize(subcategory) || null,
@@ -273,7 +264,19 @@ export const update = async (req: Request, res: Response) => {
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
-
+        if (fields.name) {
+            const nameValue = Array.isArray(fields.name) ? fields.name[0] : fields.name;
+            if (nameValue) {
+                const translations = await translateToAll(nameValue);
+                product.name = {
+                    en: nameValue,
+                    de: translations.de ?? '',
+                    es: translations.es ?? '',
+                    it: translations.it ?? '',
+                    fr: translations.fr ?? ''
+                };
+            }
+        }
         if (fields.description) {
 
             const descriptionField = fields.description;
@@ -295,7 +298,7 @@ export const update = async (req: Request, res: Response) => {
             // You can't delete from fields, so skip it in the Object.assign
             // by creating a new object without description
             const otherFields = Object.entries(fields)
-                .filter(([key]) => key !== 'description')
+                .filter(([key]) => key !== 'description' && key !== 'name')
                 .reduce((acc, [key, value]) => {
                     acc[key] = Array.isArray(value) ? value[0] : value;
                     return acc;
@@ -303,14 +306,14 @@ export const update = async (req: Request, res: Response) => {
 
             Object.assign(product, otherFields);
         } else {
-            // Process all fields normally if no description
-            Object.assign(
-                product,
-                Object.fromEntries(
-                    Object.entries(fields).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])
-                )
-            );
-        }
+    const otherFields = Object.entries(fields)
+        .filter(([key]) => key !== 'name')
+        .reduce((acc, [key, value]) => {
+            acc[key] = Array.isArray(value) ? value[0] : value;
+            return acc;
+        }, {} as Record<string, any>);
+    Object.assign(product, otherFields);
+}
 
         const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
 
@@ -337,21 +340,7 @@ export const listBySubcategory = async (req: Request, res: Response) => {
             .select("-photos")
             .lean();
 
-        // Transform each product with safe type checking
-        const transformedProducts = products.map(product => {
-            let description = '';
-            if (product.description && typeof product.description === 'object') {
-                const desc = product.description as any;
-                description = desc[lang as string] || desc.en || '';
-            } else {
-                description = product.description as string || '';
-            }
-
-            return {
-                ...product,
-                description
-            };
-        });
+        const transformedProducts = products.map(p => applyLang(p, lang as string));
 
         return res.json({ data: transformedProducts });
     } catch (err) {
@@ -369,7 +358,7 @@ export const listSearch = async (req: Request, res: Response) => {
     }
 
     const query: Record<string, any> = {
-        name: { $regex: search, $options: "i" }
+        'name.en': { $regex: search, $options: "i" }
     };
 
     if (category && category !== "All") {
@@ -381,21 +370,7 @@ export const listSearch = async (req: Request, res: Response) => {
             .select("-photos")
             .lean();
 
-        // Transform each product with safe type checking
-        const transformedProducts = products.map(product => {
-            let description = '';
-            if (product.description && typeof product.description === 'object') {
-                const desc = product.description as any;
-                description = desc[lang as string] || desc.en || '';
-            } else {
-                description = product.description as string || '';
-            }
-
-            return {
-                ...product,
-                description
-            };
-        });
+        const transformedProducts = products.map(p => applyLang(p, lang as string));
 
         return res.json(transformedProducts);
     } catch (err) {
@@ -448,23 +423,10 @@ export const listBySearch = async (req: Request, res: Response) => {
             .limit(limit)
             .lean();
 
-        // Transform each product with safe type checking
-        const transformedData = data.map(product => {
-            let description = '';
-            if (product.description && typeof product.description === 'object') {
-                const desc = product.description as any;
-                description = desc[lang as string] || desc.en || '';
-            } else {
-                description = product.description as string || '';
-            }
-
-            return {
-                ...product,
-                description
-            };
-        });
+        const transformedData = data.map(p => applyLang(p, lang as string));
 
         return res.json({ size: transformedData.length, data: transformedData });
+
     } catch (err) {
         return res.status(400).json({ error: "Products not found" });
     }

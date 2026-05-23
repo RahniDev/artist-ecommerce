@@ -11,7 +11,6 @@ import AddToCartButton from "./AddToCartButton";
 import ProductBreadcrumbs from "./ProductBreadcrumbs";
 import ShowImage from "./ShowImage";
 import { Box, Typography, Grid } from "@mui/material";
-import { useLocalizedDescription } from "../hooks/useLocalizedDescription";
 
 const Product: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -21,8 +20,8 @@ const Product: React.FC = () => {
   const { product, related, loading, error } = useSelector(
     (state: RootState) => state.product
   );
-  const { description: localizedDescription } = useLocalizedDescription(product);
-
+  const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
+  
   useEffect(() => {
     if (!productId) return;
 
@@ -31,7 +30,7 @@ const Product: React.FC = () => {
     return () => {
       dispatch(clearProduct());
     };
-  }, [dispatch, productId]);
+  }, [dispatch, productId, currentLanguage]);
 
   return (
     <Layout title="" description="">
@@ -66,7 +65,7 @@ const Product: React.FC = () => {
                   </Typography>
 
                   <Typography sx={{ whiteSpace: "pre-wrap", my: 2 }} variant="body1" color="text.primary">
-                    {localizedDescription}
+                    {product.description}
                   </Typography>
 
                   <SoldBadge quantity={product.quantity} />

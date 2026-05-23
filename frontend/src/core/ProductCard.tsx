@@ -3,13 +3,10 @@ import ShowImage from "./ShowImage";
 import type { CardProps } from "../types";
 import { Card, CardContent, Typography, Box, Stack } from "@mui/material";
 import SoldBadge from "./SoldBadge";
-import { useLocalizedDescription } from "../hooks/useLocalizedDescription";
 
 const ProductCard: React.FC<CardProps> = ({
     product
 }) => {
-
-    const { description: localizedDescription } = useLocalizedDescription(product);
 
     return (
         <Card elevation={0}
@@ -47,7 +44,7 @@ const ProductCard: React.FC<CardProps> = ({
                             component="div">
                             {product.name}
                         </Typography>
-                        <Typography sx={{whiteSpace: "pre-wrap"}} color="#6c757d">{localizedDescription}</Typography>
+                        <Typography sx={{whiteSpace: "pre-wrap"}} color="#6c757d">{product.description}</Typography>
                         <SoldBadge quantity={product.quantity} />
 
                         {product.quantity > 0 && (
