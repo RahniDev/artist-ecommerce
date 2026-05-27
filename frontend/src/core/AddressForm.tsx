@@ -32,37 +32,50 @@ const AddressForm: React.FC<Props> = ({ value, onChange }) => {
     };
 
     const handleFieldChange = (field: keyof Address, val: string) => {
-        onChange({ ...value, [field]: val });
+        const updated = { ...value, [field]: val };
+        updated.full = [updated.street1, updated.street2, updated.city, updated.zip, updated.state, updated.country]
+            .filter(Boolean)
+            .join(", ");
+        onChange(updated);
     };
 
     return (
         <Box sx={{ mb: 2 }}>
-            <Autocomplete
-                freeSolo
-                options={suggestions}
-                getOptionLabel={(option) => {
-                    if (typeof option === "string") return option;
-                    const { name, city, zip, state, country } = option.properties;
-                    return [name, city, zip, state, country].filter(Boolean).join(", ");
-                }}
-                onInputChange={(_, value) => handleAutocompleteInput(value)}
-                onChange={(_, value) => {
-                    // Only handle PhotonPlace objects, ignore freeSolo strings
-                    if (value && typeof value !== "string") {
-                        handleSelectSuggestion(value);
-                    }
-                }}
-                renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        label="Street"
-                        placeholder="Start typing your address..."
-                        fullWidth
-                        sx={{ mb: 1 }}
-                        required
-                    />
-                )}
-            />
+         {/* Street 1 — with autocomplete */}
+<Autocomplete
+  freeSolo
+  options={suggestions}
+  getOptionLabel={(option) => {
+    if (typeof option === "string") return option;
+    const { name, city, zip, state, country } = option.properties;
+    return [name, city, zip, state, country].filter(Boolean).join(", ");
+  }}
+  onInputChange={(_, val) => {
+    handleAutocompleteInput(val);
+    handleFieldChange("street1", val);
+  }}
+  onChange={(_, val) => {
+    if (val && typeof val !== "string") handleSelectSuggestion(val);
+  }}
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      label="Street address"
+      placeholder="Start typing your address..."
+      fullWidth
+      sx={{ mb: 1 }}
+      required
+    />
+  )}
+/>
+
+<TextField
+  label="Apartment, suite, etc. (optional)"
+  value={value.street2}
+  onChange={(e) => handleFieldChange("street2", e.target.value)}
+  fullWidth
+  sx={{ mb: 1 }}
+/>
             <TextField
                 label="City"
                 value={value.city}

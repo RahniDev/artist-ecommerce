@@ -12,7 +12,11 @@ import { MuiTelInput } from 'mui-tel-input';
 import type { Address, CheckoutState, CartItem } from "../types";
 import ShippingRates from "./ShippingRates";
 
-const Checkout: React.FC = () => {
+interface CheckoutProps {
+  onSuccess: () => void;
+}
+
+const Checkout: React.FC<CheckoutProps> = ({onSuccess}) => {
   const dispatch = useDispatch();
   const products = useSelector((state: RootState) => state.cart.items);
   const [selectedShipping, setSelectedShipping] = useState<any>(null);
@@ -41,6 +45,7 @@ const Checkout: React.FC = () => {
   const cartItems: CartItem[] = products.map(p => ({
     _id: p._id,
     name: p.name,
+    nameEn: p.name,
     price: p.price,
     weight: p.weight ?? 500,
     length: p.length ?? 0,
@@ -94,16 +99,26 @@ const Checkout: React.FC = () => {
       {
         authorization: data.clientToken,
         container: dropinContainer.current,
-        card: { cardholderName: true },
+        card: {
+          cardholderName: true
+        },
       },
       (err, instance) => {
+        console.error("Braintree error:", err);
         if (err) return setData(prev => ({ ...prev, error: "Failed to load payment UI" }));
+        console.log("Braintree instance created:", instance);
         dropInInstance.current = instance;
       }
     );
   }, [data.clientToken]);
 
   const payOrder = async () => {
+  console.log("selectedShipping:", selectedShipping);
+  console.log("address:", address);
+  
+  if (!dropInInstance.current || !selectedShipping || !address) {
+    return;
+  }
     if (!dropInInstance.current || !selectedShipping || !address) return;
     setData(prev => ({ ...prev, loading: true }));
 
@@ -141,7 +156,7 @@ const Checkout: React.FC = () => {
       });
 
       dispatch(clearCart());
-      setData(prev => ({ ...prev, success: true }));
+  onSuccess();
     } catch (err: any) {
       setData(prev => ({ ...prev, error: err.message || "Payment/shipping failed" }));
     } finally {
@@ -153,7 +168,6 @@ const Checkout: React.FC = () => {
     <Box>
       <h2>Total: €{getTotal()}</h2>
       <Loader loading={data.loading} />
-      {data.success && <Box sx={{ color: "green" }}>Thanks! Your payment was successful!</Box>}
       {data.error && <Box sx={{ color: "red" }}>{data.error}</Box>}
 
       <TextField label="Email" value={data.email} onChange={e => setData(prev => ({ ...prev, email: e.target.value }))} fullWidth required sx={{ mb: 1 }} />
@@ -178,9 +192,8 @@ const Checkout: React.FC = () => {
           Selected: {selectedShipping.type === "STANDARD" ? "Postal" : "Express"} - {selectedShipping.carrier} - {selectedShipping.service} - {selectedShipping.currency} {selectedShipping.rate}
         </p>
       )}
-
-      <Box ref={dropinContainer} sx={{ minHeight: 200, border: "1px solid #ddd", p: 2, borderRadius: 2, mb: 2 }} />
-      <Button variant="contained" onClick={payOrder} disabled={!dropInInstance.current || data.loading || !selectedShipping}>
+      <Box ref={dropinContainer} sx={{ minHeight: 300, border: "1px solid #ddd", p: 2, borderRadius: 2, mb: 2 }} />
+      <Button variant="contained" onClick={payOrder} disabled={!dropInInstance.current || data.loading}>
         Pay
       </Button>
     </Box>

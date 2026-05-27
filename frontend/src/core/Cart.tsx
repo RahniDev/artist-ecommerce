@@ -18,11 +18,13 @@ import CartItemControls from "./CartItemControls";
 import ShowImage from "./ShowImage";
 import { Link as RouterLink, Navigate } from "react-router-dom";
 import CartBreadcrumbs from "./CartBreadcrumbs";
+import { useState } from "react";
 
 const Cart: React.FC = () => {
     const items = useSelector((state: RootState) => state.cart.items);
     const auth = useSelector((state: RootState) => state.auth.user);
     const token = useSelector((state: RootState) => state.auth.token);
+    const [paymentSuccess, setPaymentSuccess] = useState(false);
 
     const { t } = useTranslation();
 
@@ -100,6 +102,20 @@ const Cart: React.FC = () => {
         </Box>
     );
 
+    if (paymentSuccess) {
+        return (
+            <Layout title="Order Confirmed" description="">
+                <Container maxWidth="md">
+                    <Box sx={{ textAlign: "center", p: 4 }}>
+                        <Typography variant="h5" color="success.main" fontWeight="bold">
+                            🎉 Thanks! Your payment was successful!
+                        </Typography>
+                    </Box>
+                </Container>
+            </Layout>
+        );
+    }
+
     return (
         <Layout title="Shopping Cart" description="">
             <Container maxWidth="md">
@@ -109,7 +125,7 @@ const Cart: React.FC = () => {
                 {items.length > 0 && (
                     <>
                         <Divider sx={{ my: 3 }} />
-                        <Checkout />
+                        <Checkout onSuccess={() => setPaymentSuccess(true)} />
                     </>
                 )}
             </Container>
