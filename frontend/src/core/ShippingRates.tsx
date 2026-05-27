@@ -9,6 +9,8 @@ import {
   Alert,
 } from "@mui/material";
 import type { IRate, ShippingRatesProps } from "../types";
+import { API } from "../config";
+
 
 const ShippingRates: React.FC<ShippingRatesProps> = ({
   cartItems,
@@ -28,7 +30,7 @@ const ShippingRates: React.FC<ShippingRatesProps> = ({
       setError("");
 
       try {
-        const res = await fetch("/api/shipping/rates", {
+        const res = await fetch(`${API}/shipping/rates`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ cartItems, toAddress: address }),
