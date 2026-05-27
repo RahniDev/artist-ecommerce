@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../redux/store";
@@ -11,11 +11,20 @@ import AddToCartButton from "./AddToCartButton";
 import ProductBreadcrumbs from "./ProductBreadcrumbs";
 import ShowImage from "./ShowImage";
 import { Box, Typography, Grid } from "@mui/material";
+import ImageModal from "./ImageModal";
+import { API } from "../config";
 
 const Product: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalSrc, setModalSrc] = useState("");
+
+  const handleImageClick = (src: string) => {
+    setModalSrc(src);
+    setModalOpen(true);
+  };
 
   const { product, related, loading, error } = useSelector(
     (state: RootState) => state.product
@@ -45,14 +54,24 @@ const Product: React.FC = () => {
 
               <Grid container mt={1} width="100%">
                 <Grid size={{ xs: 12, md: 6 }} mb={2}>
-                  <ShowImage
-                    item={product}
-                    url="product"
-                    width={380}
-                    height={380}
-                    showAll={true}
-                  />
+                  <Box onClick={() => handleImageClick(`${API}/product/photo/${product._id}`)}
+                    sx={{ cursor: "zoom-in" }}>
+                    <ShowImage
+                      item={product}
+                      url="product"
+                      width={380}
+                      height={380}
+                      showAll={true}
+                    />
+                    </Box>
                 </Grid>
+                {/* Add modal at the end, inside the product check */}
+                <ImageModal
+                  open={modalOpen}
+                  src={modalSrc}
+                  alt={product.nameEn}
+                  onClose={() => setModalOpen(false)}
+                />
 
                 <Grid display="flex" flexDirection="column" justifyContent="flex-start" alignItems="center"
                   size={{ xs: 12, md: 6 }} pl={{ md: 6 }}>
