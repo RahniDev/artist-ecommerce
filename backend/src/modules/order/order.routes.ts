@@ -1,7 +1,7 @@
 import { Router } from "express";
 
 import { requireSignin, isAuth, isAdmin, optionalSignin } from "../auth/auth.controller.js";
-import { userById, addOrderToUserHistory } from "../user/user.controller.js";
+import { userById, addOrderToUserHistory, loadProfileFromAuth } from "../user/user.controller.js";
 import {
     create,
     listOrders,
@@ -16,6 +16,7 @@ const router: Router = Router();
 router.post(
     "/order/create",
     optionalSignin,
+    loadProfileFromAuth,
     addOrderToUserHistory,
     decreaseQuantity,
     create

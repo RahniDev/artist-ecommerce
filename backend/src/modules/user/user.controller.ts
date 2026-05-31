@@ -7,6 +7,23 @@ interface CustomRequest extends Request {
   profile?: IUser;
 }
 
+interface AuthRequest extends Request {
+  auth?: {
+    _id?: string;
+  };
+  profile?: IUser;
+}
+
+export const loadProfileFromAuth = async (req: Request, res: Response, next: NextFunction) => {
+    const authReq = req as AuthRequest;
+    if (!authReq.auth?._id) return next();
+    try {
+        const user = await User.findById(authReq.auth._id).exec();
+        if (user) authReq.profile = user;
+    } catch {}
+    next();
+};
+
 export const userById = async (req: CustomRequest, res: Response, next: NextFunction, id: string) => {
   try {
     const user = await User.findById(id).exec();
@@ -52,8 +69,8 @@ export const update = async (req: CustomRequest, res: Response) => {
 
 // Add order to user purchase history
 export const addOrderToUserHistory = async (req: CustomRequest, res: Response, next: NextFunction) => {
-  if (!req.profile) return res.status(404).json({ error: "User not found" });
-
+ if (!req.profile) return next();
+ 
   const history = req.body.order.products.map((item: any) => ({
     _id: item._id,
     name: item.name,

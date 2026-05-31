@@ -4,8 +4,8 @@ import { errorHandler, MongoError } from '../../helpers/errorHandler.js';
 import sgMail from '@sendgrid/mail'
 
 interface CustomRequest extends Request {
-  profile?: any;
-  order?: IOrder;
+    profile?: any;
+    order?: IOrder;
 }
 
 export const orderById = async (req: CustomRequest, res: Response, next: NextFunction, id: string) => {
@@ -29,8 +29,8 @@ export const create = async (req: CustomRequest, res: Response) => {
         const profile = req.profile;
 
         req.body.order.user = profile._id;
-  console.log("create order hit, body:", req.body);
-  console.log("profile:", req.profile);
+        console.log("create order hit, body:", req.body);
+        console.log("profile:", req.profile);
         const order = new Order(req.body.order);
         const savedOrder = await order.save();
 
@@ -58,15 +58,15 @@ export const create = async (req: CustomRequest, res: Response) => {
                 <h2>Order Details:</h2>
 
                 ${order.products.map((p) => {
-                    const prod: any = p.product || {};
-                    return `
+                const prod: any = p.product || {};
+                return `
                         <div style="margin-bottom:12px;">
                             <strong>Product:</strong> ${prod.name ?? p.name}<br>
                             <strong>Price:</strong> £${prod.price ?? p.price}<br>
                             <strong>Quantity:</strong> ${p.count}
                         </div>
                     `;
-                }).join('')}
+            }).join('')}
             `
         };
 

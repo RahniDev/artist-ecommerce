@@ -29,7 +29,6 @@ const Orders: React.FC = () => {
     const loadOrders = async () => {
         try {
             const res = await listOrders(user._id, token);
-            console.log("Orders response:", res);
             if (!res.error) setOrders(res as any);
         } catch (err) {
             console.error("Failed to load orders", err);
@@ -47,6 +46,7 @@ const Orders: React.FC = () => {
 
     useEffect(() => {
         loadOrders();
+        console.log(orders)
         loadStatusValues();
     }, []);
 
@@ -80,6 +80,7 @@ const Orders: React.FC = () => {
                             : "No orders"}
                     </Typography>
                     {orders.map((order) => (
+
                         <Paper
                             key={order._id}
                             sx={{
@@ -122,28 +123,43 @@ const Orders: React.FC = () => {
                                 Total products: {order.products.length}
                             </Typography>
 
-                            {order.products.map((p) => (
-                                <Paper
-                                    key={p.product as string}
-                                    variant="outlined"
-                                    sx={{ p: 2, mb: 2 }}
-                                >
-                                    <Typography variant="body1" gutterBottom sx={{ mb: 2 }}>
-                                        Painting Name: {typeof p.product === "object" ? p.product.name : p.name}
-                                    </Typography>
-                                    <Typography variant="body1" gutterBottom sx={{ mb: 2 }}>
-                                        Price: £{typeof p.product === "object" ? p.product.price : p.price}
-                                    </Typography>
+                            {order.products.map((p) => {
+                                console.log("p:", JSON.stringify(p, null, 2));
+                                return (
+                                    <Paper
+                                        key={p.product as string}
+                                        variant="outlined"
+                                        sx={{ p: 2, mb: 2 }}
+                                    >
+                                        <Typography variant="body1" gutterBottom sx={{ mb: 2 }}>
+                                            Painting Name: {typeof p.product === "object" ? p.product.name : p.name}
+                                        </Typography>
 
-                                    <Typography variant="body1" gutterBottom sx={{ mb: 2 }}>
-                                        Quantity: {p.count ?? 0}
-                                    </Typography>
+                                        <ShowImage
+                                            item={{
+                                                _id: typeof p.product === "object"
+                                        ? (p.product as any)._id
+                                        : p.product as string,
+                                        name: p.name,
+                                            }}
+                                        url="product"
+                                        width="100px"
+                                        height="100%"
+                                    />
+                                        <Typography variant="body1" gutterBottom sx={{ mb: 2 }}>
+                                            Price: £{typeof p.product === "object" ? p.product.price : p.price}
+                                        </Typography>
 
-                                    <Typography>
-                                        Product ID: {p._id}
-                                    </Typography>
-                                </Paper>
-                            ))}
+                                        <Typography variant="body1" gutterBottom sx={{ mb: 2 }}>
+                                            Quantity: {p.count ?? 0}
+                                        </Typography>
+
+                                        <Typography>
+                                            Product ID: {p._id}
+                                        </Typography>
+                                    </Paper>
+                                )
+                            })}
 
                         </Paper>
                     ))}

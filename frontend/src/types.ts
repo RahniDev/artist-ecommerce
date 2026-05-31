@@ -195,7 +195,7 @@ export interface IAuthData {
 }
 
 export interface ICartItem {
-  _id: ReactNode;
+  _id: string;
   product: string | IProduct;
   name: string;
   price: number;

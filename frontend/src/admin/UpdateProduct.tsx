@@ -6,7 +6,7 @@ import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { getCategories, updateProduct } from "./apiAdmin";
 import { getProduct } from "../core/apiCore";
-import type { ApiResponse, ICategory, IProduct, UpdateProductValues, ProductFormField } from "../types";
+import type { Category, ApiResponse, IProduct, UpdateProductValues, ProductFormField } from "../types";
 import Loader from "../core/Loader";
 import {
     Box,
@@ -117,7 +117,7 @@ const UpdateProduct = () => {
     }, [imgPreview])
 
     const loadCategories = async () => {
-        const res: ApiResponse<ICategory[]> = await getCategories();
+        const res: ApiResponse<Category[]> = await getCategories();
         if (!res.error) {
             setValues((p) => ({ ...p, categories: res.data ?? [] }));
         }
