@@ -194,8 +194,16 @@ export interface IAuthData {
   user: IUser;
 }
 
-export interface ICartItem extends IProduct {
-  count?: number;
+export interface ICartItem {
+  _id: ReactNode;
+  product: string | IProduct;
+  name: string;
+  price: number;
+  count: number;
+  weight: number;
+  width: number;
+  height: number;
+  length: number;
 }
 
 export interface IOrder {
@@ -205,6 +213,8 @@ export interface IOrder {
   amount: number;
   address: string;
   status: string;
+  firstName: string;
+  lastName: string;
   user: IUser;
   createdAt: number;
 }

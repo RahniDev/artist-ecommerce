@@ -3,7 +3,7 @@ import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { listOrders, getStatusValues, updateOrderStatus } from "./apiAdmin";
 import moment from "moment";
-import type { ApiResponse, IOrder, IAuthData } from "../types";
+import type { IOrder, IAuthData } from "../types";
 import {
     Box,
     Container,
@@ -15,10 +15,10 @@ import {
     InputLabel,
     List,
     ListItem,
-    Divider,
-    TextField,
+    Divider
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
+import ShowImage from "../core/ShowImage";
 
 const Orders: React.FC = () => {
     const [orders, setOrders] = useState<IOrder[]>([]);
@@ -28,8 +28,9 @@ const Orders: React.FC = () => {
 
     const loadOrders = async () => {
         try {
-            const res: ApiResponse<IOrder[]> = await listOrders(user._id, token);
-            if (!res.error) setOrders(res.data || []);
+            const res = await listOrders(user._id, token);
+            console.log("Orders response:", res);
+            if (!res.error) setOrders(res as any);
         } catch (err) {
             console.error("Failed to load orders", err);
         }
@@ -69,7 +70,7 @@ const Orders: React.FC = () => {
     return (
         <Layout
             title="Orders"
-            description={`Hi ${user.name}, you can manage the orders here.`}
+            description={""}
         >
             <Container maxWidth="md">
                 <Box sx={{ mt: 4 }}>
@@ -78,7 +79,6 @@ const Orders: React.FC = () => {
                             ? `Total orders: ${orders.length}`
                             : "No orders"}
                     </Typography>
-
                     {orders.map((order) => (
                         <Paper
                             key={order._id}
@@ -91,7 +91,6 @@ const Orders: React.FC = () => {
                             <Typography variant="h6" gutterBottom>
                                 Order ID: {order._id}
                             </Typography>
-
                             <FormControl fullWidth sx={{ mb: 3 }}>
                                 <InputLabel>Status</InputLabel>
                                 <Select
@@ -109,10 +108,10 @@ const Orders: React.FC = () => {
 
                             <List dense>
                                 <ListItem>Transaction ID: {order.transaction_id}</ListItem>
-                                <ListItem>Amount: £{order.amount}</ListItem>
-                                <ListItem>Ordered by: {order.user.name}</ListItem>
+                                <ListItem>Total: £{order.amount}</ListItem>
+                                <ListItem>Ordered by: {order.firstName} {order.lastName}</ListItem>
                                 <ListItem>
-                                    Ordered on: {moment(order.createdAt).fromNow()}
+                                    Ordered on: {moment(order.createdAt).format('D-MM-YY')}
                                 </ListItem>
                                 <ListItem>Delivery address: {order.address}</ListItem>
                             </List>
@@ -125,51 +124,27 @@ const Orders: React.FC = () => {
 
                             {order.products.map((p) => (
                                 <Paper
-                                    key={p._id}
+                                    key={p.product as string}
                                     variant="outlined"
                                     sx={{ p: 2, mb: 2 }}
                                 >
-                                    <TextField
-                                        label="Product name"
-                                        value={p.name}
-                                        fullWidth
-                                        slotProps={{
-                                            input: { readOnly: true },
-                                        }}
-                                        sx={{ mb: 2 }}
-                                    />
+                                    <Typography variant="body1" gutterBottom sx={{ mb: 2 }}>
+                                        Painting Name: {typeof p.product === "object" ? p.product.name : p.name}
+                                    </Typography>
+                                    <Typography variant="body1" gutterBottom sx={{ mb: 2 }}>
+                                        Price: £{typeof p.product === "object" ? p.product.price : p.price}
+                                    </Typography>
 
-                                    <TextField
-                                        label="Price"
-                                        value={p.price}
-                                        fullWidth
-                                        slotProps={{
-                                            input: { readOnly: true },
-                                        }}
-                                        sx={{ mb: 2 }}
-                                    />
+                                    <Typography variant="body1" gutterBottom sx={{ mb: 2 }}>
+                                        Quantity: {p.count ?? 0}
+                                    </Typography>
 
-                                    <TextField
-                                        label="Quantity"
-                                        value={p.count ?? 0}
-                                        fullWidth
-                                        slotProps={{
-                                            input: { readOnly: true },
-                                        }}
-                                        sx={{ mb: 2 }}
-                                    />
-
-                                    <TextField
-                                        label="Product ID"
-                                        value={p._id}
-                                        fullWidth
-                                        slotProps={{
-                                            input: { readOnly: true },
-                                        }}
-                                    />
-
+                                    <Typography>
+                                        Product ID: {p._id}
+                                    </Typography>
                                 </Paper>
                             ))}
+
                         </Paper>
                     ))}
                 </Box>

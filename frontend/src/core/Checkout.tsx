@@ -16,7 +16,7 @@ interface CheckoutProps {
   onSuccess: () => void;
 }
 
-const Checkout: React.FC<CheckoutProps> = ({onSuccess}) => {
+const Checkout: React.FC<CheckoutProps> = ({ onSuccess }) => {
   const dispatch = useDispatch();
   const products = useSelector((state: RootState) => state.cart.items);
   const [selectedShipping, setSelectedShipping] = useState<any>(null);
@@ -106,19 +106,19 @@ const Checkout: React.FC<CheckoutProps> = ({onSuccess}) => {
       (err, instance) => {
         console.error("Braintree error:", err);
         if (err) return setData(prev => ({ ...prev, error: "Failed to load payment UI" }));
-        console.log("Braintree instance created:", instance);
+        // console.log("Braintree instance created:", instance);
         dropInInstance.current = instance;
       }
     );
   }, [data.clientToken]);
 
   const payOrder = async () => {
-  console.log("selectedShipping:", selectedShipping);
-  console.log("address:", address);
-  
-  if (!dropInInstance.current || !selectedShipping || !address) {
-    return;
-  }
+    // console.log("selectedShipping:", selectedShipping);
+    // console.log("address:", address);
+
+    if (!dropInInstance.current || !selectedShipping || !address) {
+      return;
+    }
     if (!dropInInstance.current || !selectedShipping || !address) return;
     setData(prev => ({ ...prev, loading: true }));
 
@@ -131,7 +131,16 @@ const Checkout: React.FC<CheckoutProps> = ({onSuccess}) => {
 
       // Create order in backend
       const orderData = {
-        products,
+        products: products.map(p => ({
+          product: p._id,        
+          name: p.name,
+          price: p.price,
+          count: p.count ?? 1,
+          weight: p.weight ?? 500,
+          width: p.width ?? 0,
+          height: p.height ?? 0,
+          length: p.length ?? 0,
+        })),
         transaction_id: transaction.id,
         amount: Number(transaction.amount),
         address: data.address.full,
@@ -142,6 +151,7 @@ const Checkout: React.FC<CheckoutProps> = ({onSuccess}) => {
         status: "Not processed",
         user: userId || null,
       };
+    
       await createOrder({ userId, token, orderData });
 
       // Buy shipping label
@@ -156,7 +166,7 @@ const Checkout: React.FC<CheckoutProps> = ({onSuccess}) => {
       });
 
       dispatch(clearCart());
-  onSuccess();
+      onSuccess();
     } catch (err: any) {
       setData(prev => ({ ...prev, error: err.message || "Payment/shipping failed" }));
     } finally {

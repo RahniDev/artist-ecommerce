@@ -29,7 +29,8 @@ export const create = async (req: CustomRequest, res: Response) => {
         const profile = req.profile;
 
         req.body.order.user = profile._id;
-
+  console.log("create order hit, body:", req.body);
+  console.log("profile:", req.profile);
         const order = new Order(req.body.order);
         const savedOrder = await order.save();
 
