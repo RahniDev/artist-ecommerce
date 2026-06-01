@@ -58,21 +58,23 @@ export const create = async (req: CustomRequest, res: Response) => {
                 from: process.env.GMAIL_USER,
                 subject: 'Your order is being processed',
                 html: `
-                    <h1>Hi ${profile?.name}, thank you for your order!</h1>
-                    <p>Total products: ${order.products.length}</p>
-                    <p>Order total: £${order.amount}</p>
-                    <p>Status: ${order.status}</p>
-                    <h2>Order Details:</h2>
+                    <p>Hi ${profile?.name}, thank you for your order!</p>
+                    <p>We are processing your order and will send you a tracking number once it's shipped.</p>
+                    <ul>
+                    <li><strong>Order #${order._id}</strong></li>
+                    <li>Total products: ${order.products.length}</li>
+                    <li>Order total: €${order.amount}</li>
+                    </ul>
+                    <h2>Paintings purchased:</h2>
                     ${order.products.map((p) => {
-                        const prod: any = p.product || {};
-                        return `
-                            <div style="margin-bottom:12px;">
-                                <strong>Product:</strong> ${prod.name ?? p.name}<br>
-                                <strong>Price:</strong> £${prod.price ?? p.price}<br>
-                                <strong>Quantity:</strong> ${p.count}
+                    const prod: any = p.product || {};
+                    return `
+                            <div style="margin-bottom:12px; display: flex; justify-content: space-between;">
+                                <strong style="margin-right: 10px"> ${prod.name ?? p.name}</strong>
+                                <strong> €${prod.price ?? p.price}</strong>
                             </div>
                         `;
-                    }).join('')}
+                }).join('')}
                 `
             })
         ]);
