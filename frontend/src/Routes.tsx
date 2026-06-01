@@ -23,6 +23,7 @@ import { loadAuthFromStorage } from "./redux/slices/authSlice";
 import About from "./core/About";
 import ShippingReturns from "./core/ShippingReturns";
 import PrivacyPolicy from "./core/PrivacyPolicy";
+import ResetPassword from "./user/ResetPassword";
 
 const AppRoutes: React.FC = () => {
   const dispatch = useDispatch();
@@ -110,6 +111,18 @@ const AppRoutes: React.FC = () => {
             <AdminRoute>
               <UpdateProduct />
             </AdminRoute>
+          }
+        />
+         <Route
+          path="/forgot-password"
+          element={
+              <ForgotPassword />
+          }
+        />
+         <Route
+          path="/resetPassword/:token"
+          element={
+              <ResetPassword />
           }
         />
       </Routes>

@@ -9,10 +9,10 @@ export interface IUser extends Document {
     salt: string;
     role: number;
     history: unknown[];
-
     // virtual property for TypeScript
     password?: string;
-
+    resetPasswordToken?: string;
+    resetPasswordExpires?: number;
     // methods are synchronous
     authenticate(password: string): boolean;
     encryptPassword(password: string): string;
@@ -26,11 +26,13 @@ const UserSchema = new Schema<IUser>(
             required: true,
             maxlength: 32,
         },
+        resetPasswordToken: { type: String },
+        resetPasswordExpires: { type: Date },
         email: {
             type: String,
             trim: true,
             required: true,
-            unique: true, // fixed
+            unique: true,
         },
         hashed_password: {
             type: String,

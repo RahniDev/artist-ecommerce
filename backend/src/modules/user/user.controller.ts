@@ -15,13 +15,13 @@ interface AuthRequest extends Request {
 }
 
 export const loadProfileFromAuth = async (req: Request, res: Response, next: NextFunction) => {
-    const authReq = req as AuthRequest;
-    if (!authReq.auth?._id) return next();
-    try {
-        const user = await User.findById(authReq.auth._id).exec();
-        if (user) authReq.profile = user;
-    } catch {}
-    next();
+  const authReq = req as AuthRequest;
+  if (!authReq.auth?._id) return next();
+  try {
+    const user = await User.findById(authReq.auth._id).exec();
+    if (user) authReq.profile = user;
+  } catch { }
+  next();
 };
 
 export const userById = async (req: CustomRequest, res: Response, next: NextFunction, id: string) => {
@@ -69,8 +69,8 @@ export const update = async (req: CustomRequest, res: Response) => {
 
 // Add order to user purchase history
 export const addOrderToUserHistory = async (req: CustomRequest, res: Response, next: NextFunction) => {
- if (!req.profile) return next();
- 
+  if (!req.profile) return next();
+
   const history = req.body.order.products.map((item: any) => ({
     _id: item._id,
     name: item.name,
