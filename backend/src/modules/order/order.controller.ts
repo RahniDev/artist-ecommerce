@@ -50,7 +50,7 @@ export const create = async (req: CustomRequest, res: Response) => {
                 html: `
                     <p>Customer: ${profile?.name || 'Unknown'}</p>
                     <p>Total products: ${order.products.length}</p>
-                    <p>Total cost: £${order.amount}</p>
+                    <p>Total cost: €${order.amount}</p>
                 `
             }),
             transporter.sendMail({
@@ -69,7 +69,7 @@ export const create = async (req: CustomRequest, res: Response) => {
                     ${order.products.map((p) => {
                     const prod: any = p.product || {};
                     return `
-                            <div style="margin-bottom:12px; display: flex; justify-content: space-between;">
+                            <div style="margin-bottom: 12px; display: flex; justify-content: space-between;">
                                 <strong style="margin-right: 10px"> ${prod.name ?? p.name}</strong>
                                 <strong> €${prod.price ?? p.price}</strong>
                             </div>
@@ -109,8 +109,21 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
             req.body.orderId,
             { $set: { status: req.body.status } },
             { new: true }
-        );
+        ).populate("user", "name email")
 
+        if (req.body.status === 'Shipped' && updated?.user) {
+            const user = updated.user as any;
+            await transporter.sendMail({
+                to: user.email,
+                from: process.env.GMAIL_USER,
+                subject: 'Your order has been shipped',
+                html: `
+                    <p>Hi ${user.name || 'Unknown'}</p>
+                    <p>Your order has been shipped and is on its way to you!</p>
+                    <p>Tracking number: </p>
+                `
+            })
+        }
         return res.json(updated);
     } catch (err) {
         return res.status(400).json({ error: errorHandler(err as MongoError) });
