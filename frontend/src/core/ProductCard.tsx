@@ -1,13 +1,22 @@
-import { Link } from "react-router-dom";
+import { Link, redirect, useNavigate } from "react-router-dom";
 import ShowImage from "./ShowImage";
 import type { CardProps } from "../types";
 import { Card, CardContent, Typography, Box, Stack } from "@mui/material";
 import SoldBadge from "./SoldBadge";
+import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
+import { addToCart } from "../redux/slices/cartSlice";
+import { useDispatch } from "react-redux";
 
 const ProductCard: React.FC<CardProps> = ({
     product
 }) => {
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
+    const handleAddToCart = () => {
+        dispatch(addToCart(product));
+        if (redirect) navigate("/cart");
+    };
     return (
         <Card elevation={0}
             sx={{
@@ -16,8 +25,6 @@ const ProductCard: React.FC<CardProps> = ({
                 backgroundColor: "transparent"
             }}>
             <Box
-                component={Link}
-                to={`/product/${product._id}`}
                 sx={{
                     textDecoration: "none",
                     color: "inherit",
@@ -25,44 +32,54 @@ const ProductCard: React.FC<CardProps> = ({
                     flexDirection: "column",
                 }}
             >
-                <ShowImage
-                    item={product}
-                    url="product"
-                    width="300px"
-                    showAll={false}
-                />
-
+                <Box component={Link}
+                    to={`/product/${product._id}`}>
+                    <ShowImage
+                        item={product}
+                        url="product"
+                        width="100%"
+                        showAll={false}
+                    />
+                </Box>
                 <CardContent sx={{
                     width: "100%",
                     px: 0,
                     pt: 1,
                     pb: 0
                 }}>
-                    <Stack spacing={1} alignItems="left">
+                    <Stack spacing={1}>
+                        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                            {product.quantity > 0 && (
+                                <>
+                                    <Typography variant="body1">
+                                        € {product.price}
+                                    </Typography>
+                                </>
+                            )}
+                            <ShoppingBagOutlinedIcon onClick={() => { handleAddToCart() }} color="black" fontSize="medium" sx={{ mt: 1 }} />
+                        </Box>
                         <Typography
                             variant="subtitle1"
                             component="div">
                             {product.nameEn}
                         </Typography>
-                        {product.nameEn !== product.name && (
-                            <Typography variant="body1" color="text.primary" fontStyle="italic">
-                                {product.name}
-                            </Typography>)}
+                        <Box component={Link} to={`/product/${product._id}`}>
+
+                            {product.nameEn !== product.name && (
+                                <Typography variant="body1" fontStyle="italic">
+                                    {product.name}
+                                </Typography>
+                            )}
+                        </Box>
                         <Typography sx={{ whiteSpace: "pre-wrap" }} color="#6c757d">{product.description}</Typography>
                         <SoldBadge quantity={product.quantity} />
 
-                        {product.quantity > 0 && (
-                            <>
-                                <Typography fontWeight={700}>
-                                    € {product.price}
-                                </Typography>
-                            </>
-                        )}
                     </Stack>
                 </CardContent>
             </Box>
-        </Card >
+        </Card>
     );
 };
 
 export default ProductCard;
+

@@ -23,6 +23,7 @@ const ListProducts: React.FC<ListProductsProps> = ({
             sm: 2,
             md: 3,
           }}
+          sx={{width: "100%"}}
           spacing={2}
         >
           {products.map(product => (

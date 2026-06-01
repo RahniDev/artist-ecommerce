@@ -89,7 +89,7 @@ export const list = async (req: Request, res: Response) => {
         const products = await Product.find()
             .select("-photos")
             .sort({ createdAt: -1 })
-            .limit(6)
+            .limit(20)
             .lean();
 
         const transformedProducts = products.map(p => applyLang(p, lang as string));

@@ -163,6 +163,11 @@ export interface IProduct {
   sold: number;
   photos?: any;
   photoCount?: number;
+  weight?: number;
+  width?: number;
+  height?: number;
+  length?: number;
+  count?: number;
 }
 
 export interface IPriceRange {
@@ -373,7 +378,7 @@ export interface IRate {
 }
 
 export interface CardProps {
-  product: ICartItem;
+  product: IProduct;
   showViewProductButton?: boolean;
   showAddToCartButton?: boolean;
   cartUpdate?: boolean;

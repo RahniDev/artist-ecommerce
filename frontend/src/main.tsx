@@ -9,6 +9,10 @@ import "./index.css";
 
 const theme = createTheme({
   typography: {
+    fontFamily: 'Inter, Inter-fallback, sans-serif',
+    body1: {
+      fontWeight: "500"
+    },
     h1: {
       fontSize: "1.5rem",
       fontWeight: "400",
@@ -19,7 +23,7 @@ const theme = createTheme({
       fontFamily: "playfair-display, serif",
       fontSize: "2rem"
     },
-   h3: {
+    h3: {
       fontFamily: "playfair-display, serif"
     }
   }
