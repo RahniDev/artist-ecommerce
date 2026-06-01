@@ -311,23 +311,33 @@ export const update = async (req: Request, res: Response) => {
 
             Object.assign(product, otherFields);
         } else {
-    const otherFields = Object.entries(fields)
-        .filter(([key]) => key !== 'name')
-        .reduce((acc, [key, value]) => {
-            acc[key] = Array.isArray(value) ? value[0] : value;
-            return acc;
-        }, {} as Record<string, any>);
-    Object.assign(product, otherFields);
-}
+            const otherFields = Object.entries(fields)
+                .filter(([key]) => key !== 'name')
+                .reduce((acc, [key, value]) => {
+                    acc[key] = Array.isArray(value) ? value[0] : value;
+                    return acc;
+                }, {} as Record<string, any>);
+            Object.assign(product, otherFields);
+        }
 
-        const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
+        const uploadedPhotos = Array.isArray(files.photos)
+            ? files.photos
+            : files.photos
+                ? [files.photos]
+                : [];
 
-        if (photo) {
-            if (photo.size > 1_000_000) {
-                return res.status(400).json({ error: "Image should be less than 1MB" });
+        if (uploadedPhotos.length > 0) {
+            for (const photo of uploadedPhotos) {
+                if (photo.size > 1_000_000) {
+                    return res.status(400).json({ error: "Each image must be less than 1MB" });
+                }
             }
-            const photoBuffer = await fs.promises.readFile(photo.filepath);
-            product.photos = [{ data: photoBuffer, contentType: photo.mimetype || "application/octet-stream" }];
+            product.photos = await Promise.all(
+                uploadedPhotos.map(async (photo) => ({
+                    data: await fs.promises.readFile(photo.filepath),
+                    contentType: photo.mimetype || "application/octet-stream"
+                }))
+            );
         }
         const result = await product.save();
         return res.json(result);
@@ -385,9 +395,9 @@ export const listSearch = async (req: Request, res: Response) => {
 
 export const decreaseQuantity = async (req: Request, res: Response, next: NextFunction) => {
     const bulkOps = req.body.order.products.map(
-        (item: { _id: string; count: number }) => ({
+        (item: { product: string; count: number }) => ({
             updateOne: {
-                filter: { _id: item._id },
+                filter: { _id: item.product },
                 update: { $inc: { quantity: -item.count, sold: item.count } }
             }
         })

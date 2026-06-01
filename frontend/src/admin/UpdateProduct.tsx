@@ -33,7 +33,7 @@ const UpdateProduct = () => {
     }
 
     const { user } = auth;
-    const [imgPreview, setImgPreview] = useState("")
+    const [photosPreview, setPhotosPreview] = useState<string[]>([])
     const [values, setValues] = useState<UpdateProductValues>({
         name: "",
         description: "",
@@ -42,11 +42,16 @@ const UpdateProduct = () => {
         category: "",
         shipping: "",
         quantity: "",
-        photo: null,
+        photos: [],
         loading: false,
         error: "",
         updatedProduct: false,
-        updatedProductName: ""
+        updatedProductName: "",
+        weight: "",
+        width: "",
+        height: "",
+        length: "",
+        subcategory: "",
     });
 
     const {
@@ -110,11 +115,9 @@ const UpdateProduct = () => {
 
     useEffect(() => {
         return () => {
-            if (imgPreview) {
-                URL.revokeObjectURL(imgPreview)
-            }
+            photosPreview.forEach(url => URL.revokeObjectURL(url));
         }
-    }, [imgPreview])
+    }, [photosPreview])
 
     const loadCategories = async () => {
         const res: ApiResponse<Category[]> = await getCategories();
@@ -160,26 +163,24 @@ const UpdateProduct = () => {
 
     const handlePhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!formData.current) return;
+        const files = Array.from(e.target.files ?? []);
+        if (!files.length) return;
 
-        const file = e.target.files?.[0];
-        if (!file) return;
-
-        if (!file.type.startsWith("image/")) {
-            setValues(p => ({ ...p, error: "File must be image" }))
-            return;
+        for (const file of files) {
+            if (!file.type.startsWith("image/")) {
+                setValues(p => ({ ...p, error: "File must be an image" }));
+                return;
+            }
+            if (file.size > 2 * 1024 * 1024) {
+                setValues(p => ({ ...p, error: "Each image must be less than 2MB" }));
+                return;
+            }
         }
-        const MAX_SIZE = 2 * 1024 * 1024;
 
-        if (file.size > MAX_SIZE) {
-            setValues(p => ({
-                ...p,
-                error: "Image must be less than 2MB"
-            }))
-            return;
-        }
-        formData.current.set("photo", file);
-        setValues((p) => ({ ...p, photo: file, error: "" }));
-        setImgPreview(URL.createObjectURL(file))
+        formData.current.delete("photos");
+        files.forEach(file => formData.current!.append("photos", file));
+        setValues(p => ({ ...p, photos: files, error: "" }));
+        setPhotosPreview(files.map(file => URL.createObjectURL(file)));
     };
 
     const clickSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -256,14 +257,18 @@ const UpdateProduct = () => {
                                 type="file"
                                 hidden
                                 accept="image/*"
+                                multiple
                                 onChange={handlePhotoFileChange}
                             />
                         </Button>
-                        {productId && (
-                            <img src={imgPreview || `${API}/product/photo/${productId}`}
-                                alt="Product preview"
-                                style={{ width: 200 }} />
+                        {productId && photosPreview.length === 0 && (
+                            <img src={`${API}/product/photo/${productId}`} alt="Product preview" style={{ width: 200 }} />
                         )}
+                        {photosPreview.map((src, i) => (
+                            <Box key={i} sx={{ mt: 2 }}>
+                                <img src={src} alt={`Product preview ${i + 1}`} style={{ width: 200 }} />
+                            </Box>
+                        ))}
 
                         <TextField
                             label="Name"
@@ -329,6 +334,34 @@ const UpdateProduct = () => {
                             type="number"
                             value={quantity}
                             onChange={handleInputChange("quantity")}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Weight (grams)"
+                            type="number"
+                            value={values.weight}
+                            onChange={handleInputChange("weight")}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Width (cm)"
+                            type="number"
+                            value={values.width}
+                            onChange={handleInputChange("width")}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Height (cm)"
+                            type="number"
+                            value={values.height}
+                            onChange={handleInputChange("height")}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Length (cm)"
+                            type="number"
+                            value={values.length}
+                            onChange={handleInputChange("length")}
                             fullWidth
                         />
 
