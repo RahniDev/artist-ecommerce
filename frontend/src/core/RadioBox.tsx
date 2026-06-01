@@ -17,7 +17,7 @@ const RadioBox: React.FC<RadioBoxProps> = ({ prices, handleFilters }) => {
   };
 
   return (
-    <FormControl>
+    <FormControl sx={{width: "300px"}}>
       <RadioGroup
         name="price"
         value={value}

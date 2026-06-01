@@ -168,7 +168,6 @@ export interface IProduct {
 export interface IPriceRange {
   _id: number;
   name: string;
-  array: number[];
 }
 
 export interface SignInInput {

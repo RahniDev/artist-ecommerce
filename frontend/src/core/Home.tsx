@@ -10,6 +10,7 @@ import CollectionSlider from "./CollectionSlider";
 import Layout from "./Layout";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
+import RadioBox from "./RadioBox";
 
 
 const Home: React.FC = () => {
@@ -17,7 +18,31 @@ const Home: React.FC = () => {
   const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
+  const [selectedPrice, setSelectedPrice] = useState<number>(0);
   const { t } = useTranslation();
+
+const priceRanges: Record<number, [number, number]> = {
+    0: [0, Infinity],
+    1: [0, 500],
+    2: [500, 1000],
+    3: [1000, 2000],
+    4: [2000, Infinity],
+};
+const prices = [
+    { _id: 0, name: "Any price" },
+    { _id: 1, name: "€0 - €500" },
+    { _id: 2, name: "€500 - €1000" },
+    { _id: 3, name: "€1000 - €2000" },
+    { _id: 4, name: "€2000+" },
+];
+const filteredProducts = productsByArrival.filter(p => {
+    const [min, max] = priceRanges[selectedPrice] ?? [0, Infinity];
+    return p.price >= min && p.price <= max;
+});
+
+const handleFilters = (value: number) => {
+    setSelectedPrice(value);
+};
 
   const loadProducts = async () => {
     setLoading(true);
@@ -66,7 +91,8 @@ const Home: React.FC = () => {
       <Typography sx={{ pb: 4 }} variant="h2" component="h2" textAlign="center">
         {t("latest_originals")}
       </Typography>
-      {productsByArrival.length === 0 && !loading && !error && (
+    
+      {filteredProducts.length === 0 && !loading && !error && (
         <Typography
           variant="body1"
           color="text.secondary"
@@ -76,10 +102,16 @@ const Home: React.FC = () => {
           {t("no_new_arrivals")}
         </Typography>
       )}
+ <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
+        <RadioBox
+          prices={prices}
+          handleFilters={handleFilters}
+        />
       {/* New arrivals */}
-      {productsByArrival.length > 0 && !loading && !error && (
-        <ListProducts products={productsByArrival} />
+      {filteredProducts.length > 0 && !loading && !error && (
+        <ListProducts products={filteredProducts} />
       )}
+        </Box>
     </Layout>
   );
 };

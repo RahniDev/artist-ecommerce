@@ -22,7 +22,6 @@ const ListProducts: React.FC<ListProductsProps> = ({
             xs: 1,
             sm: 2,
             md: 3,
-            lg: 4,
           }}
           spacing={2}
         >
