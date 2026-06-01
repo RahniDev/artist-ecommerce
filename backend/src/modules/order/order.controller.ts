@@ -1,7 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import { Order, IOrder } from './order.model.js';
 import { errorHandler, MongoError } from '../../helpers/errorHandler.js';
-import sgMail from '@sendgrid/mail'
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+    },
+});
 
 interface CustomRequest extends Request {
     profile?: any;
@@ -27,56 +38,46 @@ export const orderById = async (req: CustomRequest, res: Response, next: NextFun
 export const create = async (req: CustomRequest, res: Response) => {
     try {
         const profile = req.profile;
-
         req.body.order.user = profile._id;
-        console.log("create order hit, body:", req.body);
-        console.log("profile:", req.profile);
         const order = new Order(req.body.order);
         const savedOrder = await order.save();
 
-        const adminEmail = {
-            to: 'rahnidemeis@gmail.com',
-            from: 'rahnidemeis@gmail.com',
-            subject: 'New order received',
-            html: `
-                <p>Customer: ${profile?.name || 'Unknown'}</p>
-                <p>Total products: ${order.products.length}</p>
-                <p>Total cost: £${order.amount}</p>
-            `
-        };
-
-        const customerEmail = {
-            to: profile?.email,
-            from: 'rahnidemeis@gmail.com',
-            subject: 'Your order is being processed',
-            html: `
-                <h1>Hi ${profile?.name}, thank you for your order!</h1>
-                <p>Total products: ${order.products.length}</p>
-                <p>Order total: £${order.amount}</p>
-                <p>Status: ${order.status}</p>
-
-                <h2>Order Details:</h2>
-
-                ${order.products.map((p) => {
-                const prod: any = p.product || {};
-                return `
-                        <div style="margin-bottom:12px;">
-                            <strong>Product:</strong> ${prod.name ?? p.name}<br>
-                            <strong>Price:</strong> £${prod.price ?? p.price}<br>
-                            <strong>Quantity:</strong> ${p.count}
-                        </div>
-                    `;
-            }).join('')}
-            `
-        };
-
         await Promise.allSettled([
-            sgMail.send(adminEmail),
-            sgMail.send(customerEmail)
+            transporter.sendMail({
+                to: process.env.GMAIL_USER,
+                from: process.env.GMAIL_USER,
+                subject: 'New order received',
+                html: `
+                    <p>Customer: ${profile?.name || 'Unknown'}</p>
+                    <p>Total products: ${order.products.length}</p>
+                    <p>Total cost: £${order.amount}</p>
+                `
+            }),
+            transporter.sendMail({
+                to: profile?.email,
+                from: process.env.GMAIL_USER,
+                subject: 'Your order is being processed',
+                html: `
+                    <h1>Hi ${profile?.name}, thank you for your order!</h1>
+                    <p>Total products: ${order.products.length}</p>
+                    <p>Order total: £${order.amount}</p>
+                    <p>Status: ${order.status}</p>
+                    <h2>Order Details:</h2>
+                    ${order.products.map((p) => {
+                        const prod: any = p.product || {};
+                        return `
+                            <div style="margin-bottom:12px;">
+                                <strong>Product:</strong> ${prod.name ?? p.name}<br>
+                                <strong>Price:</strong> £${prod.price ?? p.price}<br>
+                                <strong>Quantity:</strong> ${p.count}
+                            </div>
+                        `;
+                    }).join('')}
+                `
+            })
         ]);
 
         return res.json(savedOrder);
-
     } catch (err) {
         return res.status(400).json({ error: errorHandler(err as MongoError) });
     }
