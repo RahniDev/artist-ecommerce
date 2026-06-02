@@ -1,37 +1,30 @@
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardContent, Typography } from "@mui/material";
 import { listOrders } from "../admin/apiAdmin";
-import { isAuthenticated } from "../auth";
-import type { IAuthData } from "../types";
 import Loader from "../core/Loader";
 
+import { useSelector } from "react-redux";
+import type { RootState } from "../redux/store";
+
 const AdminStats: React.FC = () => {
+    const { user, token, isAuthenticated: loggedIn } = useSelector((state: RootState) => state.auth);
     const [totalOrders, setTotalOrders] = useState<number | null>(null);
 
     useEffect(() => {
+        if (!loggedIn || !user || !token) {
+            setTotalOrders(0);
+            return;
+        }
         const loadTotalOrders = async () => {
-            const auth = isAuthenticated() as IAuthData | null;
-            if (!auth) {
-                setTotalOrders(0);
-                return;
-            }
-
             try {
-                const res = await listOrders(auth.user._id, auth.token);
-
-                if (Array.isArray(res.data)) {
-                    setTotalOrders(res.data.length);
-                } else {
-                    setTotalOrders(0);
-                }
+                const res = await listOrders(user._id, token);
+                setTotalOrders(Array.isArray(res.data) ? res.data.length : 0);
             } catch (err) {
                 console.error("Failed to load total orders", err);
             }
         };
-
         loadTotalOrders();
-    }, []);
-
+    }, [loggedIn, user, token]);
 
     return (
         <Card sx={{ width: 360 }}>

@@ -3,14 +3,17 @@ import type { ChangeEvent, FormEvent } from "react";
 import Layout from "../core/Layout";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { signin, authenticate, isAuthenticated } from "../auth";
-import type { IUser, SigninState } from "../types";
+import type { SigninState } from "../types";
 import { useTranslation } from "react-i18next";
 import Loader from "../core/Loader";
 import { Box, TextField, Button, Alert, Link, Typography } from "@mui/material";
 import AuthCard from "./AuthCard";
+import { setAuth } from "../redux/slices/authSlice";
+import { useDispatch } from "react-redux";
 
 const Signin: React.FC = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const { t } = useTranslation();
 
     const [values, setValues] = useState<SigninState>({
@@ -21,9 +24,8 @@ const Signin: React.FC = () => {
         redirectToReferrer: false,
     });
 
-    const { email, password, loading, error, redirectToReferrer } = values;
+    const { email, password, loading, error } = values;
     const auth = isAuthenticated();
-    const user: IUser | null = auth ? auth.user : null;
 
     const handleChange =
         (name: keyof SigninState) =>
@@ -41,33 +43,23 @@ const Signin: React.FC = () => {
             if ("error" in data) {
                 setValues({ ...values, error: data.error, loading: false });
             } else {
-                authenticate(data, () => {
-                    setValues({ ...values, redirectToReferrer: true });
-                });
+                // keep localStorage in sync
+                authenticate(data, () => { });
+                dispatch(setAuth(data));
+
+                if (data.user?.role === 1) {
+                    navigate("/admin/dashboard");
+                } else {
+                    navigate("/");
+                }
             }
         } catch (exc: any) {
-            setValues({
-                ...values,
-                error: exc?.message ?? "Signin error",
-                loading: false,
-            });
+            setValues({ ...values, error: exc?.message ?? "Signin error", loading: false });
         }
     };
 
     useEffect(() => {
-        if (!redirectToReferrer) return;
-
-        if (user?.role === 1) {
-            navigate("/admin/dashboard");
-        } else {
-            navigate("/");
-        }
-    }, [redirectToReferrer, user, navigate]);
-
-// Checks if user is already logged in
-    useEffect(() => {
-        if (auth)
-            navigate("/");
+        if (auth) navigate("/");
     }, []);
 
     return (

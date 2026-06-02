@@ -7,15 +7,24 @@ interface AuthState {
   isAuthenticated: boolean;
 }
 
-const initialState: AuthState = {
-  user: null,
-  token: null,
-  isAuthenticated: false,
+const loadInitialState = (): AuthState => {
+  try {
+    const stored = localStorage.getItem("jwt");
+    if (!stored) return { user: null, token: null, isAuthenticated: false };
+    const parsed: IAuthData = JSON.parse(stored);
+    return {
+      user: parsed.user ?? null,
+      token: parsed.token ?? null,
+      isAuthenticated: !!(parsed.user && parsed.token),
+    };
+  } catch {
+    return { user: null, token: null, isAuthenticated: false };
+  }
 };
 
 const authSlice = createSlice({
   name: "auth",
-  initialState,
+  initialState: loadInitialState(),
   reducers: {
     setAuth: (state, action: PayloadAction<IAuthData>) => {
       state.user = action.payload.user;

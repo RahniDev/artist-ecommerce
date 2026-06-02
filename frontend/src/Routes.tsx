@@ -18,19 +18,13 @@ import UpdateProduct from './admin/UpdateProduct'
 import Home from "./core/Home";
 import ForgotPassword from "./user/ForgotPassword";
 import Contact from "./core/Contact";
-import { useDispatch } from "react-redux";
-import { loadAuthFromStorage } from "./redux/slices/authSlice";
 import About from "./core/About";
 import ShippingReturns from "./core/ShippingReturns";
 import PrivacyPolicy from "./core/PrivacyPolicy";
 import ResetPassword from "./user/ResetPassword";
 
 const AppRoutes: React.FC = () => {
-  const dispatch = useDispatch();
 
-  useEffect(() => {
-    dispatch(loadAuthFromStorage());
-  }, [dispatch]);
   return (
     <BrowserRouter>
       <Routes>
