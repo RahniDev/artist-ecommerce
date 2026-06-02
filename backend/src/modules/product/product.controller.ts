@@ -5,6 +5,7 @@ import { errorHandler, MongoError } from '../../helpers/errorHandler.js'
 import { NextFunction, Request, Response } from 'express'
 import mongoose from 'mongoose'
 import { translateToAll } from './translate.js'
+import { deleteProductPhoto, uploadProductPhoto } from "./r2.service.js";
 
 declare global {
     namespace Express {
@@ -219,11 +220,9 @@ export const create = async (req: Request, res: Response) => {
                 }
             }
             product.photos = await Promise.all(
-                uploadedPhotos.map(async (photo) => ({
-                    data: await fs.promises.readFile(photo.filepath),
-                    contentType: photo.mimetype || "application/octet-stream"
-                }))
+                uploadedPhotos.map(uploadProductPhoto)
             );
+
         }
         const result = await product.save();
         console.log("Product saved with ID:", result._id);
@@ -242,6 +241,10 @@ export const deleteProduct = async (req: Request, res: Response) => {
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
+        
+        await Promise.all(
+  product.photos.map(photo => deleteProductPhoto(photo.key))
+);
 
         await product.deleteOne();
         return res.json({
@@ -333,10 +336,7 @@ export const update = async (req: Request, res: Response) => {
                 }
             }
             product.photos = await Promise.all(
-                uploadedPhotos.map(async (photo) => ({
-                    data: await fs.promises.readFile(photo.filepath),
-                    contentType: photo.mimetype || "application/octet-stream"
-                }))
+                uploadedPhotos.map(uploadProductPhoto)
             );
         }
         const result = await product.save();

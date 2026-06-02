@@ -1,0 +1,42 @@
+import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
+import crypto from "crypto";
+import path from "path";
+import * as fs from "fs";
+
+const bucket = process.env.R2_BUCKET_NAME!;
+const publicUrl = process.env.R2_PUBLIC_URL!;
+
+export const r2 = new S3Client({
+  region: "auto",
+  endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+  },
+});
+
+export async function uploadProductPhoto(photo: any) {
+  const ext = path.extname(photo.originalFilename || "") || ".webp";
+  const key = `products/${crypto.randomUUID()}${ext}`;
+
+  await r2.send(new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    Body: await fs.promises.readFile(photo.filepath),
+    ContentType: photo.mimetype || "image/webp",
+    CacheControl: "public, max-age=31536000, immutable",
+  }));
+
+  return {
+    key,
+    url: `${publicUrl}/${key}`,
+    contentType: photo.mimetype || "image/webp",
+  };
+}
+
+export async function deleteProductPhoto(key: string) {
+  await r2.send(new DeleteObjectCommand({
+    Bucket: bucket,
+    Key: key,
+  }));
+}

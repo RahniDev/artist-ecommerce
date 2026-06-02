@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import type { ShowImageProps } from "../types";
-import { API } from "../config";
+import type { ShowImageProps } from "../types";;
 import Box from "@mui/material/Box";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
@@ -9,7 +8,7 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 const ShowImage: React.FC<ShowImageProps> = (props) => {
   const [activeIndex, setActiveIndex] = useState<number>(0);
 
-  const { item, url, width, showAll } = props;
+  const { item, width, showAll } = props;
 
   const imgSx = {
     width: width,
@@ -22,13 +21,13 @@ const ShowImage: React.FC<ShowImageProps> = (props) => {
     : item.photoCount ?? 1;
   const indices = Array.from({ length: photoCount }, (_, i) => i);
   const safeIndex = Math.max(0, Math.min(activeIndex, photoCount - 1));
-  
+
   // Single image
   if (!showAll) {
     return (
       <Box
         component="img"
-        src={`${API}/${url}/photo/${item._id}?index=0`}
+        src={item.photos?.[0]?.url}
         alt={item.name ?? "Product Image"}
         sx={imgSx}
       />
@@ -48,7 +47,7 @@ const ShowImage: React.FC<ShowImageProps> = (props) => {
           <Box
             key={index}
             component="img"
-            src={`${API}/${url}/photo/${item._id}?index=${index}`}
+            src={item.photos?.[index]?.url}
             alt={`Thumbnail ${index + 1}`}
             onClick={() => setActiveIndex(index)}
             sx={{
@@ -86,7 +85,7 @@ const ShowImage: React.FC<ShowImageProps> = (props) => {
 
         <Box
           component="img"
-          src={`${API}/${url}/photo/${item._id}?index=${safeIndex}`}
+          src={item.photos?.[safeIndex]?.url}
           alt={`${item.name ?? "Product"} photo ${safeIndex + 1}`}
           sx={{ ...imgSx, display: "block" }}
         />

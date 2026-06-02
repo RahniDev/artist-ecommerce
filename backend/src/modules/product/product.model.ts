@@ -1,7 +1,7 @@
 import mongoose, { Schema, Types, Document } from "mongoose";
 
 export interface IProduct {
-    name: {
+  name: {
     en: string;
     de: string;
     es: string;
@@ -21,8 +21,9 @@ export interface IProduct {
   quantity: number;
   sold: number;
   photos: {
-    data: Buffer,
-    contentType: string
+    key: string;
+    url: string;
+    contentType: string;
   }[];
   shipping: boolean;
   weight: number;
@@ -35,12 +36,12 @@ export interface IProductDocument extends IProduct, Document { }
 
 const productSchema = new Schema<IProductDocument>({
   name: {
-    en: { type: String, required: true, trim: true},
+    en: { type: String, required: true, trim: true },
     de: { type: String, default: '' },
     es: { type: String, default: '' },
     it: { type: String, default: '' },
     fr: { type: String, default: '' }
-},
+  },
   description: {
     en: { type: String, required: true },
     de: { type: String, default: '' },
@@ -72,7 +73,8 @@ const productSchema = new Schema<IProductDocument>({
     default: 0
   },
   photos: [{
-    data: Buffer,
+    key: { type: String, required: true },
+    url: { type: String, required: true },
     contentType: String
   }],
   shipping: {
