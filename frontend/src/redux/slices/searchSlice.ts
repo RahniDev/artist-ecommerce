@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
 import { getCategories, list } from "../../core/apiCore";
-import type { ICategory, IProduct } from "../../types";
+import type { Category, IProduct } from "../../types";
 
 interface SearchState {
-  categories: ICategory[];
+  categories: Category[];
   category: string;
   search: string;
   results: IProduct[];

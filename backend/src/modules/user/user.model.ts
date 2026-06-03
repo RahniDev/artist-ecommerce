@@ -12,7 +12,7 @@ export interface IUser extends Document {
     // virtual property for TypeScript
     password?: string;
     resetPasswordToken?: string;
-    resetPasswordExpires?: number;
+    resetPasswordExpires?: Date;
     // methods are synchronous
     authenticate(password: string): boolean;
     encryptPassword(password: string): string;

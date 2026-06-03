@@ -16,7 +16,6 @@ interface AuthRequest extends Request {
 
 interface UserResetPassword extends IUser {
     resetPasswordToken?: string;
-    resetPasswordExpires?: Date;
 }
 
 const transporter = nodemailer.createTransport({

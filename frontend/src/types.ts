@@ -114,8 +114,20 @@ export interface UpdateProductValues extends ProductFormBase {
   updatedProductName?: string;
 }
 
+export interface OrderItem {
+  _id: string;
+  product: string; // product ID reference
+  name: string;
+  price: number;
+  count: number;
+  weight: number;
+  width: number;
+  height: number;
+  length: number;
+}
+
 export interface CreateOrderInput {
-  products: ICartItem[];
+  products: OrderItem[];
   transaction_id: string;
   amount: number;
   address: string;
@@ -173,6 +185,7 @@ export interface IProduct {
 export interface IPriceRange {
   _id: number;
   name: string;
+  array: number[];
 }
 
 export interface SignInInput {
@@ -198,21 +211,9 @@ export interface IAuthData {
   user: IUser;
 }
 
-export interface ICartItem {
-  _id: string;
-  product: string | IProduct;
-  name: string;
-  price: number;
-  count: number;
-  weight: number;
-  width: number;
-  height: number;
-  length: number;
-}
-
 export interface IOrder {
   _id: string;
-  products: ICartItem[];
+  products: CartItem[];
   transaction_id: string;
   amount: number;
   address: string;
@@ -337,7 +338,7 @@ export interface FooterData {
 }
 
 export interface CheckoutProps {
-  products: ICartItem[];
+  products: CartItem[];
   setRun?: React.Dispatch<React.SetStateAction<boolean>>;
   run?: boolean;
 }
@@ -355,12 +356,19 @@ export interface CheckboxProps {
   handleFilters: (selected: string[]) => void;
 }
 
-export interface CartItem extends IProduct {
+export interface CartItem {
+  _id: string;
+  name: string;
+  price: number;
   weight: number;
   length: number;
   width: number;
   height: number;
   count: number;
+  description: string;
+  shipping: boolean;
+  sold: number;
+  category: string;
 }
 
 export interface ShippingRatesProps {
@@ -388,10 +396,11 @@ export interface CardProps {
   showRemoveProductButton?: boolean;
   setRun?: (value: boolean) => void;
   run?: boolean;
+  redirect?: boolean;
 }
 
 export interface AddToCartButtonProps {
-  product: ICartItem;
+  product: CartItem;
   redirect?: boolean;
   className?: string;
 }

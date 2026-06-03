@@ -1,4 +1,4 @@
-import { Link, redirect, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ShowImage from "./ShowImage";
 import type { CardProps } from "../types";
 import { Card, CardContent, Typography, Box, Stack } from "@mui/material";
@@ -8,7 +8,8 @@ import { addToCart } from "../redux/slices/cartSlice";
 import { useDispatch } from "react-redux";
 
 const ProductCard: React.FC<CardProps> = ({
-    product
+    product,
+    redirect = false
 }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -56,7 +57,7 @@ const ProductCard: React.FC<CardProps> = ({
                                     </Typography>
                                 </>
                             )}
-                            <ShoppingBagOutlinedIcon onClick={() => { handleAddToCart() }} color="black" fontSize="medium" sx={{ mt: 1 }} />
+                            <ShoppingBagOutlinedIcon onClick={() => { handleAddToCart() }} fontSize="medium" sx={{ mt: 1, color: 'black' }} />
                         </Box>
                         <Typography
                             variant="subtitle1"

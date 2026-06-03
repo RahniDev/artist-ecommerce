@@ -132,7 +132,8 @@ const Checkout: React.FC<CheckoutProps> = ({ onSuccess }) => {
       // Create order in backend
       const orderData = {
         products: products.map(p => ({
-          product: p._id,        
+          _id: p._id,
+          product: p._id,
           name: p.name,
           price: p.price,
           count: p.count ?? 1,
@@ -151,7 +152,7 @@ const Checkout: React.FC<CheckoutProps> = ({ onSuccess }) => {
         status: "Not processed",
         user: userId || null,
       };
-    
+
       await createOrder({ userId, token, orderData });
 
       // Buy shipping label

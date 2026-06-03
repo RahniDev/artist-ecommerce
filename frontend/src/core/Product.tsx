@@ -15,6 +15,7 @@ import ImageModal from "./ImageModal";
 import { API } from "../config";
 import ArtworkLightingControls from "./ArtworkLightingControls";
 import type { LightingMode } from "../types";
+import {toCartItem} from "../redux/slices/cartSlice";
 
 const Product: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -45,6 +46,7 @@ const Product: React.FC = () => {
       dispatch(clearProduct());
     };
   }, [dispatch, productId, currentLanguage]);
+
 
   return (
     <Layout title="" description="">
@@ -115,7 +117,7 @@ const Product: React.FC = () => {
                         € {product.price}
                       </Typography>
                       <AddToCartButton
-                        product={{ ...product, count: 1 }}
+                        product={toCartItem(product)}
                         redirect={false}
                         aria-label="Add to cart"
                       />  </>)}

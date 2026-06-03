@@ -11,7 +11,7 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({ product, redirect = t
   const { t } = useTranslation();
 
   const handleAddToCart = () => {
-    dispatch(addToCart(product));
+    dispatch(addToCart(product as unknown as Parameters<typeof addToCart>[0]));
     if (redirect) navigate("/cart");
   };
 

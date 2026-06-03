@@ -16,6 +16,21 @@ const saveCart = (cart: CartItem[]) => {
   localStorage.setItem(CART_KEY, JSON.stringify(cart));
 };
 
+export const toCartItem = (product: IProduct): CartItem => ({
+  _id: product._id,
+  name: product.name,
+  price: product.price,
+  count: 1,
+  weight: product.weight ?? 0,
+  width: product.width ?? 0,
+  height: product.height ?? 0,
+  length: product.length ?? 0,
+  description: "",
+  shipping: false,
+  sold: 0,
+  category: ""
+});
+
 interface CartState {
   items: CartItem[];
 }
@@ -31,7 +46,7 @@ const cartSlice = createSlice({
     addToCart: (state, action: PayloadAction<IProduct>) => {
       const existing = state.items.find((item) => item._id === action.payload._id);
       if (!existing) {
-        state.items.push({ ...action.payload, count: 1 });
+        state.items.push(toCartItem(action.payload));
       }
       saveCart(state.items);
     },
