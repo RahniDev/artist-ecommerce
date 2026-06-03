@@ -31,10 +31,11 @@ export interface IOrder {
   address: string;
   firstName: string;
   lastName: string;
+  email: string;
   phone: string;
   status: string;
   updated: Date;
-  user: Types.ObjectId;
+  user?: Types.ObjectId | null;
   shipping: string;
   carrier: string,
   service: string,
@@ -49,6 +50,7 @@ const OrderSchema = new Schema<IOrder>({
   address: String,
   firstName: String,
   lastName: String,
+  email: String,
   phone: String,
   status: {
     type: String,
@@ -56,7 +58,11 @@ const OrderSchema = new Schema<IOrder>({
     enum: ["Not processed", "Processing", "Shipped", "Delivered", "Cancelled"]
   },
   updated: Date,
-  user: { type: Schema.Types.ObjectId, ref: "User" },
+  user: {
+    type: Schema.Types.ObjectId,
+    ref: "User",
+    default: null
+  },
   shipping: {
     carrier: String,
     service: String,
