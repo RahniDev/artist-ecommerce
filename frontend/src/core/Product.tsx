@@ -13,13 +13,18 @@ import ShowImage from "./ShowImage";
 import { Box, Typography, Grid } from "@mui/material";
 import ImageModal from "./ImageModal";
 import { API } from "../config";
+import ArtworkLightingControls from "./ArtworkLightingControls";
+import type { LightingMode } from "../types";
 
 const Product: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalSrc, setModalSrc] = useState("");
+
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [modalSrc, setModalSrc] = useState<string>("");
+  const [lightingMode, setLightingMode] = useState<LightingMode>("daylight");
+
 
   const handleImageClick = (src: string) => {
     setModalSrc(src);
@@ -62,8 +67,15 @@ const Product: React.FC = () => {
                       width={380}
                       height={380}
                       showAll={true}
+                      lightingMode={lightingMode}
+                      onImageClick={handleImageClick}
                     />
-                    </Box>
+
+                    <ArtworkLightingControls
+                      value={lightingMode}
+                      onChange={setLightingMode}
+                    />
+                  </Box>
                 </Grid>
                 {/* Add modal at the end, inside the product check */}
                 <ImageModal

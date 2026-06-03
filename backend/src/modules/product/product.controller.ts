@@ -45,7 +45,8 @@ export const productById = async (
 
         const product = await Product.findById(id)
             .populate("category")
-            .select("-photos")
+            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
+
 
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
@@ -88,7 +89,7 @@ export const list = async (req: Request, res: Response) => {
         const { lang = 'en' } = req.query;
 
         const products = await Product.find()
-            .select("-photos")
+             .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
             .sort({ createdAt: -1 })
             .limit(20)
             .lean();
@@ -128,22 +129,20 @@ export const listCategories = async (req: Request, res: Response) => {
 }
 
 export const photo = async (req: Request, res: Response) => {
-    try {
-        const product = await Product.findById(req.params.productId)
-            .select("photos");
+  try {
+    const product = await Product.findById(req.params.productId).select("photos");
 
-        const index = Number(req.query.index) || 0;
-        const img = product?.photos?.[index];
+    const index = Number(req.query.index) || 0;
+    const img = product?.photos?.[index];
 
-        if (!product || !img?.data) {
-            return res.status(404).send("No image");
-        }
-
-        res.set("Content-Type", img.contentType);
-        return res.send(img.data);
-    } catch (err) {
-        return res.status(500).send("Image error");
+    if (!product || !img?.url) {
+      return res.status(404).send("No image");
     }
+
+    return res.redirect(302, img.url);
+  } catch (err) {
+    return res.status(500).send("Image error");
+  }
 };
 
 export const create = async (req: Request, res: Response) => {
@@ -241,10 +240,10 @@ export const deleteProduct = async (req: Request, res: Response) => {
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
-        
+
         await Promise.all(
-  product.photos.map(photo => deleteProductPhoto(photo.key))
-);
+            product.photos.map(photo => deleteProductPhoto(photo.key))
+        );
 
         await product.deleteOne();
         return res.json({
@@ -352,7 +351,7 @@ export const listBySubcategory = async (req: Request, res: Response) => {
         const { lang = 'en' } = req.query;
 
         const products = await Product.find({ subcategory: req.params.subcategoryId })
-            .select("-photos")
+             .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
             .lean();
 
         const transformedProducts = products.map(p => applyLang(p, lang as string));
@@ -382,7 +381,7 @@ export const listSearch = async (req: Request, res: Response) => {
 
     try {
         const products = await Product.find(query)
-            .select("-photos")
+             .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
             .lean();
 
         const transformedProducts = products.map(p => applyLang(p, lang as string));
@@ -431,7 +430,7 @@ export const listBySearch = async (req: Request, res: Response) => {
 
     try {
         const data = await Product.find(findArgs)
-            .select("-photos")
+            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
             .populate("category")
             .sort({ [sortBy]: order })
             .skip(skip)

@@ -303,6 +303,8 @@ export interface SoldBadgeProps {
   quantity: number;
 }
 
+export type LightingMode = "daylight" | "evening" | "gallery";
+
 export interface ShowImageProps {
   item: {
     _id: string;
@@ -314,8 +316,9 @@ export interface ShowImageProps {
   width?: number | string;
   height?: number | string;
   showAll?: boolean;
+  lightingMode?: LightingMode;
+  onImageClick?: (src: string) => void;
 }
-
 export interface RadioBoxProps {
   prices: IPriceRange[];
   handleFilters: (value: number) => void;
