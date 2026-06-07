@@ -24,6 +24,7 @@ export async function uploadProductPhoto(photo: any) {
     Key: key,
     Body: await fs.promises.readFile(photo.filepath),
     ContentType: photo.mimetype || "image/webp",
+    // cache img for 1 year
     CacheControl: "public, max-age=31536000, immutable",
   }));
 

@@ -1,5 +1,4 @@
 import formidable, { Fields, Files } from 'formidable'
-import * as fs from 'fs'
 import { Product } from './product.model.js'
 import { errorHandler, MongoError } from '../../helpers/errorHandler.js'
 import { NextFunction, Request, Response } from 'express'
@@ -89,7 +88,7 @@ export const list = async (req: Request, res: Response) => {
         const { lang = 'en' } = req.query;
 
         const products = await Product.find()
-             .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
+            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
             .sort({ createdAt: -1 })
             .limit(20)
             .lean();
@@ -129,20 +128,20 @@ export const listCategories = async (req: Request, res: Response) => {
 }
 
 export const photo = async (req: Request, res: Response) => {
-  try {
-    const product = await Product.findById(req.params.productId).select("photos");
+    try {
+        const product = await Product.findById(req.params.productId).select("photos");
 
-    const index = Number(req.query.index) || 0;
-    const img = product?.photos?.[index];
+        const index = Number(req.query.index) || 0;
+        const img = product?.photos?.[index];
 
-    if (!product || !img?.url) {
-      return res.status(404).send("No image");
+        if (!product || !img?.url) {
+            return res.status(404).send("No image");
+        }
+
+        return res.redirect(302, img.url);
+    } catch (err) {
+        return res.status(500).send("Image error");
     }
-
-    return res.redirect(302, img.url);
-  } catch (err) {
-    return res.status(500).send("Image error");
-  }
 };
 
 export const create = async (req: Request, res: Response) => {
@@ -322,6 +321,9 @@ export const update = async (req: Request, res: Response) => {
             Object.assign(product, otherFields);
         }
 
+        // Keep a copy of the existing photos
+        const oldPhotos = [...product.photos];
+
         const uploadedPhotos = Array.isArray(files.photos)
             ? files.photos
             : files.photos
@@ -329,17 +331,32 @@ export const update = async (req: Request, res: Response) => {
                 : [];
 
         if (uploadedPhotos.length > 0) {
+            // Validate size
             for (const photo of uploadedPhotos) {
                 if (photo.size > 1_000_000) {
-                    return res.status(400).json({ error: "Each image must be less than 1MB" });
+                    return res.status(400).json({
+                        error: "Each image must be less than 1MB"
+                    });
                 }
             }
+
+            // Upload new photos to R2
             product.photos = await Promise.all(
                 uploadedPhotos.map(uploadProductPhoto)
             );
         }
+
         const result = await product.save();
+
+        // Delete old photos from R2 only after successful save
+        if (uploadedPhotos.length > 0) {
+            await Promise.all(
+                oldPhotos.map(photo => deleteProductPhoto(photo.key))
+            );
+        }
+
         return res.json(result);
+
     } catch (err) {
         console.log(err)
         return res.status(400).json({ error: errorHandler(err as MongoError) });
@@ -351,7 +368,7 @@ export const listBySubcategory = async (req: Request, res: Response) => {
         const { lang = 'en' } = req.query;
 
         const products = await Product.find({ subcategory: req.params.subcategoryId })
-             .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
+            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
             .lean();
 
         const transformedProducts = products.map(p => applyLang(p, lang as string));
@@ -381,7 +398,7 @@ export const listSearch = async (req: Request, res: Response) => {
 
     try {
         const products = await Product.find(query)
-             .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
+            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
             .lean();
 
         const transformedProducts = products.map(p => applyLang(p, lang as string));
