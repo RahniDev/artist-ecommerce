@@ -15,15 +15,15 @@ const ProductItem = ({ product }: { product: IProduct }) => {
 
     return (
       <Grid size={{ xs: 12, sm: 6, md: 4, lg: 3 }}>
-      <MuiLink component={Link} to={`/product/${product._id}`} style={{ textDecoration: "none", color: "inherit" }}>
-        <ShowImage item={product} url='product' width="200px" />
-        <Typography variant="h3" fontSize="24px">
-          {product.name}
-        </Typography>
-        <Typography variant="body1" color='grey.600'>
-          {localizedDescription}
-        </Typography>
-        <Typography variant="body1">€{product.price}</Typography>
+        <MuiLink component={Link} to={`/product/${product._id}`} style={{ textDecoration: "none", color: "inherit" }}>
+          <ShowImage item={product} url='product' width="200px" />
+          <Typography variant="h3" fontSize="24px">
+            {product.name}
+          </Typography>
+          <Typography variant="body1" color='grey.600'>
+            {localizedDescription}
+          </Typography>
+          <Typography variant="body1">€{product.price}</Typography>
         </MuiLink>
       </Grid>
     );
@@ -37,7 +37,7 @@ const ProductItem = ({ product }: { product: IProduct }) => {
   }
 };
 
-export const SubcategoryProducts = () => {
+export const SubcategoryProducts = ({ category }: any) => {
   const { categoryId } = useParams<{ categoryId: string }>();
   const [products, setProducts] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState(true);
@@ -49,6 +49,7 @@ export const SubcategoryProducts = () => {
       setError("No category ID provided");
       return;
     }
+    console.log(category)
 
     const fetchProducts = async () => {
       try {
@@ -59,7 +60,6 @@ export const SubcategoryProducts = () => {
         }
 
         const data = await response.json();
-
         if (data.error) {
           setError(data.error);
         } else {
@@ -105,21 +105,41 @@ export const SubcategoryProducts = () => {
     );
   }
 
+  const subcategoryColors: Record<string, string> = {
+    Reality: "#E6E1D8",            // Limestone
+  Solitude: "#D9D0C2",           // Sandalwood
+  // Worlds_&_Dimensions: "#D7DFE6",// Monsoon Sky
+  // Darker_Depths: "#353739",      // Blue Charcoal
+  Memory: "#E4D5C6",             // Aged Paper
+  Guidance: "#DCCAA5",           // Muted Saffron
+  Vibration: "#D9D0E4",          // Dusty Amethyst
+  Emotions: "#DCC5BF",           // Rose Clay
+  Essence: "#E3E6DD",            // Sacred Ash
+  Truth: "#D7DDD7",              // Temple Stone
+  The_Unknown: "#C9D2D4",        // Himalayan Mist
+  };
+
+  const bgColor =
+    category?.name
+      ? subcategoryColors[category.name] || "#FFFFFF"
+      : "#FFFFFF";
   return (
-    <Layout title="" description="">
-      <Masonry
-        columns={{
-          xs: 1,
-          sm: 2,
-          md: 3,
-          lg: 3,
-        }}
-        spacing={4}
-      >
-        {products.map(product => (
-          <ProductItem key={product._id} product={product} />
-        ))}
-      </Masonry>
-    </Layout>
+    <div style={{ backgroundColor: bgColor }}>
+      <Layout title="" description="">
+        <Masonry
+          columns={{
+            xs: 1,
+            sm: 2,
+            md: 3,
+            lg: 3,
+          }}
+          spacing={4}
+        >
+          {products.map(product => (
+            <ProductItem key={product._id} product={product} />
+          ))}
+        </Masonry>
+      </Layout>
+    </div>
   );
 };

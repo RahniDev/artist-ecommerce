@@ -34,9 +34,8 @@ const Category = () => {
 
   return (
     <Box>
-
       {isSubcategory ? (
-        <SubcategoryProducts />
+        <SubcategoryProducts category={category} />
       ) : (
         category.subcategories.length > 0 && (
           <Layout title='' description=''>
