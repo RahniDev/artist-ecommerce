@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../redux/store";
@@ -10,26 +10,68 @@ import SoldBadge from "./SoldBadge";
 import AddToCartButton from "./AddToCartButton";
 import ProductBreadcrumbs from "./ProductBreadcrumbs";
 import ShowImage from "./ShowImage";
-import { Box, Typography, Grid } from "@mui/material";
+import { Box, Typography, Grid, Button } from "@mui/material";
 import ImageModal from "./ImageModal";
 import { API } from "../config";
-import ArtworkLightingControls from "./ArtworkLightingControls";
-import type { LightingMode } from "../types";
-import {toCartItem} from "../redux/slices/cartSlice";
+import { toCartItem } from "../redux/slices/cartSlice";
 
 const Product: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const dispatch = useDispatch<AppDispatch>();
   const { t } = useTranslation();
 
+  const [roomImage, setRoomImage] = useState<string>("");
+  const [artBox, setArtBox] = useState({
+    x: 50,
+    y: 50,
+    width: 150,
+    height: 150,
+  });
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [modalSrc, setModalSrc] = useState<string>("");
-  const [lightingMode, setLightingMode] = useState<LightingMode>("daylight");
-
 
   const handleImageClick = (src: string) => {
     setModalSrc(src);
     setModalOpen(true);
+  };
+
+  const handleRoomUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const url = URL.createObjectURL(file);
+    setRoomImage(url);
+  };
+
+  const dragStart = useRef({ x: 0, y: 0 });
+  const boxStart = useRef(artBox);
+
+  const onMouseMoveDrag = useCallback((e: MouseEvent) => {
+    const dx = e.clientX - dragStart.current.x;
+    const dy = e.clientY - dragStart.current.y;
+
+    setArtBox(prev => ({
+      ...prev,
+      x: boxStart.current.x + dx,
+      y: boxStart.current.y + dy,
+    }));
+  }, []);
+
+  const onMouseUpDrag = useCallback(() => {
+    window.removeEventListener("mousemove", onMouseMoveDrag);
+    window.removeEventListener("mouseup", onMouseUpDrag);
+  }, [onMouseMoveDrag]);
+
+  const onMouseDownDrag = (e: React.MouseEvent) => {
+      dragStart.current = {
+    x: e.clientX,
+    y: e.clientY,
+  };
+
+  boxStart.current = artBox;
+
+    window.addEventListener("mousemove", onMouseMoveDrag);
+    window.addEventListener("mouseup", onMouseUpDrag);
   };
 
   const { product, related, loading, error } = useSelector(
@@ -48,6 +90,57 @@ const Product: React.FC = () => {
   }, [dispatch, productId, currentLanguage]);
 
 
+  useEffect(() => {
+    if (!roomImage) return;
+
+    setArtBox({
+      x: 50,
+      y: 50,
+      width: 150,
+      height: 150,
+    });
+  }, [roomImage]);
+
+  const resizeStart = useRef({ w: 0, h: 0, x: 0, y: 0 });
+
+  const onResizeMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation();
+
+    resizeStart.current = {
+      w: artBox.width,
+      h: artBox.height,
+      x: e.clientX,
+      y: e.clientY,
+    };
+
+    window.addEventListener("mousemove", onResizeMove);
+    window.addEventListener("mouseup", onResizeUp);
+  };
+
+  const onResizeMove = (e: MouseEvent) => {
+    const dw = e.clientX - resizeStart.current.x;
+    const dh = e.clientY - resizeStart.current.y;
+
+    setArtBox(prev => ({
+      ...prev,
+      width: Math.max(50, resizeStart.current.w + dw),
+      height: Math.max(50, resizeStart.current.h + dh),
+    }));
+  };
+
+  const onResizeUp = () => {
+    window.removeEventListener("mousemove", onResizeMove);
+    window.removeEventListener("mouseup", onResizeUp);
+  };
+
+  useEffect(() => {
+  return () => {
+    window.removeEventListener("mousemove", onMouseMoveDrag);
+    window.removeEventListener("mouseup", onMouseUpDrag);
+    window.removeEventListener("mousemove", onResizeMove);
+    window.removeEventListener("mouseup", onResizeUp);
+  };
+}, [onMouseMoveDrag, onMouseUpDrag]);
   return (
     <Layout title="" description="">
       <Grid container spacing={2} p={3}>
@@ -69,14 +162,93 @@ const Product: React.FC = () => {
                       width={380}
                       height={380}
                       showAll={true}
-                      lightingMode={lightingMode}
                       onImageClick={handleImageClick}
                     />
+                  </Box>
 
-                    <ArtworkLightingControls
-                      value={lightingMode}
-                      onChange={setLightingMode}
-                    />
+                  <Box pt={4}>
+                    <Typography pb={1}> Upload an image of your to wall to preview the painting on your wall.</Typography>
+                    <Button variant="outlined" component="label">View on your wall
+                      <input
+                        hidden
+                        type="file"
+                        accept="image/*"
+                        onChange={handleRoomUpload}
+                      />
+                    </Button>
+                    <Box display="flex" gap={1} mb={1}>
+                      <Button onClick={() => setRoomImage("")}>
+                        Remove room image
+                      </Button>
+
+                      <Button onClick={() =>
+                        setArtBox({ x: 100, y: 100, width: 150, height: 150 })
+                      }>
+                        Reset painting
+                      </Button>
+                    </Box>
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: 500,
+                        height: 350,
+                        border: "1px solid #ddd",
+                        overflow: "hidden",
+                        background: "#f5f5f5",
+                      }}
+                    >
+                      {roomImage && (
+                        <img
+                          src={roomImage}
+                          style={{
+                            position: "absolute",
+                            inset: 0, width: "100%", height: "100%", objectFit: "cover"
+                          }}
+                        />
+                      )}
+                      {roomImage && product && (
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: artBox.y,
+                            left: artBox.x,
+                            width: artBox.width,
+                            height: artBox.height,
+                            cursor: "move",
+                            userSelect: "none",
+                          }}
+                          onMouseDown={onMouseDownDrag}
+                        >
+                          {/* artwork */}
+                          <img
+                            src={`${API}/product/photo/${product._id}`}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "contain",
+                              filter: "drop-shadow(0px 10px 20px rgba(0,0,0,0.3))",
+                              border: "6px solid white",
+                              pointerEvents: "none",
+                            }}
+                          />
+
+                          {/* resize handle */}
+                          <div
+                            onMouseDown={onResizeMouseDown}
+                            style={{
+                              position: "absolute",
+                              right: 0,
+                              bottom: 0,
+                              width: 16,
+                              height: 16,
+                              background: "white",
+                              border: "2px solid black",
+                              cursor: "nwse-resize",
+                            }}
+                          />
+                        </div>
+                      )}
+                    </Box>
                   </Box>
                 </Grid>
                 {/* Add modal at the end, inside the product check */}
@@ -116,6 +288,7 @@ const Product: React.FC = () => {
                       >
                         € {product.price}
                       </Typography>
+
                       <AddToCartButton
                         product={toCartItem(product)}
                         redirect={false}
