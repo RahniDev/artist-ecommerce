@@ -65,14 +65,11 @@ const AddCategory = () => {
         token,
         payload
       ) as ApiResponse<Category>;
-
       if (data.error) {
         setError(data.error);
-      } else if (data.data) {
-        setCreatedCategory(data.data);
+      } else {
+        setCreatedCategory(data as Category);
         setSuccess(true);
-        setName("");
-        setParentId("");
       }
     } catch (err) {
       console.error("Category creation failed:", err);
@@ -135,9 +132,18 @@ const AddCategory = () => {
     </form>
   );
 
+  const goBack = () => (
+    <Link href="/admin/dashboard">Back to Dashboard</Link>
+  );
+
+  const showError = () =>
+    error && (
+      <Typography color="error.main" pt={4} textAlign='center'>{error}</Typography>
+    );
+
   const showSuccess = () =>
     success && createdCategory && (
-      <Typography color="success.main">
+      <Typography color="success.main" pt={4} textAlign='center'>
         <strong>{createdCategory.name}</strong> created successfully
         {createdCategory.parent
           ? ` as a subcategory of ${(createdCategory.parent as Category).name}`
@@ -146,15 +152,6 @@ const AddCategory = () => {
       </Typography>
     );
 
-  const showError = () =>
-    error && (
-      <Typography color="error.main">{error}</Typography>
-    );
-
-  const goBack = () => (
-    <Link href="/admin/dashboard">Back to Dashboard</Link>
-  );
-
   return (
     <Layout title="" description="">
       <Typography variant="h1" gutterBottom>
@@ -162,9 +159,9 @@ const AddCategory = () => {
       </Typography>
       <Box>
         {goBack()}
-        {showSuccess()}
-        {showError()}
         {newCategoryForm()}
+        {showError()}
+        {showSuccess()}
       </Box>
     </Layout>
   );

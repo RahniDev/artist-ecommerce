@@ -52,14 +52,20 @@ const Navbar: React.FC = () => {
   const cartCount = cartItems.reduce((total, item) => total + (item.count ?? 1), 0);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const handleMouseEnter = (e: any) => {
+    setAnchorEl(e.currentTarget);
+  };
+
+  const handleMouseLeave = () => {
+    setAnchorEl(null);
+  };
+
   const open = Boolean(anchorEl);
 
-  const handleDropdownOpen = (event: React.MouseEvent<HTMLElement>) => setAnchorEl(event.currentTarget);
-  const handleDropdownClose = () => setAnchorEl(null);
   const handleSignout = () => {
     dispatch(clearAuth());
     navigate("/");
-    handleDropdownClose();
   };
 
   const loadCategories = async () => {
@@ -229,24 +235,46 @@ const Navbar: React.FC = () => {
           <LangToggle />
           {user ? (
             <>
-              <IconButton onClick={handleDropdownOpen} sx={{ color: "#3a3535" }}>
+              <IconButton onMouseEnter={handleMouseEnter} sx={{ color: "#3a3535" }}>
                 <Person2OutlinedIcon fontSize="medium" />
               </IconButton>
-              <Menu anchorEl={anchorEl} open={open} onClose={handleDropdownClose}>
+              <Menu anchorEl={anchorEl}
+                disableAutoFocus
+                disableEnforceFocus
+                open={open}
+                onClose={handleMouseLeave}
+                MenuListProps={{
+                  autoFocusItem: false,
+                }}
+                slotProps={{
+                  paper: {
+                    onMouseLeave: handleMouseLeave,
+                  },
+                }}>
                 {user?.role === 0 && (
-                  <MenuItem onClick={() => { navigate("/user/dashboard"); handleDropdownClose(); }}>
+                  <MenuItem onClick={() => {
+                    navigate("/user/dashboard");
+                    handleMouseLeave();
+                  }}>
                     Dashboard
                   </MenuItem>
                 )}
                 {user?.role === 1 && (
-                  <MenuItem onClick={() => { navigate("/admin/dashboard"); handleDropdownClose(); }}>
+                  <MenuItem sx={{
+                    "&.Mui-focusVisible": {
+                      backgroundColor: "transparent",
+                    },
+                    "&.Mui-selected": {
+                      backgroundColor: "transparent",
+                    },
+                  }} onClick={() => { navigate("/admin/dashboard"); handleMouseLeave(); }}>
                     Admin
                   </MenuItem>
                 )}
                 <MenuItem onClick={handleSignout}>Sign Out</MenuItem>
               </Menu>
             </>
-         ) : (
+          ) : (
             <IconButton component={NavLink} to="/signin" sx={{ color: "#3a3535" }}>
               <Person2OutlinedIcon fontSize="medium" />
             </IconButton>
