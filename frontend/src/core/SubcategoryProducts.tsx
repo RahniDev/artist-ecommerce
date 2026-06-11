@@ -108,15 +108,15 @@ export const SubcategoryProducts = ({ category }: any) => {
   const subcategoryColors: Record<string, string> = {
     Reality: "#E6E1D8",            // Limestone
   Solitude: "#D9D0C2",           // Sandalwood
-  // Worlds_&_Dimensions: "#D7DFE6",// Monsoon Sky
-  // Darker_Depths: "#353739",      // Blue Charcoal
+  "Worlds_&_Dimensions": "#D7DFE6",// Monsoon Sky
+  "Darker_Depths": "#353739",      // Blue Charcoal
   Memory: "#E4D5C6",             // Aged Paper
   Guidance: "#DCCAA5",           // Muted Saffron
   Vibration: "#D9D0E4",          // Dusty Amethyst
   Emotions: "#DCC5BF",           // Rose Clay
   Essence: "#E3E6DD",            // Sacred Ash
   Truth: "#D7DDD7",              // Temple Stone
-  The_Unknown: "#C9D2D4",        // Himalayan Mist
+  "The Unknown": "#C9D2D4",        // Himalayan Mist
   };
 
   const bgColor =

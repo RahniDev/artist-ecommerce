@@ -167,8 +167,9 @@ const Product: React.FC = () => {
                   </Box>
 
                   <Box pt={4}>
-                    <Typography pb={1}> Upload an image of your to wall to preview the painting on your wall.</Typography>
-                    <Button variant="outlined" component="label">View on your wall
+                    <Typography variant="h3" fontSize={24}>View on your wall</Typography>
+                    <Typography pb={1}> Upload an image of your wall to preview the painting on your wall.</Typography>
+                    <Button variant="outlined" component="label">Upload
                       <input
                         hidden
                         type="file"
@@ -184,7 +185,7 @@ const Product: React.FC = () => {
                       <Button onClick={() =>
                         setArtBox({ x: 100, y: 100, width: 150, height: 150 })
                       }>
-                        Reset painting
+                        Reset position
                       </Button>
                     </Box>
                     <Box
