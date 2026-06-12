@@ -4,21 +4,15 @@ import type { RootState, AppDispatch } from "../redux/store";
 import {
   fetchCategories,
   fetchSearchResults,
-  setCategory,
   setSearch,
 } from "../redux/slices/searchSlice";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
   TextField,
-  Select,
-  MenuItem,
   Button,
-  InputLabel,
-  FormControl,
   Typography,
 } from "@mui/material";
-import type { SelectChangeEvent } from "@mui/material/Select";
 import { useTranslation } from "react-i18next";
 import ProductCard from "./ProductCard";
 
@@ -27,7 +21,6 @@ const Search = () => {
   const { t } = useTranslation();
 
   const {
-    categories,
     category,
     search,
     results,
@@ -63,33 +56,6 @@ const Search = () => {
           pt: 5
         }}
       >
-        <FormControl
-          size="small"
-          sx={{
-            minWidth: 150,
-            "& .MuiOutlinedInput-root": {
-              borderTopRightRadius: 0,
-              borderBottomRightRadius: 0,
-            },
-          }}
-        >
-          <InputLabel>{t("category")}</InputLabel>
-          <Select
-            value={category}
-            label={t("category")}
-            sx={{ minWidth: 150 }}
-            onChange={(e: SelectChangeEvent) =>
-              dispatch(setCategory(e.target.value))
-            }
-          >
-            <MenuItem value="">All</MenuItem>
-            {categories.map(c => (
-              <MenuItem key={c._id} value={c._id}>
-                {c.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
 
         <TextField
           size="small"

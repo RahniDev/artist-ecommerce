@@ -84,7 +84,7 @@ const Category = () => {
                                 marginBottom: "8px"
                               }}
                             >{sub.name}</Typography>
-                            <Typography variant="body2" color="grey.200" letterSpacing='0.14em' fontSize=".8rem" fontFamily='Playfair Display, serif'>VIEW SERIES</Typography>
+                            <Typography variant="body2" color="grey.200" letterSpacing='0.14em' fontSize=".8rem" fontFamily='Playfair Display, serif'>VIEW COLLECTION</Typography>
                           </Box>
                         </Box>
                       </Box>

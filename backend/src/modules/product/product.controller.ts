@@ -90,7 +90,7 @@ export const list = async (req: Request, res: Response) => {
         const products = await Product.find()
             .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
             .sort({ createdAt: -1 })
-            .limit(20)
+            .limit(12)
             .lean();
 
         const transformedProducts = products.map(p => applyLang(p, lang as string));
