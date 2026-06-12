@@ -1,8 +1,21 @@
 import formidable from 'formidable';
-import * as fs from 'fs';
 import { Product } from './product.model.js';
 import { errorHandler } from '../../helpers/errorHandler.js';
 import mongoose from 'mongoose';
+import { translateToAll } from './translate.js';
+import { deleteProductPhoto, uploadProductPhoto } from "./r2.service.js";
+const applyLang = (product, lang) => {
+    const description = typeof product.description === 'object'
+        ? product.description[lang] || product.description.en || ''
+        : product.description || '';
+    const name = typeof product.name === 'object'
+        ? product.name[lang] || product.name.en || ''
+        : product.name || '';
+    const nameEn = typeof product.name === 'object'
+        ? product.name.en || ''
+        : product.name || '';
+    return { ...product, name, nameEn, description };
+};
 export const productById = async (req, res, next, id) => {
     try {
         if (!mongoose.Types.ObjectId.isValid(id)) {
@@ -10,7 +23,7 @@ export const productById = async (req, res, next, id) => {
         }
         const product = await Product.findById(id)
             .populate("category")
-            .select("-photo");
+            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt");
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
@@ -22,20 +35,36 @@ export const productById = async (req, res, next, id) => {
         return res.status(500).json({ error: "Failed to load product" });
     }
 };
-export const read = (req, res) => {
+export const read = async (req, res) => {
     if (!req.product) {
         return res.status(404).json({ error: "Product not loaded" });
     }
-    return res.json(req.product);
+    const { lang = 'en' } = req.query;
+    // Re-fetch with photos (but strip binary data manually)
+    const fullProduct = await Product.findById(req.product._id)
+        .populate("category")
+        .lean();
+    if (!fullProduct) {
+        return res.status(404).json({ error: "Product not found" });
+    }
+    // Strip binary data but keep rest of each photo object
+    const photos = (fullProduct.photos ?? []).map(({ data, ...rest }) => rest);
+    return res.json({
+        ...applyLang(fullProduct, lang),
+        photos,
+        photoCount: photos.length
+    });
 };
 export const list = async (req, res) => {
     try {
+        const { lang = 'en' } = req.query;
         const products = await Product.find()
-            .select("-photo")
+            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
             .sort({ createdAt: -1 })
-            .limit(6)
+            .limit(20)
             .lean();
-        return res.status(200).json({ data: products });
+        const transformedProducts = products.map(p => applyLang(p, lang));
+        return res.status(200).json({ data: transformedProducts });
     }
     catch (err) {
         return res.status(400).json({ error: "Products not found" });
@@ -45,6 +74,7 @@ export const list = async (req, res) => {
 export const listRelated = async (req, res) => {
     let limit = req.query.limit ? Number(req.query.limit) : 6;
     try {
+        const { lang = 'en' } = req.query;
         const products = await Product.find({
             _id: { $ne: req.product?._id },
             category: req.product?.category
@@ -52,7 +82,8 @@ export const listRelated = async (req, res) => {
             .limit(limit)
             .populate('category', '_id name')
             .lean();
-        return res.json({ data: products });
+        const transformedProducts = products.map(p => applyLang(p, lang));
+        return res.json({ data: transformedProducts });
     }
     catch (err) {
         return res.status(400).json({ error: 'Products not found' });
@@ -69,25 +100,20 @@ export const listCategories = async (req, res) => {
 };
 export const photo = async (req, res) => {
     try {
-        const product = await Product.findById(req.params.productId)
-            .select("photo");
-        if (!product || !product.photo?.data) {
+        const product = await Product.findById(req.params.productId).select("photos");
+        const index = Number(req.query.index) || 0;
+        const img = product?.photos?.[index];
+        if (!product || !img?.url) {
             return res.status(404).send("No image");
         }
-        res.set("Content-Type", product.photo.contentType);
-       // Caches images for 2 weeks 
-        res.set(
-            "Cache-Control",
-            "public, max-age=1209600, must-revalidate"
-        );
-        return res.send(product.photo.data);
+        return res.redirect(302, img.url);
     }
     catch (err) {
         return res.status(500).send("Image error");
     }
 };
 export const create = async (req, res) => {
-    const form = formidable();
+    const form = formidable({ multiples: true });
     try {
         const { fields, files } = await new Promise((resolve, reject) => {
             form.parse(req, (err, fields, files) => {
@@ -97,7 +123,7 @@ export const create = async (req, res) => {
                     resolve({ fields, files });
             });
         });
-        let { name, description, price, category, quantity, shipping } = fields;
+        let { name, description, price, category, subcategory, quantity, shipping, weight, width, height, length } = fields;
         const normalize = (v) => Array.isArray(v) ? v[0] : v;
         const nameValue = normalize(name);
         const descriptionValue = normalize(description);
@@ -106,6 +132,10 @@ export const create = async (req, res) => {
         const categoryValue = normalize(category);
         const shippingValue = normalize(shipping) === "1" ||
             normalize(shipping) === "true";
+        const weightValue = Number(normalize(weight));
+        const widthValue = normalize(width) ? Number(normalize(width)) : undefined;
+        const heightValue = normalize(height) ? Number(normalize(height)) : undefined;
+        const lengthValue = normalize(length) ? Number(normalize(length)) : undefined;
         if (nameValue == null ||
             descriptionValue == null ||
             isNaN(priceValue) ||
@@ -114,29 +144,43 @@ export const create = async (req, res) => {
             shippingValue == null) {
             return res.status(400).json({ error: "All fields are required" });
         }
+        const [nameTranslations, descTranslations] = await Promise.all([
+            translateToAll(nameValue),
+            translateToAll(descriptionValue)
+        ]);
         const product = new Product({
-            name: nameValue,
-            description: descriptionValue,
+            name: { en: nameValue, ...nameTranslations },
+            description: { en: descriptionValue, ...descTranslations },
             price: priceValue,
             category: categoryValue,
+            subcategory: normalize(subcategory) || null,
             quantity: quantityValue,
-            shipping: shippingValue
+            shipping: shippingValue,
+            weight: weightValue,
+            width: widthValue,
+            height: heightValue,
+            length: lengthValue,
         });
-        const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
-        if (photo) {
-            if (photo.size > 1000000) {
-                return res.status(400).json({ error: "Image should be less than 1MB" });
+        console.log("Product before save:", product);
+        const uploadedPhotos = Array.isArray(files.photos)
+            ? files.photos
+            : files.photos
+                ? [files.photos]
+                : [];
+        if (uploadedPhotos.length > 0) {
+            for (const photo of uploadedPhotos) {
+                if (photo.size > 1000000) {
+                    return res.status(400).json({ error: "Each image must be less than 1MB" });
+                }
             }
-            product.photo = {
-                data: await fs.promises.readFile(photo.filepath),
-                contentType: photo.mimetype || "application/octet-stream"
-            };
+            product.photos = await Promise.all(uploadedPhotos.map(uploadProductPhoto));
         }
         const result = await product.save();
+        console.log("Product saved with ID:", result._id);
         return res.json({ data: result });
     }
     catch (err) {
-        console.error(err);
+        console.error("ERROR in create:", err);
         return res.status(400).json({ error: "Product creation failed" });
     }
 };
@@ -146,6 +190,7 @@ export const deleteProduct = async (req, res) => {
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
+        await Promise.all(product.photos.map(photo => deleteProductPhoto(photo.key)));
         await product.deleteOne();
         return res.json({
             message: "Product deleted successfully",
@@ -157,10 +202,11 @@ export const deleteProduct = async (req, res) => {
     }
 };
 export const update = async (req, res) => {
-    const form = formidable();
+    const form = formidable({ multiples: true });
     try {
         const { fields, files } = await new Promise((resolve, reject) => {
             form.parse(req, (err, fields, files) => {
+                console.log(files);
                 if (err)
                     return reject(err);
                 resolve({ fields, files });
@@ -170,16 +216,77 @@ export const update = async (req, res) => {
         if (!product) {
             return res.status(404).json({ error: "Product not found" });
         }
-        Object.assign(product, Object.fromEntries(Object.entries(fields).map(([k, v]) => [k, Array.isArray(v) ? v[0] : v])));
-        const photo = Array.isArray(files.photo) ? files.photo[0] : files.photo;
-        if (photo) {
-            if (photo.size > 1000000) {
-                return res.status(400).json({ error: "Image should be less than 1MB" });
+        if (fields.name) {
+            const nameValue = Array.isArray(fields.name) ? fields.name[0] : fields.name;
+            if (nameValue) {
+                const translations = await translateToAll(nameValue);
+                product.name = {
+                    en: nameValue,
+                    de: translations.de ?? '',
+                    es: translations.es ?? '',
+                    it: translations.it ?? '',
+                    fr: translations.fr ?? ''
+                };
             }
-            const photoBuffer = await fs.promises.readFile(photo.filepath);
-            product.photo = { data: photoBuffer, contentType: photo.mimetype || "application/octet-stream" };
+        }
+        if (fields.description) {
+            const descriptionField = fields.description;
+            const descriptionValue = Array.isArray(descriptionField)
+                ? descriptionField[0]
+                : descriptionField;
+            if (descriptionValue && typeof descriptionValue === 'string') {
+                const translations = await translateToAll(descriptionValue);
+                product.description = {
+                    en: descriptionValue,
+                    de: translations.de ?? '',
+                    es: translations.es ?? '',
+                    it: translations.it ?? '',
+                    fr: translations.fr ?? ''
+                };
+            }
+            // You can't delete from fields, so skip it in the Object.assign
+            // by creating a new object without description
+            const otherFields = Object.entries(fields)
+                .filter(([key]) => key !== 'description' && key !== 'name')
+                .reduce((acc, [key, value]) => {
+                acc[key] = Array.isArray(value) ? value[0] : value;
+                return acc;
+            }, {});
+            Object.assign(product, otherFields);
+        }
+        else {
+            const otherFields = Object.entries(fields)
+                .filter(([key]) => key !== 'name')
+                .reduce((acc, [key, value]) => {
+                acc[key] = Array.isArray(value) ? value[0] : value;
+                return acc;
+            }, {});
+            Object.assign(product, otherFields);
+        }
+        // Keep a copy of the existing photos
+        const oldPhotos = [...product.photos];
+        const uploadedPhotos = Array.isArray(files.photos)
+            ? files.photos
+            : files.photos
+                ? [files.photos]
+                : [];
+        if (uploadedPhotos.length > 0) {
+            // Validate size
+            for (const photo of uploadedPhotos) {
+                if (photo.size > 1000000) {
+                    return res.status(400).json({
+                        error: "Each image must be less than 1MB"
+                    });
+                }
+            }
+            // Upload new photos to R2
+            product.photos = await Promise.all(uploadedPhotos.map(uploadProductPhoto));
         }
         const result = await product.save();
+        // Delete old photos from R2 only after successful save
+        if (uploadedPhotos.length > 0) {
+            await Promise.all(oldPhotos.map(photo => deleteProductPhoto(photo.key)));
+        }
         return res.json(result);
     }
     catch (err) {
@@ -187,23 +294,38 @@ export const update = async (req, res) => {
         return res.status(400).json({ error: errorHandler(err) });
     }
 };
+export const listBySubcategory = async (req, res) => {
+    try {
+        const { lang = 'en' } = req.query;
+        const products = await Product.find({ subcategory: req.params.subcategoryId })
+            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
+            .lean();
+        const transformedProducts = products.map(p => applyLang(p, lang));
+        return res.json({ data: transformedProducts });
+    }
+    catch (err) {
+        return res.status(400).json({ error: "Products not found" });
+    }
+};
 export const listSearch = async (req, res) => {
     const search = typeof req.query.search === "string" ? req.query.search : "";
     const category = typeof req.query.category === "string" ? req.query.category : "";
+    const { lang = 'en' } = req.query;
     if (!search) {
         return res.json([]);
     }
     const query = {
-        name: { $regex: search, $options: "i" }
+        'name.en': { $regex: search, $options: "i" }
     };
     if (category && category !== "All") {
         query.category = category;
     }
     try {
         const products = await Product.find(query)
-            .select("-photo")
+            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
             .lean();
-        return res.json(products);
+        const transformedProducts = products.map(p => applyLang(p, lang));
+        return res.json(transformedProducts);
     }
     catch (err) {
         res.status(400).json({ error: errorHandler(err) });
@@ -212,7 +334,7 @@ export const listSearch = async (req, res) => {
 export const decreaseQuantity = async (req, res, next) => {
     const bulkOps = req.body.order.products.map((item) => ({
         updateOne: {
-            filter: { _id: item._id },
+            filter: { _id: item.product },
             update: { $inc: { quantity: -item.count, sold: item.count } }
         }
     }));
@@ -229,12 +351,11 @@ export const listBySearch = async (req, res) => {
     const sortBy = req.body.sortBy ? req.body.sortBy : "_id";
     const limit = req.body.limit ? Number(req.body.limit) : 100;
     const skip = req.body.skip ? Number(req.body.skip) : 0;
+    const { lang = 'en' } = req.query;
     const findArgs = {};
     for (let key in req.body.filters) {
         if (req.body.filters[key].length > 0) {
             if (key === "price") {
-                // gte - greater than price [0-10]
-                // lte - less than
                 findArgs[key] = { $gte: req.body.filters[key][0], $lte: req.body.filters[key][1] };
             }
             else {
@@ -244,13 +365,14 @@ export const listBySearch = async (req, res) => {
     }
     try {
         const data = await Product.find(findArgs)
-            .select("-photo")
+            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
             .populate("category")
             .sort({ [sortBy]: order })
             .skip(skip)
             .limit(limit)
             .lean();
-        return res.json({ size: data.length, data });
+        const transformedData = data.map(p => applyLang(p, lang));
+        return res.json({ size: transformedData.length, data: transformedData });
     }
     catch (err) {
         return res.status(400).json({ error: "Products not found" });

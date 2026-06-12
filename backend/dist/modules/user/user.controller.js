@@ -1,6 +1,18 @@
 import { User } from "./user.model.js";
 import { Order } from "../order/order.model.js";
 import { errorHandler } from "../../helpers/errorHandler.js";
+export const loadProfileFromAuth = async (req, res, next) => {
+    const authReq = req;
+    if (!authReq.auth?._id)
+        return next();
+    try {
+        const user = await User.findById(authReq.auth._id).exec();
+        if (user)
+            authReq.profile = user;
+    }
+    catch { }
+    next();
+};
 export const userById = async (req, res, next, id) => {
     try {
         const user = await User.findById(id).exec();
@@ -45,7 +57,7 @@ export const update = async (req, res) => {
 // Add order to user purchase history
 export const addOrderToUserHistory = async (req, res, next) => {
     if (!req.profile)
-        return res.status(404).json({ error: "User not found" });
+        return next();
     const history = req.body.order.products.map((item) => ({
         _id: item._id,
         name: item.name,

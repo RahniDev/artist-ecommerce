@@ -1,15 +1,18 @@
 import mongoose, { Schema } from "mongoose";
 const productSchema = new Schema({
     name: {
-        type: String,
-        trim: true,
-        required: true,
-        maxlength: 32
+        en: { type: String, required: true, trim: true },
+        de: { type: String, default: '' },
+        es: { type: String, default: '' },
+        it: { type: String, default: '' },
+        fr: { type: String, default: '' }
     },
     description: {
-        type: String,
-        required: true,
-        maxlength: 2000
+        en: { type: String, required: true },
+        de: { type: String, default: '' },
+        es: { type: String, default: '' },
+        it: { type: String, default: '' },
+        fr: { type: String, default: '' }
     },
     price: {
         type: Number,
@@ -22,6 +25,11 @@ const productSchema = new Schema({
         ref: "Category",
         required: true
     },
+    subcategory: {
+        type: Schema.Types.ObjectId,
+        ref: 'Category',
+        default: null,
+    },
     quantity: {
         type: Number
     },
@@ -29,10 +37,11 @@ const productSchema = new Schema({
         type: Number,
         default: 0
     },
-    photo: {
-        data: Buffer,
-        contentType: String
-    },
+    photos: [{
+            key: { type: String, required: true },
+            url: { type: String, required: true },
+            contentType: String
+        }],
     shipping: {
         required: false,
         type: Boolean

@@ -1,6 +1,15 @@
 import { Order } from './order.model.js';
 import { errorHandler } from '../../helpers/errorHandler.js';
-import sgMail from '@sendgrid/mail';
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+dotenv.config();
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+    },
+});
 export const orderById = async (req, res, next, id) => {
     try {
         const order = await Order.findById(id)
@@ -18,46 +27,39 @@ export const orderById = async (req, res, next, id) => {
 export const create = async (req, res) => {
     try {
         const profile = req.profile;
-        req.body.order.user = profile._id;
-        const order = new Order(req.body.order);
+        const orderInput = req.body.order;
+        const order = new Order({
+            ...orderInput,
+            user: profile?._id ?? null,
+            email: profile?.email ?? orderInput.email,
+        });
         const savedOrder = await order.save();
-        const adminEmail = {
-            to: 'rahnidemeis@gmail.com',
-            from: 'rahnidemeis@gmail.com',
-            subject: 'New order received',
-            html: `
-                <p>Customer: ${profile?.name || 'Unknown'}</p>
-                <p>Total products: ${order.products.length}</p>
-                <p>Total cost: £${order.amount}</p>
-            `
-        };
-        const customerEmail = {
-            to: profile?.email,
-            from: 'rahnidemeis@gmail.com',
-            subject: 'Your order is being processed',
-            html: `
-                <h1>Hi ${profile?.name}, thank you for your order!</h1>
-                <p>Total products: ${order.products.length}</p>
-                <p>Order total: £${order.amount}</p>
-                <p>Status: ${order.status}</p>
-
-                <h2>Order Details:</h2>
-
-                ${order.products.map((p) => {
-                const prod = p.product || {};
-                return `
-                        <div style="margin-bottom:12px;">
-                            <strong>Product:</strong> ${prod.name ?? p.name}<br>
-                            <strong>Price:</strong> £${prod.price ?? p.price}<br>
-                            <strong>Quantity:</strong> ${p.count}
-                        </div>
-                    `;
-            }).join('')}
-            `
-        };
         await Promise.allSettled([
-            sgMail.send(adminEmail),
-            sgMail.send(customerEmail)
+            transporter.sendMail({
+                to: process.env.GMAIL_USER,
+                from: process.env.GMAIL_USER,
+                subject: "New order received",
+                html: `
+          <p>Customer: ${profile?.name || `${order.firstName} ${order.lastName}`}</p>
+          <p>Email: ${order.email}</p>
+          <p>Total products: ${order.products.length}</p>
+          <p>Total cost: €${order.amount}</p>
+        `
+            }),
+            transporter.sendMail({
+                to: order.email,
+                from: process.env.GMAIL_USER,
+                subject: "Your order is being processed",
+                html: `
+          <p>Hi ${order.firstName || profile?.name || "there"}, thank you for your order!</p>
+          <p>We are processing your order and will send you a tracking number once it's shipped.</p>
+          <ul>
+            <li><strong>Order #${order._id}</strong></li>
+            <li>Total products: ${order.products.length}</li>
+            <li>Order total: €${order.amount}</li>
+          </ul>
+        `
+            })
         ]);
         return res.json(savedOrder);
     }
@@ -83,7 +85,20 @@ export const getStatusValues = (req, res) => {
 };
 export const updateOrderStatus = async (req, res) => {
     try {
-        const updated = await Order.findByIdAndUpdate(req.body.orderId, { $set: { status: req.body.status } }, { new: true });
+        const updated = await Order.findByIdAndUpdate(req.body.orderId, { $set: { status: req.body.status } }, { new: true }).populate("user", "name email");
+        if (req.body.status === 'Shipped' && updated?.user) {
+            const user = updated.user;
+            await transporter.sendMail({
+                to: user.email,
+                from: process.env.GMAIL_USER,
+                subject: 'Your order has been shipped',
+                html: `
+                    <p>Hi ${user.name || 'Unknown'}</p>
+                    <p>Your order has been shipped and is on its way to you!</p>
+                    <p>Tracking number: </p>
+                `
+            });
+        }
         return res.json(updated);
     }
     catch (err) {

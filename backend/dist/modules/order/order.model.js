@@ -16,6 +16,7 @@ const OrderSchema = new Schema({
     address: String,
     firstName: String,
     lastName: String,
+    email: String,
     phone: String,
     status: {
         type: String,
@@ -23,7 +24,11 @@ const OrderSchema = new Schema({
         enum: ["Not processed", "Processing", "Shipped", "Delivered", "Cancelled"]
     },
     updated: Date,
-    user: { type: Schema.Types.ObjectId, ref: "User" },
+    user: {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+        default: null
+    },
     shipping: {
         carrier: String,
         service: String,

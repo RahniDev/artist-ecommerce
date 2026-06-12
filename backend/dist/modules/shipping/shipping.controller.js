@@ -1,81 +1,98 @@
-import * as EasyPost from "@easypost/api";
+import fetch from "node-fetch";
 import { calculateParcel } from "./shipping.utils.js";
-import { getLaPosteRates } from "./laposte.service.js";
 import { createColissimoLabel } from "./laposte.label.js";
-
-// Lazy init — only runs when a route is actually called
-function getClient() {
-    const apiKey = process.env.EASYPOST_API_KEY;
-    if (!apiKey) throw new Error("EASYPOST_API_KEY is not set in .env");
-    return new EasyPost.default(apiKey);
-}
-
+const LAPOSTE_API_KEY = process.env.LAPOSTE_API_KEY;
+const LAPOSTE_TRACKING_URL = process.env.LAPOSTE_TRACKING_URL;
 export const getShippingRates = async (req, res) => {
     try {
-        const client = getClient(); 
-        const { toAddress, cartItems } = req.body;
+        const { cartItems, toAddress } = req.body;
+        if (!cartItems || !toAddress) {
+            return res.status(400).json({ error: "Missing cartItems or toAddress" });
+        }
         const parcel = calculateParcel(cartItems);
-        const fromAddress = {
-            street1: process.env.WAREHOUSE_STREET,
-            city: process.env.WAREHOUSE_CITY,
-            state: process.env.WAREHOUSE_STATE,
-            zip: process.env.WAREHOUSE_ZIP,
-            country: process.env.WAREHOUSE_COUNTRY,
+        const weightKg = parcel.weight / 1000;
+        // Later replace this with real Colissimo contract pricing
+        const rate = {
+            id: "laposte_colissimo_standard",
+            carrier: "La Poste",
+            service: "Colissimo International",
+            rate: weightKg <= 1 ? "25.00" : "35.00",
+            currency: "EUR",
+            type: "STANDARD",
+            deliveryEstimate: "3-8 business days",
         };
-
-        const shipment = await client.Shipment.create({
-            to_address: toAddress,
-            from_address: fromAddress,
-            parcel,
-        });
-        const easyPostRates = shipment.rates;
-
-        const laPosteRates = await getLaPosteRates(toAddress, cartItems, fromAddress);
-        const rates = [...laPosteRates, ...easyPostRates];
-
-        return res.json({ rates });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Failed to get shipping rates" });
+        return res.json({ rates: [rate] });
+    }
+    catch (err) {
+        console.error("Rate error:", err);
+        return res.status(500).json({ error: "Failed to fetch shipping rates" });
     }
 };
-
 export const buyShippingLabel = async (req, res) => {
     try {
-        const client = getClient(); 
-        const { rate, cartItems, toAddress } = req.body;
-        const fromAddress = {
-            street1: process.env.WAREHOUSE_STREET,
-            city: process.env.WAREHOUSE_CITY,
-            state: process.env.WAREHOUSE_STATE,
-            zip: process.env.WAREHOUSE_ZIP,
-            country: process.env.WAREHOUSE_COUNTRY,
-        };
-
-        if (rate.carrier === "La Poste") {
-            const label = await createColissimoLabel(cartItems, toAddress, fromAddress);
-            return res.json(label);
+        const { cartItems, toAddress } = req.body;
+        if (!cartItems || !toAddress) {
+            return res.status(400).json({ error: "Missing shipping data" });
         }
-
-        const boughtShipment = await client.Shipment.buy(rate.shipmentId, { id: rate.id });
+        const fromAddress = {
+            street1: process.env.STORE_STREET,
+            city: process.env.STORE_CITY,
+            state: process.env.STORE_STATE,
+            zip: process.env.STORE_ZIP,
+            country: process.env.STORE_COUNTRY,
+        };
+        const label = await createColissimoLabel(cartItems, toAddress, fromAddress);
         return res.json({
-            labelUrl: boughtShipment.postage_label.label_url,
-            trackingCode: boughtShipment.tracking_code,
+            success: true,
+            carrier: "La Poste",
+            trackingCode: label.trackingCode,
+            labelUrl: label.labelUrl,
         });
-    } catch (err) {
-        console.error(err);
-        return res.status(500).json({ error: "Failed to buy label" });
+    }
+    catch (err) {
+        console.error("Buy label error:", err);
+        return res.status(500).json({ error: "Failed to buy shipping label" });
     }
 };
-
 export const trackShipment = async (req, res) => {
     try {
-        const client = getClient();
         const { trackingCode } = req.params;
-        const tracker = await client.Tracker.create({ tracking_code: trackingCode });
-        return res.json(tracker);
-    } catch (err) {
-        console.error(err);
+        if (!trackingCode) {
+            return res.status(400).json({ error: "Missing trackingCode" });
+        }
+        const response = await fetch(`${LAPOSTE_TRACKING_URL}/${trackingCode}`, {
+            headers: {
+                "X-Okapi-Key": LAPOSTE_API_KEY,
+                Accept: "application/json",
+            },
+        });
+        if (!response.ok) {
+            return res.status(response.status).json({
+                error: `La Poste API returned status ${response.status}: ${response.statusText}`,
+            });
+        }
+        const data = (await response.json());
+        if (!data.shipment) {
+            return res.status(404).json({
+                error: "Invalid or unknown tracking number",
+                trackingCode,
+            });
+        }
+        if (!data.shipment.timeline || data.shipment.timeline.length === 0) {
+            return res.status(404).json({
+                error: "Tracking number exists but no events found yet",
+                trackingCode,
+            });
+        }
+        return res.json({
+            carrier: "La Poste",
+            trackingCode,
+            status: data.shipment.status || "Unknown",
+            events: data.shipment.timeline,
+        });
+    }
+    catch (err) {
+        console.error("Tracking error:", err);
         return res.status(500).json({ error: "Failed to track shipment" });
     }
 };

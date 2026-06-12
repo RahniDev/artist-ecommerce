@@ -2,6 +2,63 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { User } from "../user/user.model.js";
 import { errorHandler } from "../../helpers/errorHandler.js";
+import crypto from 'crypto';
+import nodemailer from 'nodemailer';
+import dotenv from 'dotenv';
+dotenv.config();
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+    },
+});
+export const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+    try {
+        const user = await User.findOne({ email });
+        if (!user)
+            return res.json("email not in db");
+        const token = crypto.randomBytes(32).toString('hex');
+        const expiry = Date.now() + 3600000; // 1 hour
+        user.resetPasswordToken = token;
+        user.resetPasswordExpires = new Date(expiry);
+        await user.save();
+        await transporter.sendMail({
+            to: email,
+            from: process.env.GMAIL_USER,
+            subject: 'Password Reset',
+            html: `
+                <p>Click the link below to reset your password. It expires in 1 hour.</p>
+                <a href="${process.env.CLIENT_URL}/resetPassword/${token}">Reset Password</a>
+            `
+        });
+        return res.json("recovery email sent");
+    }
+    catch (err) {
+        console.error("forgotPassword error:", err);
+        return res.status(500).json({ error: "Failed to send reset email" });
+    }
+};
+export const resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+    try {
+        const user = await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+        if (!user)
+            return res.status(400).json({ error: "Token is invalid or expired" });
+        user.password = newPassword;
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+        return res.json("password updated");
+    }
+    catch (err) {
+        return res.status(500).json({ error: "Failed to reset password" });
+    }
+};
 export const signup = async (req, res) => {
     try {
         const user = new User(req.body);

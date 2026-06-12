@@ -7,11 +7,13 @@ const UserSchema = new Schema({
         required: true,
         maxlength: 32,
     },
+    resetPasswordToken: { type: String },
+    resetPasswordExpires: { type: Date },
     email: {
         type: String,
         trim: true,
         required: true,
-        unique: true, // fixed
+        unique: true,
     },
     hashed_password: {
         type: String,

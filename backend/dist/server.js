@@ -13,10 +13,8 @@ import orderRoutes from './modules/order/order.routes.js';
 import braintreeRoutes from './modules/braintree/braintree.routes.js';
 import contactRoutes from './modules/contact/contact.routes.js';
 import shippingRoutes from "./modules/shipping/shipping.routes.js";
-
 const app = express();
 app.use(compression());
-
 await connectDB();
 app.use(morgan('dev'));
 app.use(cookieParser());
@@ -27,7 +25,10 @@ app.use((req, res, next) => {
     express.json()(req, res, next);
 });
 app.use(cors({
-    origin: "http://localhost:5173",
+    origin: [
+        "http://localhost:5173",
+        "https://artist-ecommerce.vercel.app"
+    ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -46,7 +47,6 @@ app.use('/api', orderRoutes);
 app.use('/api', braintreeRoutes);
 app.use('/api', contactRoutes);
 app.use("/api/shipping", shippingRoutes);
-
 const port = process.env.PORT || 8000;
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
