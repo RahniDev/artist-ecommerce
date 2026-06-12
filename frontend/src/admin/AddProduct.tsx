@@ -45,7 +45,8 @@ const AddProduct: React.FC = () => {
     createdProduct: false,
     createdProductName: "",
     framing: "",
-    additionalDetails: ""
+    additionalDetails: "",
+    quality: ""
   });
 
   const {
@@ -60,7 +61,8 @@ const AddProduct: React.FC = () => {
     error,
     createdProduct,
     framing,
-    additionalDetails
+    additionalDetails,
+    quality
   } = values;
 
   const formData = useRef<FormData | null>(null);
@@ -170,7 +172,8 @@ const AddProduct: React.FC = () => {
           shipping: "",
           quantity: "",
           photos: [],
-          additionalDetails: ""
+          additionalDetails: "",
+          quality: ""
         }));
         setSubcategories([]);
         setImgPreviews([]);
@@ -317,6 +320,25 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="Ready to hang">Ready to hang</MenuItem>
               </Select>
             </FormControl>
+            <FormControl fullWidth>
+              <InputLabel>Quality</InputLabel>
+              <Select
+                value={quality}
+                label="Quality"
+                onChange={handleSelectChange("quality")}>
+                <MenuItem value="Low quality">Low quality</MenuItem>
+                <MenuItem value="Medium quality">Medium quality</MenuItem>
+                <MenuItem value="High quality">High quality</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              label="Additional Details e.g: painting scuffed on the bottom left"
+              value={additionalDetails}
+              onChange={handleInputChange("additionalDetails")}
+              multiline
+              rows={4}
+              fullWidth
+            />
             <Typography>Only required for shipping: </Typography>
             <TextField
               label="Weight (grams)"
@@ -332,7 +354,6 @@ const AddProduct: React.FC = () => {
               onChange={handleInputChange("length")}
               fullWidth
             />
-
             {/* <TextField
               label="Quantity"
               type="number"
@@ -340,15 +361,6 @@ const AddProduct: React.FC = () => {
               onChange={handleInputChange("quantity")}
               fullWidth
             /> */}
-            <TextField
-              label="Additional Details e.g: painting scuffed on the bottom left"
-              value={additionalDetails}
-              onChange={handleInputChange("additionalDetails")}
-              multiline
-              rows={4}
-              fullWidth
-            />
-
             <Button
               type="submit"
               variant="contained"
