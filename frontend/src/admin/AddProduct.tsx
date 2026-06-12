@@ -44,7 +44,8 @@ const AddProduct: React.FC = () => {
     error: "",
     createdProduct: false,
     createdProductName: "",
-    framing: ""
+    framing: "",
+    additionalDetails: ""
   });
 
   const {
@@ -58,7 +59,8 @@ const AddProduct: React.FC = () => {
     loading,
     error,
     createdProduct,
-    framing
+    framing,
+    additionalDetails
   } = values;
 
   const formData = useRef<FormData | null>(null);
@@ -168,6 +170,7 @@ const AddProduct: React.FC = () => {
           shipping: "",
           quantity: "",
           photos: [],
+          additionalDetails: ""
         }));
         setSubcategories([]);
         setImgPreviews([]);
@@ -337,6 +340,14 @@ const AddProduct: React.FC = () => {
               onChange={handleInputChange("quantity")}
               fullWidth
             /> */}
+            <TextField
+              label="Additional Details e.g: painting scuffed on the bottom left"
+              value={additionalDetails}
+              onChange={handleInputChange("additionalDetails")}
+              multiline
+              rows={4}
+              fullWidth
+            />
 
             <Button
               type="submit"

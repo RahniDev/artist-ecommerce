@@ -83,7 +83,8 @@ export type ProductFormField =
   | "width"
   | "height"
   | "length"
-  | "framing";
+  | "framing"
+  | "additionalDetails";
 
 export interface ProductFormBase {
   name: string;
@@ -107,6 +108,7 @@ export interface AddProductValues extends ProductFormBase {
   createdProduct: boolean;
   createdProductName?: string;
   framing: ""
+  additionalDetails?: ""
 }
 
 export interface UpdateProductValues extends ProductFormBase {
