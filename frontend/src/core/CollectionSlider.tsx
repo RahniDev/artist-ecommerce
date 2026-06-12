@@ -12,8 +12,9 @@ import { useSelector } from "react-redux";
 
 const CollectionSlider = ({ subcategoryId }: { subcategoryId: string }) => {
   const [products, setProducts] = useState<IProduct[]>([]);
-  const [collectionTitle, setCollectionTitle] = useState("");
+  const [collectionTitle, setCollectionTitle] = useState<string>("");
   const swiperRef = useRef<SwiperType | null>(null);
+
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
   useEffect(() => {
     const lang = store.getState().language.currentLanguage;
@@ -28,12 +29,12 @@ const CollectionSlider = ({ subcategoryId }: { subcategoryId: string }) => {
 
   return (
     <>
-      <Typography variant="h2" textAlign="center">{collectionTitle}</Typography>
+      <Typography variant="h2" textAlign="center">Featured Collection</Typography>
       <Typography variant="subtitle1" textAlign="center"
         fontFamily="playfair display"
         fontStyle="italic"
         sx={{ pb: 4, color: "#222" }}>
-        Series </Typography>
+      {collectionTitle} Series </Typography>
       <Box sx={{ display: "flex", alignItems: "center" }}>
         <SlidePrevButton onClick={() => swiperRef.current?.slidePrev()} />
 
