@@ -25,7 +25,6 @@ export interface IProduct {
     url: string;
     contentType: string;
   }[];
-  shipping: boolean;
   weight: number;
   width: number;
   height: number;
@@ -78,10 +77,6 @@ const productSchema = new Schema<IProductDocument>({
     url: { type: String, required: true },
     contentType: String
   }],
-  shipping: {
-    required: false,
-    type: Boolean
-  },
   weight: {
     type: Number, // grams
     required: true

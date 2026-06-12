@@ -38,7 +38,6 @@ const AddProduct: React.FC = () => {
     categories: [],
     category: "",
     subcategory: "",
-    shipping: "",
     quantity: "",
     photos: [],
     loading: false,
@@ -55,7 +54,6 @@ const AddProduct: React.FC = () => {
     categories,
     category,
     subcategory,
-    shipping,
     quantity,
     loading,
     error,
@@ -292,23 +290,6 @@ const AddProduct: React.FC = () => {
                 </Select>
               </FormControl>
             )}
-            <FormControl fullWidth>
-              <InputLabel>Framing</InputLabel>
-              <Select
-                value={framing}
-                label="Framing"
-                onChange={handleSelectChange("framing")}>
-                <MenuItem value="Unframed">Unframed</MenuItem>
-                <MenuItem value="Ready to hang">Ready to hang</MenuItem>
-              </Select>
-            </FormControl>
-            <TextField
-              label="Weight (grams)"
-              type="number"
-              value={values.weight}
-              onChange={handleInputChange("weight")}
-              fullWidth
-            />
             <TextField
               label="Width (cm)"
               type="number"
@@ -323,6 +304,24 @@ const AddProduct: React.FC = () => {
               onChange={handleInputChange("height")}
               fullWidth
             />
+            <FormControl fullWidth>
+              <InputLabel>Framing</InputLabel>
+              <Select
+                value={framing}
+                label="Framing"
+                onChange={handleSelectChange("framing")}>
+                <MenuItem value="Unframed">Unframed</MenuItem>
+                <MenuItem value="Ready to hang">Ready to hang</MenuItem>
+              </Select>
+            </FormControl>
+            <Typography>Only required for shipping: </Typography>
+            <TextField
+              label="Weight (grams)"
+              type="number"
+              value={values.weight}
+              onChange={handleInputChange("weight")}
+              fullWidth
+            />
             <TextField
               label="Length (cm)"
               type="number"
@@ -331,22 +330,13 @@ const AddProduct: React.FC = () => {
               fullWidth
             />
 
-            <FormControl fullWidth>
-              <InputLabel>Shipping</InputLabel>
-              <Select value={shipping} label="Shipping" onChange={handleSelectChange("shipping")}>
-                <MenuItem value=""><em>Please select</em></MenuItem>
-                <MenuItem value="0">No</MenuItem>
-                <MenuItem value="1">Yes</MenuItem>
-              </Select>
-            </FormControl>
-
-            <TextField
+            {/* <TextField
               label="Quantity"
               type="number"
               value={quantity}
               onChange={handleInputChange("quantity")}
               fullWidth
-            />
+            /> */}
 
             <Button
               type="submit"

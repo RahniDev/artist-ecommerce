@@ -44,7 +44,7 @@ export const productById = async (
 
         const product = await Product.findById(id)
             .populate("category")
-            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
+            .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType createdAt")
 
 
         if (!product) {
@@ -88,7 +88,7 @@ export const list = async (req: Request, res: Response) => {
         const { lang = 'en' } = req.query;
 
         const products = await Product.find()
-            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
+            .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType createdAt")
             .sort({ createdAt: -1 })
             .limit(12)
             .lean();
@@ -155,7 +155,7 @@ export const create = async (req: Request, res: Response) => {
             });
         });
 
-        let { name, description, price, category, subcategory, quantity, shipping, weight, width, height, length, framing } = fields;
+        let { name, description, price, category, subcategory, quantity, weight, width, height, length, framing } = fields;
         // normalize fields to ensure expected type
         const normalize = (v: string | string[] | undefined) => Array.isArray(v) ? v[0] : v;
 
@@ -164,9 +164,6 @@ export const create = async (req: Request, res: Response) => {
         const priceValue = Number(normalize(price));
         const quantityValue = Number(normalize(quantity));
         const categoryValue = normalize(category);
-        const shippingValue =
-            normalize(shipping) === "1" ||
-            normalize(shipping) === "true";
         const weightValue = Number(normalize(weight));
         const widthValue = normalize(width) ? Number(normalize(width)) : undefined;
         const heightValue = normalize(height) ? Number(normalize(height)) : undefined;
@@ -178,8 +175,7 @@ export const create = async (req: Request, res: Response) => {
             descriptionValue == null ||
             isNaN(priceValue) ||
             categoryValue == null ||
-            isNaN(quantityValue) ||
-            shippingValue == null
+            isNaN(quantityValue)
         ) {
             return res.status(400).json({ error: "All fields are required" });
         }
@@ -196,7 +192,6 @@ export const create = async (req: Request, res: Response) => {
             category: categoryValue,
             subcategory: normalize(subcategory) || null,
             quantity: quantityValue,
-            shipping: shippingValue,
             weight: weightValue,
             width: widthValue,
             height: heightValue,
@@ -204,8 +199,6 @@ export const create = async (req: Request, res: Response) => {
             framing: framingValue
 
         });
-
-        console.log("Product before save:", product);
 
         const uploadedPhotos = Array.isArray(files.photos)
             ? files.photos
@@ -370,7 +363,7 @@ export const listBySubcategory = async (req: Request, res: Response) => {
         const { lang = 'en' } = req.query;
 
         const products = await Product.find({ subcategory: req.params.subcategoryId })
-            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
+            .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType createdAt")
             .lean();
 
         const transformedProducts = products.map(p => applyLang(p, lang as string));
@@ -400,7 +393,7 @@ export const listSearch = async (req: Request, res: Response) => {
 
     try {
         const products = await Product.find(query)
-            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
+            .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType createdAt")
             .lean();
 
         const transformedProducts = products.map(p => applyLang(p, lang as string));
@@ -449,7 +442,7 @@ export const listBySearch = async (req: Request, res: Response) => {
 
     try {
         const data = await Product.find(findArgs)
-            .select("name description price category quantity sold shipping weight width height length photos.url photos.key photos.contentType createdAt")
+            .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType createdAt")
             .populate("category")
             .sort({ [sortBy]: order })
             .skip(skip)

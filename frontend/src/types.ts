@@ -96,7 +96,6 @@ export interface ProductFormBase {
   categories: Category[];
   category: string;
   subcategory: string;
-  shipping: string;
   quantity: string;
   loading: boolean;
   error: string;
