@@ -29,12 +29,13 @@ const priceRanges: Record<number, [number, number]> = {
     4: [2000, Infinity],
 };
 const prices = [
-    { _id: 0, name: "Any price" },
-    { _id: 1, name: "€0 - €500" },
-    { _id: 2, name: "€500 - €1000" },
-    { _id: 3, name: "€1000 - €2000" },
-    { _id: 4, name: "€2000+" },
+  { _id: 0, name: "Any price", array: [0, Infinity] },
+  { _id: 1, name: "€0 - €500", array: [0, 500] },
+  { _id: 2, name: "€500 - €1000", array: [500, 1000] },
+  { _id: 3, name: "€1000 - €2000", array: [1000, 2000] },
+  { _id: 4, name: "€2000+", array: [2000, Infinity] },
 ];
+
 const filteredProducts = productsByArrival.filter(p => {
     const [min, max] = priceRanges[selectedPrice] ?? [0, Infinity];
     return p.price >= min && p.price <= max;

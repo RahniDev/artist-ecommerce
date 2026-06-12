@@ -19,6 +19,7 @@ const saveCart = (cart: CartItem[]) => {
 export const toCartItem = (product: IProduct): CartItem => ({
   _id: product._id,
   name: product.name,
+  product: product._id,
   price: product.price,
   count: 1,
   weight: product.weight ?? 0,

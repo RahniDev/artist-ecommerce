@@ -44,6 +44,7 @@ const Checkout: React.FC<CheckoutProps> = ({ onSuccess }) => {
   // Convert cart products to CartItem type required for shipping
   const cartItems: CartItem[] = products.map(p => ({
     _id: p._id,
+    product: p._id,
     name: p.name,
     nameEn: p.name,
     price: p.price,

@@ -14,6 +14,7 @@ import { Box, Typography, Grid, Button } from "@mui/material";
 import ImageModal from "./ImageModal";
 import { API } from "../config";
 import { toCartItem } from "../redux/slices/cartSlice";
+import { useLocalizedDescription } from "../hooks/useLocalizedDescription";
 
 const Product: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -141,6 +142,9 @@ const Product: React.FC = () => {
     window.removeEventListener("mouseup", onResizeUp);
   };
 }, [onMouseMoveDrag, onMouseUpDrag]);
+
+  const { description } = useLocalizedDescription(product);
+
   return (
     <Layout title="" description="">
       <Grid container spacing={2} p={3}>
@@ -275,7 +279,7 @@ const Product: React.FC = () => {
                   </Typography>
 
                   <Typography sx={{ whiteSpace: "pre-wrap", my: 2 }} variant="body1" color="text.primary">
-                    {product.description}
+                    {description}
                   </Typography>
 
                   <SoldBadge quantity={product.quantity} />

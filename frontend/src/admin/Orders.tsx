@@ -67,6 +67,7 @@ const Orders: React.FC = () => {
         }
     };
 
+
     return (
         <Layout
             title="Orders"
@@ -127,27 +128,25 @@ const Orders: React.FC = () => {
                                 console.log("p:", JSON.stringify(p, null, 2));
                                 return (
                                     <Paper
-                                        key={p.product as string}
+                                        key={p._id}
                                         variant="outlined"
                                         sx={{ p: 2, mb: 2 }}
                                     >
                                         <Typography variant="body1" gutterBottom sx={{ mb: 2 }}>
-                                            Painting Name: {typeof p.product === "object" ? p.product.name : p.name}
+                                            Painting Name: {p.name}
                                         </Typography>
 
                                         <ShowImage
                                             item={{
-                                                _id: typeof p.product === "object"
-                                        ? (p.product as any)._id
-                                        : p.product as string,
-                                        name: p.name,
+                                                _id: p.product,
+                                                name: p.name,
                                             }}
-                                        url="product"
-                                        width="100px"
-                                        height="100%"
-                                    />
+                                            url="product"
+                                            width="100px"
+                                            height="100%"
+                                        />
                                         <Typography variant="body1" gutterBottom sx={{ mb: 2 }}>
-                                            Price: £{typeof p.product === "object" ? p.product.price : p.price}
+                                            Price: €{p.price}
                                         </Typography>
 
                                         <Typography variant="body1" gutterBottom sx={{ mb: 2 }}>
@@ -160,7 +159,6 @@ const Orders: React.FC = () => {
                                     </Paper>
                                 )
                             })}
-
                         </Paper>
                     ))}
                 </Box>

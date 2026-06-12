@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { fetchProduct } from "../redux/slices/productSlice";
 import type { RootState, AppDispatch } from "../redux/store";
 import ShowImage from "./ShowImage";
+import { useLocalizedDescription } from "../hooks/useLocalizedDescription";
 
 const FeaturedPainting = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -11,7 +12,7 @@ const FeaturedPainting = () => {
   const { product, loading, error } = useSelector(
     (state: RootState) => state.product
   );
-
+const { description } = useLocalizedDescription(product);
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
 
   useEffect(() => {
@@ -55,7 +56,7 @@ const FeaturedPainting = () => {
           {product.name}
         </Typography>
         <Typography variant="body1" textAlign="center" color="grey.700" fontSize="1.1rem" fontFamily='Playfair Display, serif' mt={2}>
-          {product.description}
+          {description}
         </Typography>
       </Box>
       <Box style={{ width: "50%" }}>

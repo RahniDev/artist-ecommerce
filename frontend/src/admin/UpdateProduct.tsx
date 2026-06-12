@@ -92,7 +92,9 @@ const UpdateProduct = () => {
             const product = res.data;
             const fd = new FormData()
             fd.set("name", product.name)
-            fd.set("description", product.description)
+            fd.set("description", typeof product.description === "string"
+                ? product.description
+                : JSON.stringify(product.description))
             fd.set("price", product.price.toString())
             fd.set("category", product.category._id)
             fd.set("shipping", product.shipping ? "1" : "0")
@@ -102,7 +104,9 @@ const UpdateProduct = () => {
             setValues((p) => ({
                 ...p,
                 name: product.name,
-                description: product.description,
+                description: typeof product.description === "string"
+                    ? product.description
+                    : JSON.stringify(product.description),
                 price: product.price.toString(),
                 category: product.category._id,
                 shipping: product.shipping ? "1" : "0",

@@ -167,7 +167,13 @@ export interface IProduct {
   _id: string;
   name: string;
   nameEn: string;
-  description: string;
+ description:
+  | string
+  | {
+      en?: string;
+      fr?: string;
+      [key: string]: string | undefined;
+    };
   price: number;
   category: any;
   quantity: number;
@@ -369,6 +375,7 @@ export interface CartItem {
   shipping: boolean;
   sold: number;
   category: string;
+  product: string;
 }
 
 export interface ShippingRatesProps {
