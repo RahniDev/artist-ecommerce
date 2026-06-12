@@ -44,7 +44,8 @@ const AddProduct: React.FC = () => {
     loading: false,
     error: "",
     createdProduct: false,
-    createdProductName: ""
+    createdProductName: "",
+    framing: ""
   });
 
   const {
@@ -58,7 +59,8 @@ const AddProduct: React.FC = () => {
     quantity,
     loading,
     error,
-    createdProduct
+    createdProduct,
+    framing
   } = values;
 
   const formData = useRef<FormData | null>(null);
@@ -182,8 +184,8 @@ const AddProduct: React.FC = () => {
 
   return (
     <Layout
-      title="Add a new product"
-      description={`Hello ${user?.name || ""}, ready to add a new product?`}
+      title="Add a new painting"
+      description={`Hello ${user?.name || ""}, ready to add a new painting?`}
     >
       <Container maxWidth="md">
         <Box sx={{ mt: 4 }}>
@@ -206,7 +208,7 @@ const AddProduct: React.FC = () => {
             onSubmit={clickSubmit}
             sx={{ display: "flex", flexDirection: "column", gap: 2 }}
           >
-            <Typography variant="h6">Product Photo</Typography>
+            <Typography variant="h6">Painting Photo</Typography>
             <Box
               sx={{
                 display: "flex",
@@ -231,21 +233,21 @@ const AddProduct: React.FC = () => {
                   key={i}
                   component="img"
                   src={src}
-                  alt="Product photo preview"
+                  alt="Painting photo preview"
                   sx={{ width: 200, borderRadius: 1, border: "1px solid #ddd" }}
                 />
               ))}
             </Box>
 
             <TextField
-              label="Name"
+              label="Title"
               value={name}
               onChange={handleInputChange("name")}
               fullWidth
             />
 
             <TextField
-              label="Product Description"
+              label="Painting Details: size, material, medium"
               value={description}
               onChange={handleInputChange("description")}
               multiline
@@ -290,6 +292,16 @@ const AddProduct: React.FC = () => {
                 </Select>
               </FormControl>
             )}
+            <FormControl fullWidth>
+              <InputLabel>Framing</InputLabel>
+              <Select
+                value={framing}
+                label="Framing"
+                onChange={handleSelectChange("framing")}>
+                <MenuItem value="Unframed">Unframed</MenuItem>
+                <MenuItem value="Ready to hang">Ready to hang</MenuItem>
+              </Select>
+            </FormControl>
             <TextField
               label="Weight (grams)"
               type="number"
@@ -343,7 +355,7 @@ const AddProduct: React.FC = () => {
               sx={{ mt: 2 }}
               disabled={loading}
             >
-              Create Product
+              Add Painting
             </Button>
           </Box>
         </Box>

@@ -43,14 +43,14 @@ const AdminDashboard: React.FC = () => {
                 <ListItemButton component={RouterLink} to="/create/category">
                   <ListItemText primary="Create Category" />
                 </ListItemButton>
-                <ListItemButton component={RouterLink} to="/create/product">
-                  <ListItemText primary="Create Product" />
+                <ListItemButton component={RouterLink} to="/add/painting">
+                  <ListItemText primary="Add Painting" />
                 </ListItemButton>
                 <ListItemButton component={RouterLink} to="/admin/orders">
                   <ListItemText primary="View Orders" />
                 </ListItemButton>
                 <ListItemButton component={RouterLink} to="/admin/products">
-                  <ListItemText primary="Manage Products" />
+                  <ListItemText primary="Manage Paintings" />
                 </ListItemButton>
               </List>
             </Card>

@@ -30,6 +30,7 @@ export interface IProduct {
   width: number;
   height: number;
   length: number;
+  framing: string;
 }
 
 export interface IProductDocument extends IProduct, Document { }
@@ -89,6 +90,11 @@ const productSchema = new Schema<IProductDocument>({
   width: Number,
   height: Number,
   length: Number,
+  framing: {
+    type: String,
+    enum: ["Unframed", "Ready to hang"],
+    default: "Unframed"
+  }
 }, { timestamps: true });
 
 export const Product = mongoose.model<IProductDocument>("Product", productSchema);

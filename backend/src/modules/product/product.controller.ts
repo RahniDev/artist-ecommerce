@@ -155,8 +155,8 @@ export const create = async (req: Request, res: Response) => {
             });
         });
 
-        let { name, description, price, category, subcategory, quantity, shipping, weight, width, height, length } = fields;
-
+        let { name, description, price, category, subcategory, quantity, shipping, weight, width, height, length, framing } = fields;
+        // normalize fields to ensure expected type
         const normalize = (v: string | string[] | undefined) => Array.isArray(v) ? v[0] : v;
 
         const nameValue = normalize(name);
@@ -171,6 +171,7 @@ export const create = async (req: Request, res: Response) => {
         const widthValue = normalize(width) ? Number(normalize(width)) : undefined;
         const heightValue = normalize(height) ? Number(normalize(height)) : undefined;
         const lengthValue = normalize(length) ? Number(normalize(length)) : undefined;
+        const framingValue = normalize(framing);
 
         if (
             nameValue == null ||
@@ -200,6 +201,7 @@ export const create = async (req: Request, res: Response) => {
             width: widthValue,
             height: heightValue,
             length: lengthValue,
+            framing: framingValue
 
         });
 

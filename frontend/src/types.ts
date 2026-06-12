@@ -82,7 +82,8 @@ export type ProductFormField =
   | "weight"
   | "width"
   | "height"
-  | "length";
+  | "length"
+  | "framing";
 
 export interface ProductFormBase {
   name: string;
@@ -106,6 +107,7 @@ export interface AddProductValues extends ProductFormBase {
   subcategory: string;
   createdProduct: boolean;
   createdProductName?: string;
+  framing: ""
 }
 
 export interface UpdateProductValues extends ProductFormBase {
