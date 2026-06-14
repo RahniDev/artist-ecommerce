@@ -1,16 +1,9 @@
 import type { ReactNode } from "react";
 
-export interface Subcategory {
-  products: any;
-  _id: string;
-  name: string;
-}
-
 export interface CategoryData {
-  parent: any;
+  products: IProduct[];
   _id: string;
   name: string;
-  subcategories: Subcategory[];
 }
 
 export interface CheckoutState {
@@ -75,7 +68,6 @@ export type ProductFormField =
   | "description"
   | "price"
   | "category"
-  | "subcategory"
   | "shipping"
   | "quantity"
   | "photo"
@@ -97,15 +89,13 @@ export interface ProductFormBase {
   length: string;
   categories: Category[];
   category: string;
-  subcategory: string;
-  quantity: string;
+  quantity?: string;
   loading: boolean;
   error: string;
 }
 
 export interface AddProductValues extends ProductFormBase {
   photos: File[] | [];
-  subcategory: string;
   createdProduct: boolean;
   createdProductName?: string;
   framing: "";
@@ -172,17 +162,16 @@ export interface IProduct {
   _id: string;
   name: string;
   nameEn: string;
- description:
+  description:
   | string
   | {
-      en?: string;
-      fr?: string;
-      [key: string]: string | undefined;
-    };
+    en?: string;
+    fr?: string;
+    [key: string]: string | undefined;
+  };
   price: number;
   category: any;
   quantity: number;
-  shipping: boolean;
   sold: number;
   photos?: any;
   photoCount?: number;

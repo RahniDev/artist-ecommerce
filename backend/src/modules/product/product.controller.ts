@@ -14,7 +14,7 @@ declare global {
     }
 }
 
-const applyLang = (product: any, lang: string) => {
+export const applyLang = (product: any, lang: string) => {
     const description = typeof product.description === 'object'
         ? product.description[lang] || product.description.en || ''
         : product.description || '';
@@ -162,7 +162,6 @@ export const create = async (req: Request, res: Response) => {
         const nameValue = normalize(name);
         const descriptionValue = normalize(description);
         const priceValue = Number(normalize(price));
-        const quantityValue = Number(normalize(quantity));
         const categoryValue = normalize(category);
         const weightValue = Number(normalize(weight));
         const widthValue = normalize(width) ? Number(normalize(width)) : undefined;
@@ -171,13 +170,12 @@ export const create = async (req: Request, res: Response) => {
         const framingValue = normalize(framing);
         const additionalDetailsValue = normalize(additionalDetails);
         const qualityValue = normalize(quality);
-
+        const quantityValue = 1;
         if (
             nameValue == null ||
             descriptionValue == null ||
             isNaN(priceValue) ||
-            categoryValue == null ||
-            isNaN(quantityValue)
+            categoryValue == null
         ) {
             return res.status(400).json({ error: "All fields are required" });
         }
@@ -221,8 +219,6 @@ export const create = async (req: Request, res: Response) => {
 
         }
         const result = await product.save();
-        console.log("Product saved with ID:", result._id);
-
         return res.json({ data: result });
 
     } catch (err) {

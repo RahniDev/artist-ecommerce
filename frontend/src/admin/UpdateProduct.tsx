@@ -40,7 +40,6 @@ const UpdateProduct = () => {
         price: "",
         categories: [],
         category: "",
-        shipping: "",
         quantity: "",
         photos: [],
         loading: false,
@@ -51,7 +50,6 @@ const UpdateProduct = () => {
         width: "",
         height: "",
         length: "",
-        subcategory: "",
     });
 
     const {
@@ -60,7 +58,6 @@ const UpdateProduct = () => {
         price,
         categories,
         category,
-        shipping,
         quantity,
         loading,
         error,
@@ -97,8 +94,6 @@ const UpdateProduct = () => {
                 : JSON.stringify(product.description))
             fd.set("price", product.price.toString())
             fd.set("category", product.category._id)
-            fd.set("shipping", product.shipping ? "1" : "0")
-            fd.set("quantity", product.quantity.toString())
 
             formData.current = fd
             setValues((p) => ({
@@ -109,7 +104,6 @@ const UpdateProduct = () => {
                     : JSON.stringify(product.description),
                 price: product.price.toString(),
                 category: product.category._id,
-                shipping: product.shipping ? "1" : "0",
                 quantity: product.quantity.toString()
             }));
         } catch {

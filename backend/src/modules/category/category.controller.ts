@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { Category, ICategory } from '../category/category.model.js';
 import { Product } from '../product/product.model.js';
+import { applyLang } from '../product/product.controller.js'
 import { errorHandler, MongoError } from '../../helpers/errorHandler.js';
 
 interface CustomRequest extends Request {
@@ -55,29 +56,29 @@ export const create = async (req: Request, res: Response) => {
   }
 };
 
-export const getCategory = async (req: CustomRequest, res: Response) => {
+export const getCategory = async (
+  req: CustomRequest,
+  res: Response
+) => {
   try {
-    const subcategories = await Category.find({ parent: req.category!._id })
-      .select('_id name')
+    const lang = typeof req.query.lang === 'string' ? req.query.lang : "en";
+    const products = await Product.find({
+      category: req.category!._id
+    })
+      .select("-photo")
       .lean();
-
-    const subcategoriesWithProducts = await Promise.all(
-      subcategories.map(async (sub) => {
-        const products = await Product.find({ subcategory: sub._id })
-          .select('-photo')
-          .lean();
-        return {
-          ...sub,
-          products,
-        };
-      })
-    );
-
-    res.json({ ...req.category!.toObject(), subcategories: subcategoriesWithProducts });
+    const transformed = products.map(p => applyLang(p, lang));
+    res.json({
+      ...req.category!.toObject(),
+      products: transformed
+    });
   } catch (err) {
-    res.status(400).json({ error: 'Failed to load category' });
+    res.status(400).json({
+      error: "Failed to load category"
+    });
   }
 };
+
 export const update = async (req: CustomRequest, res: Response) => {
   try {
     if (!req.category) {

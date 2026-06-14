@@ -25,13 +25,11 @@ const AddCategory = () => {
 
   const { user, token } = isAuthenticated() as IAuthData;
 
-  // Load only top-level categories as parent options (no subcategories of subcategories)
   useEffect(() => {
     const loadCategories = async () => {
       try {
         const data = await getCategories() as ApiResponse<Category[]>;
         if (data.data) {
-          // Only top-level categories (no parent) can be parents themselves
           const topLevel = data.data.filter((c) => !c.parent);
           setTopLevelCategories(topLevel);
         }
@@ -72,7 +70,7 @@ const AddCategory = () => {
         setSuccess(true);
       }
     } catch (err) {
-      console.error("Category creation failed:", err);
+      console.error("Error creating the collection:", err);
       setError("Something went wrong. Please try again.");
     }
   };
@@ -126,7 +124,7 @@ const AddCategory = () => {
         </FormControl>
 
         <Button type="submit" variant="contained">
-          Create Category
+          Add Collection
         </Button>
       </Box>
     </form>

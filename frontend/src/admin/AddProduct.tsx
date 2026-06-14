@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, type ChangeEvent, type FormEvent } from "react";
 import Layout from "../core/Layout";
 import { createProduct, getCategories } from "./apiAdmin";
-import type { AddProductValues, ProductFormField, Category } from "../types";
+import type { AddProductValues, ProductFormField } from "../types";
 import Loader from "../core/Loader";
 import {
   Box,
@@ -26,7 +26,6 @@ const AddProduct: React.FC = () => {
   const { user, token, isAuthenticated } = auth;
 
   const [imgPreviews, setImgPreviews] = useState<string[]>([]);
-  const [subcategories, setSubcategories] = useState<Category[]>([]);
   const [values, setValues] = useState<AddProductValues>({
     name: "",
     description: "",
@@ -37,8 +36,6 @@ const AddProduct: React.FC = () => {
     length: "",
     categories: [],
     category: "",
-    subcategory: "",
-    quantity: "",
     photos: [],
     loading: false,
     error: "",
@@ -55,8 +52,6 @@ const AddProduct: React.FC = () => {
     price,
     categories,
     category,
-    subcategory,
-    quantity,
     loading,
     error,
     createdProduct,
@@ -117,25 +112,8 @@ const AddProduct: React.FC = () => {
     if (!formData.current) return;
     const value = event.target.value;
     formData.current.set("category", value);
-    formData.current.delete("subcategory");
 
-    const subs = categories.filter(c =>
-      c.parent && (typeof c.parent === "object" ? c.parent._id === value : c.parent === value)
-    );
-
-    setSubcategories(subs);
-    setValues(prev => ({ ...prev, category: value, subcategory: "" }));
-  };
-
-  const handleSubcategoryChange = (event: SelectChangeEvent<string>) => {
-    if (!formData.current) return;
-    const value = event.target.value;
-    if (value) {
-      formData.current.set("subcategory", value);
-    } else {
-      formData.current.delete("subcategory");
-    }
-    setValues(prev => ({ ...prev, subcategory: value }));
+    setValues(prev => ({ ...prev, category: value }));
   };
 
   const clickSubmit = async (event: FormEvent<HTMLFormElement>) => {
@@ -164,18 +142,14 @@ const AddProduct: React.FC = () => {
           description: "",
           price: "",
           category: "",
-          subcategory: "",
           weight: "",
           width: "",
           height: "",
           length: "",
-          shipping: "",
-          quantity: "",
           photos: [],
           additionalDetails: "",
           quality: ""
         }));
-        setSubcategories([]);
         setImgPreviews([]);
         formData.current = new FormData();
       }
@@ -272,30 +246,13 @@ const AddProduct: React.FC = () => {
               <InputLabel>Category</InputLabel>
               <Select value={category} label="Category" onChange={handleCategoryChange}>
                 <MenuItem value=""><em>Please select</em></MenuItem>
-                {categories
-                  .filter(c => !c.parent)
-                  .map(c => (
-                    <MenuItem key={c._id} value={c._id}>{c.name}</MenuItem>
-                  ))}
+                {categories.map(c => (
+                  <MenuItem key={c._id} value={c._id}>
+                    {c.name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
-
-            {/* Subcategory */}
-            {subcategories.length > 0 && (
-              <FormControl fullWidth>
-                <InputLabel>Subcategory</InputLabel>
-                <Select
-                  value={subcategory}
-                  label="Subcategory"
-                  onChange={handleSubcategoryChange}
-                >
-                  <MenuItem value=""><em>None</em></MenuItem>
-                  {subcategories.map(sub => (
-                    <MenuItem key={sub._id} value={sub._id}>{sub.name}</MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
             <TextField
               label="Width (cm)"
               type="number"
@@ -354,13 +311,6 @@ const AddProduct: React.FC = () => {
               onChange={handleInputChange("length")}
               fullWidth
             />
-            {/* <TextField
-              label="Quantity"
-              type="number"
-              value={quantity}
-              onChange={handleInputChange("quantity")}
-              fullWidth
-            /> */}
             <Button
               type="submit"
               variant="contained"

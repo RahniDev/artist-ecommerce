@@ -23,7 +23,6 @@ import PrivacyPolicy from "./core/PrivacyPolicy";
 import ResetPassword from "./user/ResetPassword";
 
 const AppRoutes: React.FC = () => {
-
   return (
     <BrowserRouter>
       <Routes>
