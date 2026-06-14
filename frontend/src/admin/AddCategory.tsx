@@ -1,166 +1,96 @@
-import { useState, useEffect, type ChangeEvent, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
+import { Link as RouterLink } from 'react-router-dom';
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
-import { createCategory, getCategories } from "./apiAdmin";
-import type { IAuthData, ApiResponse, Category } from "../types";
+import { createCategory } from "./apiAdmin";
+import type { IAuthData, Category } from "../types";
 import {
   Box,
   Typography,
   Button,
+  TextField,
   Link,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-  type SelectChangeEvent,
+  Alert
 } from "@mui/material";
 
 const AddCategory = () => {
   const [name, setName] = useState<string>("");
-  const [parentId, setParentId] = useState<string>("");
-  const [topLevelCategories, setTopLevelCategories] = useState<Category[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
   const [createdCategory, setCreatedCategory] = useState<Category | null>(null);
 
   const { user, token } = isAuthenticated() as IAuthData;
 
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const data = await getCategories() as ApiResponse<Category[]>;
-        if (data.data) {
-          const topLevel = data.data.filter((c) => !c.parent);
-          setTopLevelCategories(topLevel);
-        }
-      } catch (err) {
-        console.error("Failed to load categories:", err);
-      }
-    };
-    loadCategories();
-  }, [success]); // Re-fetch after a successful creation
-
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setError(null);
+    setCreatedCategory(null);
     setName(e.target.value);
-  };
-
-  const handleParentChange = (e: SelectChangeEvent<string>) => {
-    setParentId(e.target.value);
   };
 
   const clickSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    setSuccess(false);
+    setLoading(true);
 
     try {
-      const payload: { name: string; parent?: string } = { name };
-      if (parentId) payload.parent = parentId;
+      const payload = { name };
 
       const data = await createCategory(
         user._id,
         token,
         payload
-      ) as ApiResponse<Category>;
+      );
       if (data.error) {
         setError(data.error);
       } else {
         setCreatedCategory(data as Category);
-        setSuccess(true);
+        setName("");
       }
     } catch (err) {
       console.error("Error creating the collection:", err);
       setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
-  const newCategoryForm = () => (
-    <form id="categoryForm" onSubmit={clickSubmit}>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 2,
-          maxWidth: 400,
-          mx: "auto",
-        }}
-      >
-        {/* Name field */}
-        <Box sx={{ width: "100%" }}>
-          <label htmlFor="name">Name</label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={handleNameChange}
-            required
-            style={{ display: "block", width: "100%", marginTop: 4 }}
-          />
-        </Box>
-
-        {/* Parent category selector */}
-        <FormControl fullWidth>
-          <InputLabel id="parent-label">
-            Parent Category (leave blank for top-level)
-          </InputLabel>
-          <Select
-            labelId="parent-label"
-            id="parent"
-            value={parentId}
-            label="Parent Category (leave blank for top-level)"
-            onChange={handleParentChange}
-          >
-            <MenuItem value="">
-              <em>None — top-level category</em>
-            </MenuItem>
-            {topLevelCategories.map((cat) => (
-              <MenuItem key={cat._id} value={cat._id}>
-                {cat.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-
-        <Button type="submit" variant="contained">
-          Add Collection
-        </Button>
-      </Box>
-    </form>
-  );
-
-  const goBack = () => (
-    <Link href="/admin/dashboard">Back to Dashboard</Link>
-  );
-
-  const showError = () =>
-    error && (
-      <Typography color="error.main" pt={4} textAlign='center'>{error}</Typography>
-    );
-
-  const showSuccess = () =>
-    success && createdCategory && (
-      <Typography color="success.main" pt={4} textAlign='center'>
-        <strong>{createdCategory.name}</strong> created successfully
-        {createdCategory.parent
-          ? ` as a subcategory of ${(createdCategory.parent as Category).name}`
-          : " as a top-level category"}
-        !
-      </Typography>
-    );
-
   return (
     <Layout title="" description="">
+      <Link component={RouterLink} to="/admin/dashboard">Back to Dashboard</Link>
       <Typography variant="h1" gutterBottom>
         Add a new collection
       </Typography>
-      <Box>
-        {goBack()}
-        {newCategoryForm()}
-        {showError()}
-        {showSuccess()}
-      </Box>
+      <form onSubmit={clickSubmit}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 2,
+            maxWidth: 400,
+            mx: "auto",
+          }}
+        >
+          {/* Name field */}
+          <TextField
+            label="Collection Name"
+            value={name}
+            onChange={handleNameChange}
+            required
+            fullWidth
+          />
+          <Button type="submit" variant="contained" disabled={loading}>
+            {loading ? "Creating..." : "Add Collection"}
+          </Button>
+        </Box>
+      </form>
+      {error && (
+        <Alert severity="error" sx={{ mt: 3 }}>{error}</Alert>
+      )}
+      {createdCategory && (
+        <Alert severity="success" sx={{ mt: 3 }}>
+          <strong>{createdCategory.name}</strong> created successfully!
+        </Alert>)}
     </Layout>
   );
 };
