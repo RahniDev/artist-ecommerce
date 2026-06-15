@@ -17,7 +17,6 @@ export interface IProduct {
   };
   price: number;
   category: Types.ObjectId;
-  subcategory: Types.ObjectId | null;
   quantity: number;
   sold: number;
   photos: {

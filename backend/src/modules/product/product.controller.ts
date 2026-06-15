@@ -155,7 +155,7 @@ export const create = async (req: Request, res: Response) => {
             });
         });
 
-        let { name, description, price, category, subcategory, quantity, weight, width, height, length, framing, additionalDetails, quality } = fields;
+        let { name, description, price, category, weight, width, height, length, framing, additionalDetails, quality } = fields;
         // normalize fields to ensure expected type
         const normalize = (v: string | string[] | undefined) => Array.isArray(v) ? v[0] : v;
 
@@ -190,7 +190,6 @@ export const create = async (req: Request, res: Response) => {
             description: { en: descriptionValue, ...descTranslations },
             price: priceValue,
             category: categoryValue,
-            subcategory: normalize(subcategory) || null,
             quantity: quantityValue,
             weight: weightValue,
             width: widthValue,
@@ -354,22 +353,6 @@ export const update = async (req: Request, res: Response) => {
     } catch (err) {
         console.log(err)
         return res.status(400).json({ error: errorHandler(err as MongoError) });
-    }
-};
-
-export const listBySubcategory = async (req: Request, res: Response) => {
-    try {
-        const { lang = 'en' } = req.query;
-
-        const products = await Product.find({ subcategory: req.params.subcategoryId })
-            .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType createdAt")
-            .lean();
-
-        const transformedProducts = products.map(p => applyLang(p, lang as string));
-
-        return res.json({ data: transformedProducts });
-    } catch (err) {
-        return res.status(400).json({ error: "Products not found" });
     }
 };
 

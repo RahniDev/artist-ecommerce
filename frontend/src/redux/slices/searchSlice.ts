@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
-import { getCategories, list } from "../../core/apiCore";
+import { getCategories, listSearchedProducts } from "../../core/apiCore";
 import type { Category, IProduct } from "../../types";
 
 interface SearchState {
@@ -36,7 +36,7 @@ export const fetchSearchResults = createAsyncThunk(
     params: { search: string; category: string },
     { rejectWithValue }
   ) => {
-    const res = await list(params);
+    const res = await listSearchedProducts(params);
     if (res.error) return rejectWithValue(res.error);
     return Array.isArray(res.data) ? res.data : [];
   }

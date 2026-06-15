@@ -66,7 +66,6 @@ export async function listRelated(
 }
 
 export async function getCategories(): Promise<ApiResponse<Category[]>> {
-  // For non-fetchJSON functions, manually add language
   try {
     const url = addLanguageParam(`${API}/categories`);
     const res = await fetch(url);
@@ -93,7 +92,7 @@ export async function getFilteredProducts(
   });
 }
 
-export const list = async (
+export const listSearchedProducts = async (
   params: { search?: string; category?: string }
 ): Promise<ApiResponse<IProduct[]>> => {
   try {

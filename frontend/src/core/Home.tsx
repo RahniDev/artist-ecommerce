@@ -98,13 +98,13 @@ const Home: React.FC = () => {
           {t("no_new_arrivals")}
         </Typography>
       )}
-       <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
         {/* New arrivals */}
         {productsByArrival.length > 0 && !loading && !error && (
           <ListProducts products={productsByArrival} />
         )}
       </Box>
-      <CollectionSlider subcategoryId="69a6d38a38bf6fdd8d8b84e9" />
+      <CollectionSlider categoryId="69a6d38a38bf6fdd8d8b84e9" />
 
     </Layout>
   );

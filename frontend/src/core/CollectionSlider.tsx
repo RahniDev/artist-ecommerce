@@ -10,22 +10,26 @@ import SlideNextButton from "./SlideNextButton";
 import { store, type RootState } from "../redux/store";
 import { useSelector } from "react-redux";
 
-const CollectionSlider = ({ subcategoryId }: { subcategoryId: string }) => {
+const CollectionSlider = ({ categoryId }: { categoryId: string }) => {
   const [products, setProducts] = useState<IProduct[]>([]);
   const [collectionTitle, setCollectionTitle] = useState<string>("");
   const swiperRef = useRef<SwiperType | null>(null);
 
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
+  
   useEffect(() => {
-    const lang = store.getState().language.currentLanguage;
-    Promise.all([
-      fetch(`${API}/products/subcategory/${subcategoryId}?lang=${lang}`).then(res => res.json()),
-      fetch(`${API}/category/${subcategoryId}`).then(res => res.json()),
-    ]).then(([productsData, categoryData]) => {
-      setProducts(productsData.data ?? []);
-      setCollectionTitle(categoryData.name ?? "");
+  const lang = store.getState().language.currentLanguage;
+
+  fetch(`${API}/category/${categoryId}?lang=${lang}`)
+    .then(res => res.json())
+    .then(data => {
+      setProducts(data.products ?? []);
+      setCollectionTitle(data.name ?? "");
+    })
+    .catch(err => {
+      console.error("Failed to load collection", err);
     });
-  }, [subcategoryId, currentLanguage]);
+}, [categoryId, currentLanguage]);
 
   return (
     <>
