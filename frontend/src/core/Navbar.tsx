@@ -14,6 +14,7 @@ import {
   ListItemText,
   useMediaQuery,
   useTheme,
+  Button,
 } from "@mui/material";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
@@ -38,13 +39,12 @@ const Navbar: React.FC = () => {
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-
+const [collectionsOpen, setCollectionsOpen] = useState<boolean>(false);
   const { user } = useSelector((state: RootState) => state.auth);
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const cartCount = cartItems.reduce((total, item) => total + (item.count ?? 1), 0);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
   const handleMouseEnter = (e: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(e.currentTarget);
   };
@@ -97,6 +97,12 @@ const Navbar: React.FC = () => {
           </ListItemButton>
         </ListItem>
 
+        <ListItem disablePadding>
+          <ListItemButton>
+            <ListItemText primary="Collections" />
+          </ListItemButton>
+        </ListItem>
+
         {categories.map(category => (
           <ListItem key={category._id} disablePadding>
             <ListItemButton
@@ -127,15 +133,52 @@ const Navbar: React.FC = () => {
         About
       </NavLink>
 
+     <Box
+  sx={{ position: "relative" }}
+  onMouseEnter={() => setCollectionsOpen(true)}
+  onMouseLeave={() => setCollectionsOpen(false)}
+>
+  <Button
+    sx={{
+      color: "#3a3535",
+      textTransform: "uppercase",
+      fontWeight: 500,
+    }}
+  >
+    Collections
+  </Button>
+
+  {collectionsOpen && (
+    <Box
+      sx={{
+        position: "absolute",
+        top: "100%",
+        left: "50%",
+        transform: "translateX(-50%)",
+        bgcolor: "white",
+        color: "#3a3535",
+        boxShadow: 3,
+        minWidth: 220,
+        zIndex: 1300,
+      }}
+    >
       {categories.map(category => (
-        <NavLink
+        <Box
           key={category._id}
-          to={`/category/${category._id}`}
-          style={linkStyle}
+          sx={{
+            px: 2,
+            py: 1,
+            cursor: "pointer",
+            "&:hover": { bgcolor: "#f5f5f5" },
+          }}
+          onClick={() => navigate(`/category/${category._id}`)}
         >
           {category.name}
-        </NavLink>
+        </Box>
       ))}
+    </Box>
+  )}
+</Box>
     </Box>
   );
 
