@@ -15,23 +15,37 @@ export const r2 = new S3Client({
   },
 });
 
-export async function uploadProductPhoto(photo: any) {
-  const ext = path.extname(photo.originalFilename || "") || ".webp";
-  const key = `products/${crypto.randomUUID()}${ext}`;
+import sharp from "sharp";
 
-  await r2.send(new PutObjectCommand({
-    Bucket: bucket,
-    Key: key,
-    Body: await fs.promises.readFile(photo.filepath),
-    ContentType: photo.mimetype || "image/webp",
-    // cache img for 1 year
-    CacheControl: "public, max-age=31536000, immutable",
-  }));
+export async function uploadProductPhoto(photo: any) {
+  const key = `products/${crypto.randomUUID()}.webp`;
+
+  const originalBuffer = await fs.promises.readFile(photo.filepath);
+
+  const optimizedBuffer = await sharp(originalBuffer)
+    .resize({
+      width: 1600,
+      withoutEnlargement: true,
+    })
+    .webp({
+      quality: 100,
+    })
+    .toBuffer();
+
+  await r2.send(
+    new PutObjectCommand({
+      Bucket: bucket,
+      Key: key,
+      Body: optimizedBuffer,
+      ContentType: "image/webp",
+      CacheControl: "public, max-age=31536000, immutable",
+    })
+  );
 
   return {
     key,
     url: `${publicUrl}/${key}`,
-    contentType: photo.mimetype || "image/webp",
+    contentType: "image/webp",
   };
 }
 

@@ -40,7 +40,6 @@ const UpdateProduct = () => {
         price: "",
         categories: [],
         category: "",
-        quantity: "",
         photos: [],
         loading: false,
         error: "",
@@ -58,7 +57,6 @@ const UpdateProduct = () => {
         price,
         categories,
         category,
-        quantity,
         loading,
         error,
         updatedProduct,
@@ -88,7 +86,7 @@ const UpdateProduct = () => {
 
             const product = res.data;
             const fd = new FormData()
-            fd.set("name", product.name)
+            fd.set("name", product.nameEn);
             fd.set("description", typeof product.description === "string"
                 ? product.description
                 : JSON.stringify(product.description))
@@ -104,7 +102,6 @@ const UpdateProduct = () => {
                     : JSON.stringify(product.description),
                 price: product.price.toString(),
                 category: product.category._id,
-                quantity: product.quantity.toString()
             }));
         } catch {
             setValues((p) => ({ ...p, error: "Failed to load product", loading: false }));
@@ -311,29 +308,6 @@ const UpdateProduct = () => {
                                 ))}
                             </Select>
                         </FormControl>
-
-                        <FormControl fullWidth>
-                            <InputLabel>Shipping</InputLabel>
-                            <Select
-                                value={shipping}
-                                label="Shipping"
-                                onChange={handleSelectChange("shipping")}
-                            >
-                                <MenuItem value="">
-                                    <em>Select</em>
-                                </MenuItem>
-                                <MenuItem value="0">No</MenuItem>
-                                <MenuItem value="1">Yes</MenuItem>
-                            </Select>
-                        </FormControl>
-
-                        <TextField
-                            label="Quantity"
-                            type="number"
-                            value={quantity}
-                            onChange={handleInputChange("quantity")}
-                            fullWidth
-                        />
                         <TextField
                             label="Weight (grams)"
                             type="number"
