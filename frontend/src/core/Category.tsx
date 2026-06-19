@@ -63,6 +63,7 @@ const Category = () => {
   return (
     <Box sx={{ backgroundColor: bgColor }}>
       <Layout title="" description="">
+        <h1>{category.name}</h1>
         <Masonry
           columns={{
             xs: 1,

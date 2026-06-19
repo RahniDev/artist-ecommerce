@@ -107,11 +107,11 @@ export const listRelated = async (req: Request, res: Response) => {
     try {
         const { lang = 'en' } = req.query;
 
-        const products = await Product.find(
-            {
-                _id: { $ne: req.product?._id },
-                category: req.product?.category
-            })
+        const products = await Product.find({
+            _id: { $ne: req.product?._id },
+            category: req.product?.category,
+            quantity: { $gt: 0 }
+        })
             .limit(limit)
             .populate('category', '_id name')
             .lean()
@@ -366,7 +366,8 @@ export const listSearch = async (req: Request, res: Response) => {
     }
 
     const query: Record<string, any> = {
-        'name.en': { $regex: search, $options: "i" }
+        'name.en': { $regex: search, $options: "i" },
+        quantity: { $gt: 0 }
     };
 
     if (category && category !== "All") {
@@ -404,7 +405,7 @@ export const decreaseQuantity = async (req: Request, res: Response, next: NextFu
     }
 };
 
-export const listBySearch = async (req: Request, res: Response) => {
+export const listByFilters = async (req: Request, res: Response) => {
     const order = req.body.order ? req.body.order : "desc";
     const sortBy = req.body.sortBy ? req.body.sortBy : "_id";
     const limit = req.body.limit ? Number(req.body.limit) : 100;

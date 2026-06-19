@@ -9,9 +9,9 @@ update,
 list,
 listRelated,
 listCategories,
-listBySearch,
 photo,
-listSearch
+listSearch,
+listByFilters
 } from './product.controller.js';
 import { userById } from '../user/user.controller.js'
 
@@ -20,7 +20,7 @@ const router: Router = Router();
 router.get('/products/search', listSearch);
 router.get('/products/categories', listCategories);
 router.get('/products', list);
-router.post('/products/by/search', listBySearch);
+router.post('/products/by/search', listByFilters);
 
 
 // param declarations
