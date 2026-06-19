@@ -24,6 +24,7 @@ export interface IProduct {
     url: string;
     contentType: string;
   }[];
+  material: string;
   weight: number;
   width: number;
   height: number;
@@ -76,6 +77,11 @@ const productSchema = new Schema<IProductDocument>({
   weight: {
     type: Number, // grams
     required: true
+  },
+  material: {
+    type: String,
+    enum: ["Paper", "Canvas", "Other"],
+    default: "Canvas"
   },
   // cm
   width: Number,

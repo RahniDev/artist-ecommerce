@@ -20,7 +20,7 @@ const router: Router = Router();
 router.get('/products/search', listSearch);
 router.get('/products/categories', listCategories);
 router.get('/products', list);
-router.post('/products/by/search', listByFilters);
+router.post('/products/filter', listByFilters);
 
 
 // param declarations

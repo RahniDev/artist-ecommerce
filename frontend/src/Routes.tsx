@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Shop from './core/Shop';
 import Signup from "./user/Signup";
 import Signin from "./user/Signin";
 import PrivateRoute from "./auth/PrivateRoute";
@@ -28,6 +29,7 @@ const AppRoutes: React.FC = () => {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<Home />} />
+        <Route path="/shop" element={<Shop />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/signup" element={<Signup />} />
@@ -105,16 +107,16 @@ const AppRoutes: React.FC = () => {
             </AdminRoute>
           }
         />
-         <Route
+        <Route
           path="/forgot-password"
           element={
-              <ForgotPassword />
+            <ForgotPassword />
           }
         />
-         <Route
+        <Route
           path="/resetPassword/:token"
           element={
-              <ResetPassword />
+            <ResetPassword />
           }
         />
       </Routes>

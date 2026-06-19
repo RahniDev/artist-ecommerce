@@ -39,7 +39,7 @@ const Navbar: React.FC = () => {
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-const [collectionsOpen, setCollectionsOpen] = useState<boolean>(false);
+  const [collectionsOpen, setCollectionsOpen] = useState<boolean>(false);
   const { user } = useSelector((state: RootState) => state.auth);
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const cartCount = cartItems.reduce((total, item) => total + (item.count ?? 1), 0);
@@ -132,53 +132,53 @@ const [collectionsOpen, setCollectionsOpen] = useState<boolean>(false);
       <NavLink to="/about" style={linkStyle}>
         About
       </NavLink>
-
-     <Box
-  sx={{ position: "relative" }}
-  onMouseEnter={() => setCollectionsOpen(true)}
-  onMouseLeave={() => setCollectionsOpen(false)}
->
-  <Button
-    sx={{
-      color: "#3a3535",
-      textTransform: "uppercase",
-      fontWeight: 500,
-    }}
-  >
-    Collections
-  </Button>
-
-  {collectionsOpen && (
-    <Box
-      sx={{
-        position: "absolute",
-        top: "100%",
-        left: "50%",
-        transform: "translateX(-50%)",
-        bgcolor: "white",
-        color: "#3a3535",
-        boxShadow: 3,
-        minWidth: 220,
-        zIndex: 1300,
-      }}
-    >
-      {categories.map(category => (
-        <Box
-          key={category._id}
+      <NavLink to="/shop" style={linkStyle}>Shop</NavLink>
+      <Box
+        sx={{ position: "relative" }}
+        onMouseEnter={() => setCollectionsOpen(true)}
+        onMouseLeave={() => setCollectionsOpen(false)}
+      >
+        <Button
           sx={{
-            px: 2,
-            py: 1,
-            cursor: "pointer",
-            "&:hover": { bgcolor: "#f5f5f5" },
+            color: "#3a3535",
+            textTransform: "uppercase",
+            fontWeight: 500,
           }}
-          onClick={() => navigate(`/category/${category._id}`)}
         >
-          {category.name}
-        </Box>
-      ))}
-    </Box>
-  )}
-</Box>
+          Collections
+        </Button>
+
+        {collectionsOpen && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: "100%",
+              left: "50%",
+              transform: "translateX(-50%)",
+              bgcolor: "white",
+              color: "#3a3535",
+              boxShadow: 3,
+              minWidth: 220,
+              zIndex: 1300,
+            }}
+          >
+            {categories.map(category => (
+              <Box
+                key={category._id}
+                sx={{
+                  px: 2,
+                  py: 1,
+                  cursor: "pointer",
+                  "&:hover": { bgcolor: "#f5f5f5" },
+                }}
+                onClick={() => navigate(`/category/${category._id}`)}
+              >
+                {category.name}
+              </Box>
+            ))}
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 

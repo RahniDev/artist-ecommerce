@@ -1,0 +1,224 @@
+import { useEffect, useState } from "react";
+import {
+    Box,
+    Typography,
+    Checkbox,
+    FormControlLabel,
+    FormGroup,
+    Divider,
+    Slider,
+    Paper,
+} from "@mui/material";
+import Masonry from "@mui/lab/Masonry";
+import ProductCard from "./ProductCard";
+import Layout from "./Layout";
+import type { IProduct } from "../types";
+import { API } from '../config'
+
+const Shop = () => {
+    const [products, setProducts] = useState<IProduct[]>([]);
+
+    const [filters, setFilters] = useState({
+        material: [] as string[],
+        framing: [] as string[],
+        price: [0, 5000] as number[],
+    });
+
+    const handleCheckbox = (
+        filterName: "material" | "framing",
+        value: string
+    ) => {
+        const current = [...filters[filterName]];
+
+        const updated = current.includes(value)
+            ? current.filter(v => v !== value)
+            : [...current, value];
+
+        setFilters(prev => ({
+            ...prev,
+            [filterName]: updated,
+        }));
+    };
+
+    useEffect(() => {
+        loadProducts();
+    }, [filters]);
+
+    const loadProducts = async () => {
+        try {
+            const response = await fetch(`${API}/products/filter`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    order: "desc",
+                    sortBy: "createdAt",
+                    filters,
+                }),
+            });
+
+            const data = await response.json();
+            setProducts(data.data || []);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    return (
+        <Layout title="" description="Browse all paintings">
+            <Box
+                sx={{
+                    display: "flex",
+                    gap: 4,
+                    alignItems: "flex-start",
+                }}
+            >
+                {/* Filters */}
+                <Paper
+                    elevation={0}
+                    sx={{
+                        width: 260,
+                        p: 3,
+                        position: "sticky",
+                        top: 100,
+                    }}
+                >
+                    <Typography variant="h6" gutterBottom>
+                        Filters
+                    </Typography>
+
+                    <Divider sx={{ my: 2 }} />
+
+                    <Typography fontWeight={600}>
+                        Material
+                    </Typography>
+
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={filters.material.includes("Paper")}
+                                    onChange={() =>
+                                        handleCheckbox("material", "Paper")
+                                    }
+                                />
+                            }
+                            label="Paper"
+                        />
+
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={filters.material.includes("Canvas")}
+                                    onChange={() =>
+                                        handleCheckbox("material", "Canvas")
+                                    }
+                                />
+                            }
+                            label="Canvas"
+                        />
+
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={filters.material.includes("Other")}
+                                    onChange={() =>
+                                        handleCheckbox("material", "Other")
+                                    }
+                                />
+                            }
+                            label="Other"
+                        />
+                    </FormGroup>
+
+                    <Divider sx={{ my: 2 }} />
+
+                    <Typography fontWeight={600}>
+                        Framing
+                    </Typography>
+
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={filters.framing.includes(
+                                        "Ready to hang"
+                                    )}
+                                    onChange={() =>
+                                        handleCheckbox(
+                                            "framing",
+                                            "Ready to hang"
+                                        )
+                                    }
+                                />
+                            }
+                            label="Ready to hang"
+                        />
+
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={filters.framing.includes(
+                                        "Unframed"
+                                    )}
+                                    onChange={() =>
+                                        handleCheckbox(
+                                            "framing",
+                                            "Unframed"
+                                        )
+                                    }
+                                />
+                            }
+                            label="Unframed"
+                        />
+                    </FormGroup>
+
+                    <Divider sx={{ my: 2 }} />
+
+                    <Typography fontWeight={600}>
+                        Price (€)
+                    </Typography>
+
+                    <Slider
+                        value={filters.price}
+                        onChange={(_, value) =>
+                            setFilters(prev => ({
+                                ...prev,
+                                price: value as number[],
+                            }))
+                        }
+                        valueLabelDisplay="auto"
+                        min={0}
+                        max={5000}
+                    />
+                </Paper>
+
+                {/* Products */}
+                <Box sx={{ flex: 1 }}>
+                    <Typography color="text.secondary" mb={4}>
+                        {products.length} artworks found
+                    </Typography>
+
+                    <Masonry
+                        columns={{
+                            xs: 1,
+                            sm: 2,
+                            md: 3,
+                        }}
+                        spacing={3}
+                    >
+                        {products.map(product => (
+                            <ProductCard
+                                key={product._id}
+                                product={product}
+                            />
+                        ))}
+                    </Masonry>
+                </Box>
+            </Box>
+        </Layout>
+    );
+};
+
+export default Shop;

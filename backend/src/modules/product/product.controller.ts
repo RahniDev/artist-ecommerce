@@ -87,7 +87,9 @@ export const list = async (req: Request, res: Response) => {
     try {
         const { lang = 'en' } = req.query;
 
-        const products = await Product.find()
+        const products = await Product.find({
+            quantity: { $gt: 0 }
+        })
             .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType createdAt")
             .sort({ createdAt: -1 })
             .limit(12)
@@ -155,7 +157,7 @@ export const create = async (req: Request, res: Response) => {
             });
         });
 
-        let { name, description, price, category, weight, width, height, length, framing, additionalDetails, quality } = fields;
+        let { name, description, price, category, weight, width, height, length, framing, material, additionalDetails, quality } = fields;
         // normalize fields to ensure expected type
         const normalize = (v: string | string[] | undefined) => Array.isArray(v) ? v[0] : v;
 
@@ -170,6 +172,7 @@ export const create = async (req: Request, res: Response) => {
         const framingValue = normalize(framing);
         const additionalDetailsValue = normalize(additionalDetails);
         const qualityValue = normalize(quality);
+        const materialValue = normalize(material);
         const quantityValue = 1;
         if (
             nameValue == null ||
@@ -196,6 +199,7 @@ export const create = async (req: Request, res: Response) => {
             height: heightValue,
             length: lengthValue,
             framing: framingValue,
+            material: materialValue,
             additionalDetails: additionalDetailsValue,
             quality: qualityValue
         });
