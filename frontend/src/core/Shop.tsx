@@ -22,10 +22,18 @@ const Shop = () => {
         material: [] as string[],
         framing: [] as string[],
         price: [0, 5000] as number[],
+        size: [] as string[],
+        medium: [] as string[]
     });
 
+    type FilterKey =
+        | "material"
+        | "framing"
+        | "size"
+        | "medium";
+
     const handleCheckbox = (
-        filterName: "material" | "framing",
+        filterName: FilterKey,
         value: string
     ) => {
         const current = [...filters[filterName]];
@@ -39,6 +47,16 @@ const Shop = () => {
             [filterName]: updated,
         }));
     };
+    
+    const mediums = [
+        "Watercolour",
+        "Acrylic",
+        "Oil pastel",
+        "Gouache",
+        "Ink",
+        "Charcoal",
+        "Mixed media"
+    ];
 
     useEffect(() => {
         loadProducts();
@@ -88,6 +106,51 @@ const Shop = () => {
                         Filters
                     </Typography>
 
+                    <Typography fontWeight={600}>
+                        Size
+                    </Typography>
+
+                    <FormGroup>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={filters.size.includes("Small")}
+                                    onChange={() => handleCheckbox("size", "Small")}
+                                />
+                            }
+                            label="Small (<30 cm)"
+                        />
+
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={filters.size.includes("Medium")}
+                                    onChange={() => handleCheckbox("size", "Medium")}
+                                />
+                            }
+                            label="Medium (30–50 cm)"
+                        />
+
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={filters.size.includes("Large")}
+                                    onChange={() => handleCheckbox("size", "Large")}
+                                />
+                            }
+                            label="Large (50–70 cm)"
+                        />
+
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    checked={filters.size.includes("Oversized")}
+                                    onChange={() => handleCheckbox("size", "Oversized")}
+                                />
+                            }
+                            label="Oversized (>70 cm)"
+                        />
+                    </FormGroup>
                     <Divider sx={{ my: 2 }} />
 
                     <Typography fontWeight={600}>
@@ -132,6 +195,25 @@ const Shop = () => {
                         />
                     </FormGroup>
 
+                    <Divider sx={{ my: 2 }} />
+                    <Typography fontWeight={600}>
+                        Medium
+                    </Typography>
+
+                    <FormGroup>
+                        {mediums.map(medium => (
+                            <FormControlLabel
+                                key={medium}
+                                control={
+                                    <Checkbox
+                                        checked={filters.medium.includes(medium)}
+                                        onChange={() => handleCheckbox("medium", medium)}
+                                    />
+                                }
+                                label={medium}
+                            />
+                        ))}
+                    </FormGroup>
                     <Divider sx={{ my: 2 }} />
 
                     <Typography fontWeight={600}>

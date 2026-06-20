@@ -25,6 +25,7 @@ export interface IProduct {
     contentType: string;
   }[];
   material: string;
+  medium: string;
   weight: number;
   width: number;
   height: number;
@@ -83,6 +84,18 @@ const productSchema = new Schema<IProductDocument>({
     enum: ["Paper", "Canvas", "Other"],
     default: "Canvas"
   },
+  medium: {
+  type: String,
+  enum: [
+    "Watercolour",
+    "Acrylic",
+    "Oil pastel",
+    "Gouache",
+    "Ink",
+    "Charcoal",
+    "Mixed media"
+  ]
+},
   // cm
   width: Number,
   height: Number,

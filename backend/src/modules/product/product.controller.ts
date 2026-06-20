@@ -44,7 +44,7 @@ export const productById = async (
 
         const product = await Product.findById(id)
             .populate("category")
-            .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType createdAt")
+            .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType material medium createdAt")
 
 
         if (!product) {
@@ -90,7 +90,7 @@ export const list = async (req: Request, res: Response) => {
         const products = await Product.find({
             quantity: { $gt: 0 }
         })
-            .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType createdAt")
+            .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType material medium createdAt")
             .sort({ createdAt: -1 })
             .limit(12)
             .lean();
@@ -157,7 +157,7 @@ export const create = async (req: Request, res: Response) => {
             });
         });
 
-        let { name, description, price, category, weight, width, height, length, framing, material, additionalDetails, quality } = fields;
+        let { name, description, price, category, weight, width, height, length, framing, material, medium, additionalDetails, quality } = fields;
         // normalize fields to ensure expected type
         const normalize = (v: string | string[] | undefined) => Array.isArray(v) ? v[0] : v;
 
@@ -173,7 +173,9 @@ export const create = async (req: Request, res: Response) => {
         const additionalDetailsValue = normalize(additionalDetails);
         const qualityValue = normalize(quality);
         const materialValue = normalize(material);
+        const mediumValue = normalize(medium);
         const quantityValue = 1;
+
         if (
             nameValue == null ||
             descriptionValue == null ||
@@ -200,6 +202,7 @@ export const create = async (req: Request, res: Response) => {
             length: lengthValue,
             framing: framingValue,
             material: materialValue,
+            medium: mediumValue,
             additionalDetails: additionalDetailsValue,
             quality: qualityValue
         });
@@ -409,6 +412,59 @@ export const decreaseQuantity = async (req: Request, res: Response, next: NextFu
     }
 };
 
+const sizeFilter = (sizes: string[]) => {
+    const conditions: any[] = [];
+
+    for (const size of sizes) {
+        switch (size) {
+            case "Small":
+                conditions.push({
+                    $and: [
+                        { $or: [{ width: { $lt: 30 } }, { height: { $lt: 30 } }] }
+                    ]
+                });
+                break;
+
+            case "Medium":
+                conditions.push({
+                    $and: [
+                        {
+                            $or: [
+                                { width: { $gte: 30, $lte: 50 } },
+                                { height: { $gte: 30, $lte: 50 } }
+                            ]
+                        }
+                    ]
+                });
+                break;
+
+            case "Large":
+                conditions.push({
+                    $and: [
+                        {
+                            $or: [
+                                { width: { $gte: 50, $lte: 70 } },
+                                { height: { $gte: 50, $lte: 70 } }
+                            ]
+                        }
+                    ]
+                });
+                break;
+
+            case "Oversized":
+                conditions.push({
+                    $or: [
+                        { width: { $gt: 70 } },
+                        { height: { $gt: 70 } }
+                    ]
+                });
+                break;
+        }
+    }
+
+    return conditions.length ? { $or: conditions } : {};
+};
+
 export const listByFilters = async (req: Request, res: Response) => {
     const order = req.body.order ? req.body.order : "desc";
     const sortBy = req.body.sortBy ? req.body.sortBy : "_id";
@@ -416,20 +472,34 @@ export const listByFilters = async (req: Request, res: Response) => {
     const skip = req.body.skip ? Number(req.body.skip) : 0;
     const { lang = 'en' } = req.query;
 
-    const findArgs: Record<string, any> = {};
-    for (let key in req.body.filters) {
-        if (req.body.filters[key].length > 0) {
-            if (key === "price") {
-                findArgs[key] = { $gte: req.body.filters[key][0], $lte: req.body.filters[key][1] };
-            } else {
-                findArgs[key] = req.body.filters[key];
-            }
+    const findArgs: Record<string, any> = {
+        quantity: { $gt: 0 }
+    };
+
+    for (const key in req.body.filters) {
+        const value = req.body.filters[key];
+
+        if (!value?.length) continue;
+
+        if (key === "price") {
+            findArgs.price = {
+                $gte: value[0],
+                $lte: value[1]
+            };
+        }
+        else if (key === "size") {
+            Object.assign(findArgs, sizeFilter(value));
+        }
+        else {
+            findArgs[key] = {
+                $in: value
+            };
         }
     }
-
+    
     try {
         const data = await Product.find(findArgs)
-            .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType createdAt")
+            .select("name description price category quantity material medium framing sold weight width height length photos.url photos.key photos.contentType createdAt")
             .populate("category")
             .sort({ [sortBy]: order })
             .skip(skip)
