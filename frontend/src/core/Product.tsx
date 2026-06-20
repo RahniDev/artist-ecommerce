@@ -16,6 +16,7 @@ import { API } from "../config";
 import { toCartItem } from "../redux/slices/cartSlice";
 import { useLocalizedDescription } from "../hooks/useLocalizedDescription";
 
+
 const Product: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
   const dispatch = useDispatch<AppDispatch>();

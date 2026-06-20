@@ -19,6 +19,7 @@ import type { SelectChangeEvent } from "@mui/material/Select";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 import { useNavigate } from "react-router-dom";
+import { PAINT_COLOR_OPTIONS } from "../constants/colourPalette";
 
 const AddProduct: React.FC = () => {
   const navigate = useNavigate();
@@ -62,22 +63,9 @@ const AddProduct: React.FC = () => {
     additionalDetails,
     quality,
     medium,
+    colors,
     material
   } = values;
-
-  const COLOR_OPTIONS = [
-    "red",
-    "orange",
-    "yellow",
-    "green",
-    "blue",
-    "purple",
-    "pink",
-    "brown",
-    "black",
-    "white",
-    "grey",
-  ];
 
   const formData = useRef<FormData | null>(null);
 
@@ -106,7 +94,6 @@ const AddProduct: React.FC = () => {
         if (field === "photo" && event.target instanceof HTMLInputElement && event.target.files) {
           const files = Array.from(event.target.files);
           if (files.length > 0) {
-
             files.forEach((file) => formData.current!.append("photos", file));
             setValues(prev => ({ ...prev, photos: files }));
             setImgPreviews(files.map(file => URL.createObjectURL(file)));
@@ -127,23 +114,21 @@ const AddProduct: React.FC = () => {
         setValues(prev => ({ ...prev, [field]: value }));
       };
 
-  const handleMultiSelectChange =
-    (field: "colors") =>
-      (event: SelectChangeEvent<string[]>) => {
-        if (!formData.current) return;
+  const handleColorToggle = (hex: string) => {
+    if (!formData.current) return;
 
-        const value = event.target.value;
-        const selectedValues =
-          typeof value === "string" ? value.split(",") : value;
+    const updatedColors = colors.includes(hex)
+      ? colors.filter(c => c !== hex)
+      : [...colors, hex];
 
-        formData.current.delete(field);
-        selectedValues.forEach(v => formData.current!.append(field, v));
+    formData.current.delete("colors");
+    updatedColors.forEach(c => formData.current!.append("colors", c));
 
-        setValues(prev => ({
-          ...prev,
-          [field]: selectedValues,
-        }));
-      };
+    setValues(prev => ({
+      ...prev,
+      colors: updatedColors,
+    }));
+  };
 
   const handleCategoryChange = (event: SelectChangeEvent<string>) => {
     if (!formData.current) return;
@@ -174,7 +159,7 @@ const AddProduct: React.FC = () => {
         setValues(p => ({
           ...p,
           createdProduct: true,
-          createdProductName: typeof rawName === 'object' ? rawName?.en : rawName ?? "",
+          createdProductName: typeof rawName === "object" ? rawName?.en : rawName ?? "",
           name: "",
           description: "",
           price: "",
@@ -187,7 +172,9 @@ const AddProduct: React.FC = () => {
           additionalDetails: "",
           quality: "",
           material: "",
-          medium: ""
+          medium: "",
+          colors: [],
+          framing: ""
         }));
         setImgPreviews([]);
         formData.current = new FormData();
@@ -226,6 +213,7 @@ const AddProduct: React.FC = () => {
             sx={{ display: "flex", flexDirection: "column", gap: 2 }}
           >
             <Typography variant="h6">Painting Photo</Typography>
+
             <Box
               sx={{
                 display: "flex",
@@ -239,7 +227,7 @@ const AddProduct: React.FC = () => {
                 <input
                   hidden
                   type="file"
-                  multiple={true}
+                  multiple
                   accept="image/*"
                   onChange={handleInputChange("photo")}
                 />
@@ -271,6 +259,7 @@ const AddProduct: React.FC = () => {
               rows={4}
               fullWidth
             />
+
             <TextField
               label="Price"
               type="number"
@@ -279,11 +268,12 @@ const AddProduct: React.FC = () => {
               fullWidth
             />
 
-            {/* Category — top-level only */}
             <FormControl fullWidth>
               <InputLabel>Category</InputLabel>
               <Select value={category} label="Category" onChange={handleCategoryChange}>
-                <MenuItem value=""><em>Please select</em></MenuItem>
+                <MenuItem value="">
+                  <em>Please select</em>
+                </MenuItem>
                 {categories.map(c => (
                   <MenuItem key={c._id} value={c._id}>
                     {c.name}
@@ -302,28 +292,64 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="">
                   <em>Please select</em>
                 </MenuItem>
-
                 <MenuItem value="Paper">Paper</MenuItem>
                 <MenuItem value="Canvas">Canvas</MenuItem>
                 <MenuItem value="Other">Other</MenuItem>
               </Select>
             </FormControl>
-            <FormControl fullWidth>
-              <InputLabel>Colors</InputLabel>
-              <Select
-                multiple
-                value={values.colors}
-                label="Colors"
-                onChange={handleMultiSelectChange("colors")}
-                renderValue={(selected) => (selected as string[]).join(", ")}
+
+            <Box>
+              <Typography fontWeight={600} sx={{ mb: 1 }}>
+                Colors
+              </Typography>
+
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(6, 34px)",
+                  gap: 1.2,
+                  alignItems: "center",
+                }}
               >
-                {COLOR_OPTIONS.map(color => (
-                  <MenuItem key={color} value={color}>
-                    {color.charAt(0).toUpperCase() + color.slice(1)}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
+                {PAINT_COLOR_OPTIONS.map((color) => {
+                  const selected = colors.includes(color.hex);
+
+                  return (
+                    <Box
+                      key={color.hex}
+                      onClick={() => handleColorToggle(color.hex)}
+                      title={color.name}
+                      sx={{
+                        width: 20,
+                        height: 20,
+                        borderRadius: "50%",
+                        cursor: "pointer",
+                        backgroundColor: color.hex,
+                        border: selected
+                          ? "3px solid #111"
+                          : "1px solid rgba(0,0,0,0.15)",
+                        boxShadow: selected ? "0 0 0 3px rgba(0,0,0,0.12)" : "none",
+                        transition: "all 0.2s ease",
+                        "&:hover": {
+                          transform: "scale(1.08)",
+                        },
+                      }}
+                    />
+                  );
+                })}
+              </Box>
+
+              {colors.length > 0 && (
+                <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
+                  Selected:{" "}
+                  {PAINT_COLOR_OPTIONS
+                    .filter(c => colors.includes(c.hex))
+                    .map(c => c.name)
+                    .join(", ")}
+                </Typography>
+              )}
+            </Box>
+
             <FormControl fullWidth>
               <InputLabel>Medium</InputLabel>
               <Select
@@ -334,7 +360,6 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="">
                   <em>Please select</em>
                 </MenuItem>
-
                 <MenuItem value="Watercolour">Watercolour</MenuItem>
                 <MenuItem value="Acrylic">Acrylic</MenuItem>
                 <MenuItem value="Oil pastel">Oil pastel</MenuItem>
@@ -345,8 +370,6 @@ const AddProduct: React.FC = () => {
               </Select>
             </FormControl>
 
-
-
             <TextField
               label="Width (cm)"
               type="number"
@@ -354,6 +377,7 @@ const AddProduct: React.FC = () => {
               onChange={handleInputChange("width")}
               fullWidth
             />
+
             <TextField
               label="Height (cm)"
               type="number"
@@ -361,27 +385,32 @@ const AddProduct: React.FC = () => {
               onChange={handleInputChange("height")}
               fullWidth
             />
+
             <FormControl fullWidth>
               <InputLabel>Framing</InputLabel>
               <Select
                 value={framing}
                 label="Framing"
-                onChange={handleSelectChange("framing")}>
+                onChange={handleSelectChange("framing")}
+              >
                 <MenuItem value="Unframed">Unframed</MenuItem>
                 <MenuItem value="Ready to hang">Ready to hang</MenuItem>
               </Select>
             </FormControl>
+
             <FormControl fullWidth>
               <InputLabel>Quality</InputLabel>
               <Select
                 value={quality}
                 label="Quality"
-                onChange={handleSelectChange("quality")}>
+                onChange={handleSelectChange("quality")}
+              >
                 <MenuItem value="Low quality">Low quality</MenuItem>
                 <MenuItem value="Medium quality">Medium quality</MenuItem>
                 <MenuItem value="High quality">High quality</MenuItem>
               </Select>
             </FormControl>
+
             <TextField
               label="Additional Details e.g: painting scuffed on the bottom left"
               value={additionalDetails}
@@ -390,7 +419,9 @@ const AddProduct: React.FC = () => {
               rows={4}
               fullWidth
             />
-            <Typography>Only required for shipping: </Typography>
+
+            <Typography>Only required for shipping:</Typography>
+
             <TextField
               label="Weight (grams)"
               type="number"
@@ -398,6 +429,7 @@ const AddProduct: React.FC = () => {
               onChange={handleInputChange("weight")}
               fullWidth
             />
+
             <TextField
               label="Length (cm)"
               type="number"
@@ -405,6 +437,7 @@ const AddProduct: React.FC = () => {
               onChange={handleInputChange("length")}
               fullWidth
             />
+
             <Button
               type="submit"
               variant="contained"

@@ -14,6 +14,7 @@ import ProductCard from "./ProductCard";
 import Layout from "./Layout";
 import type { IProduct } from "../types";
 import { API } from '../config'
+import { PAINT_COLOR_OPTIONS } from "../constants/colourPalette";
 
 const Shop = () => {
     const [products, setProducts] = useState<IProduct[]>([]);
@@ -26,20 +27,6 @@ const Shop = () => {
         medium: [] as string[],
         colors: [] as string[]
     });
-
-    const COLOR_SWATCHES = [
-        { label: "red", hex: "#C62828" },
-        { label: "orange", hex: "#EF6C00" },
-        { label: "yellow", hex: "#FDD835" },
-        { label: "green", hex: "#43A047" },
-        { label: "blue", hex: "#1E88E5" },
-        { label: "purple", hex: "#8E24AA" },
-        { label: "pink", hex: "#D81B60" },
-        { label: "brown", hex: "#6D4C41" },
-        { label: "black", hex: "#212121" },
-        { label: "white", hex: "#FFFFFF" },
-        { label: "grey", hex: "#9E9E9E" },
-    ];
 
     const handleCheckbox = (
         filterName: "material" | "framing" | "size" | "medium" | "colors",
@@ -172,23 +159,23 @@ const Shop = () => {
                             gap: 1,
                         }}
                     >
-                        {COLOR_SWATCHES.map((color) => {
-                            const selected = filters.colors.includes(color.label);
+                        {PAINT_COLOR_OPTIONS.map((color) => {
+                            const selected = filters.colors.includes(color.hex);
 
                             return (
                                 <Box
-                                    key={color.label}
-                                    onClick={() => handleCheckbox("colors", color.label)}
-                                    title={color.label}
+                                    key={color.hex}
+                                    onClick={() => handleCheckbox("colors", color.hex)}
+                                    title={color.hex}
                                     sx={{
-                                        width: 32,
-                                        height: 32,
+                                        width: 18,
+                                        height: 18,
                                         borderRadius: "50%",
                                         cursor: "pointer",
                                         backgroundColor: color.hex,
                                         border: selected
                                             ? "3px solid #111"
-                                            : color.label === "white"
+                                            : color.hex === "white"
                                                 ? "1px solid #ccc"
                                                 : "1px solid transparent",
                                         boxSizing: "border-box",
