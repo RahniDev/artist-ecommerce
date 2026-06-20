@@ -19,7 +19,7 @@ import type { SelectChangeEvent } from "@mui/material/Select";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 import { useNavigate } from "react-router-dom";
-import { PAINT_COLOR_OPTIONS } from "../constants/colourPalette";
+import { PAINT_COLOR_OPTIONS } from "../../../shared/colourPalette";
 
 const AddProduct: React.FC = () => {
   const navigate = useNavigate();
@@ -43,9 +43,9 @@ const AddProduct: React.FC = () => {
     createdProduct: false,
     createdProductName: "",
     framing: "",
+    additionalDetails: "",
     material: "",
     medium: "",
-    additionalDetails: "",
     colors: [],
     quality: ""
   });

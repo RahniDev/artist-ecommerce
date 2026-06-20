@@ -93,10 +93,13 @@ export interface ProductFormBase {
   category: string;
   quantity?: string;
   material: string;
+  framing: string;
   medium: string;
+  quality: string;
   colors: string[];
   loading: boolean;
   error: string;
+  additionalDetails?: string;
 }
 
 export interface AddProductValues extends ProductFormBase {
@@ -185,6 +188,12 @@ export interface IProduct {
   height?: number;
   length?: number;
   count?: number;
+  material?: string;
+  medium?: string;
+  colors?: string[];
+  framing?: string;
+  additionalDetails?: string;
+  quality?: string;
 }
 
 export interface IPriceRange {

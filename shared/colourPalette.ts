@@ -552,3 +552,5 @@ export const PAINT_COLOR_OPTIONS: PaintColor[] = [
         finish: "Opaque / Heavily Granulating"
     }
 ];
+
+export const PAINT_COLOR_HEXES = PAINT_COLOR_OPTIONS.map(c => c.hex);

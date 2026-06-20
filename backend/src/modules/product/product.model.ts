@@ -1,4 +1,5 @@
 import mongoose, { Schema, Types, Document } from "mongoose";
+import { PAINT_COLOR_HEXES } from "../../../../shared/colourPalette.js";
 
 export interface IProduct {
   name: {
@@ -106,22 +107,11 @@ const productSchema = new Schema<IProductDocument>({
     enum: ["Unframed", "Ready to hang"],
     default: "Unframed"
   },
-  colors: [{
-  type: String,
-  enum: [
-    "red",
-    "orange",
-    "yellow",
-    "green",
-    "blue",
-    "purple",
-    "pink",
-    "brown",
-    "black",
-    "white",
-    "grey"
-  ]
-}],
+colors: {
+  type: [String],
+  enum: PAINT_COLOR_HEXES,
+  default: [],
+},
   additionalDetails: String,
   quality: String
 }, { timestamps: true });

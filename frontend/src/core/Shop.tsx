@@ -15,7 +15,7 @@ import ProductCard from "./ProductCard";
 import Layout from "./Layout";
 import type { IProduct } from "../types";
 import { API } from '../config'
-import { PAINT_COLOR_OPTIONS } from "../constants/colourPalette";
+import { PAINT_COLOR_OPTIONS } from "../../../shared/colourPalette";
 
 const Shop = () => {
     const [products, setProducts] = useState<IProduct[]>([]);

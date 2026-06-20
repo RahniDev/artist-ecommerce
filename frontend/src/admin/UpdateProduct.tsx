@@ -1,12 +1,18 @@
 import { useEffect, useRef, useState } from "react";
-import type { FormEvent } from "react";
-import { API } from '../config'
+import type { ChangeEvent, FormEvent } from "react";
+import { API } from "../config";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { getCategories, updateProduct } from "./apiAdmin";
 import { getProduct } from "../core/apiCore";
-import type { Category, ApiResponse, IProduct, UpdateProductValues, ProductFormField } from "../types";
+import type {
+    Category,
+    ApiResponse,
+    IProduct,
+    UpdateProductValues,
+    ProductFormField,
+} from "../types";
 import Loader from "../core/Loader";
 import {
     Box,
@@ -18,26 +24,31 @@ import {
     InputLabel,
     FormControl,
     Alert,
+    Typography,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
+import { PAINT_COLOR_OPTIONS } from "../../../shared/colourPalette";
 
 const UpdateProduct = () => {
     const { productId } = useParams<{ productId: string }>();
-
     const navigate = useNavigate();
-
     const auth = isAuthenticated();
 
     if (!auth) {
         return <Navigate to="/signin" replace />;
     }
 
-    const { user } = auth;
-    const [photosPreview, setPhotosPreview] = useState<string[]>([])
+    const { user, token } = auth;
+
+    const [photosPreview, setPhotosPreview] = useState<string[]>([]);
     const [values, setValues] = useState<UpdateProductValues>({
         name: "",
         description: "",
         price: "",
+        weight: "",
+        width: "",
+        height: "",
+        length: "",
         categories: [],
         category: "",
         photos: [],
@@ -45,10 +56,12 @@ const UpdateProduct = () => {
         error: "",
         updatedProduct: false,
         updatedProductName: "",
-        weight: "",
-        width: "",
-        height: "",
-        length: "",
+        material: "",
+        medium: "",
+        colors: [],
+        framing: "",
+        additionalDetails: "",
+        quality: "",
     });
 
     const {
@@ -60,156 +73,248 @@ const UpdateProduct = () => {
         loading,
         error,
         updatedProduct,
-        updatedProductName
+        updatedProductName,
+        material,
+        medium,
+        colors,
+        framing,
+        additionalDetails,
+        quality,
     } = values;
-    // Using useRef instead of useState to avoid re-renders
-    // as FormData does not affect the UI, only used when 
-    // submitting to the API so should not cause re-render when updated.
-    const formData = useRef<FormData | null>(null)
+
+    const formData = useRef<FormData | null>(null);
 
     useEffect(() => {
         if (!productId) return;
-        loadCategories();
-        initProduct(productId);
+
+        const init = async () => {
+            await loadCategories();
+            await initProduct(productId);
+        };
+
+        init();
     }, [productId]);
-
-    const initProduct = async (id: string) => {
-        try {
-            const res: ApiResponse<IProduct> = await getProduct(id);
-            if (res.error || !res.data) {
-                setValues((p) => ({
-                    ...p,
-                    error: res.error ?? "Failed to load product",
-                }));
-                return;
-            }
-
-            const product = res.data;
-            const fd = new FormData()
-            fd.set("name", product.nameEn);
-            fd.set("description", typeof product.description === "string"
-                ? product.description
-                : JSON.stringify(product.description))
-            fd.set("price", product.price.toString())
-            fd.set("category", product.category._id)
-
-            formData.current = fd
-            setValues((p) => ({
-                ...p,
-                name: product.name,
-                description: typeof product.description === "string"
-                    ? product.description
-                    : JSON.stringify(product.description),
-                price: product.price.toString(),
-                category: product.category._id,
-            }));
-        } catch {
-            setValues((p) => ({ ...p, error: "Failed to load product", loading: false }));
-        }
-    };
 
     useEffect(() => {
         return () => {
-            photosPreview.forEach(url => URL.revokeObjectURL(url));
-        }
-    }, [photosPreview])
-
-    const loadCategories = async () => {
-        const res: ApiResponse<Category[]> = await getCategories();
-        if (!res.error) {
-            setValues((p) => ({ ...p, categories: res.data ?? [] }));
-        }
-    };
+            photosPreview.forEach((url) => URL.revokeObjectURL(url));
+        };
+    }, [photosPreview]);
 
     useEffect(() => {
         if (!updatedProduct) return;
 
         const timer = setTimeout(() => {
             navigate("/");
+            setValues((prev) => ({
+                ...prev,
+                updatedProductName: "",
+            }));
+        }, 1500);
 
-            setValues(p => ({
-                ...p,
-                updatedProductName: ""
-            }))
-        }, 1500)
+        return () => clearTimeout(timer);
+    }, [updatedProduct, navigate]);
 
+    const loadCategories = async () => {
+        try {
+            const res: ApiResponse<Category[]> = await getCategories();
+            if (res.error) {
+                setValues((prev) => ({ ...prev, error: res.error || "" }));
+                return;
+            }
 
-        return () => clearTimeout(timer)
-    }, [updatedProduct, navigate])
+            setValues((prev) => ({
+                ...prev,
+                categories: res.data ?? [],
+            }));
+        } catch {
+            setValues((prev) => ({
+                ...prev,
+                error: "Failed to load categories",
+            }));
+        }
+    };
+
+    const initProduct = async (id: string) => {
+        try {
+            const res: ApiResponse<IProduct> = await getProduct(id);
+
+            if (res.error || !res.data) {
+                setValues((prev) => ({
+                    ...prev,
+                    error: res.error ?? "Failed to load product",
+                }));
+                return;
+            }
+
+            const product = res.data;
+
+            const descriptionValue =
+                typeof product.description === "string"
+                    ? product.description
+                    : JSON.stringify(product.description);
+
+            const fd = new FormData();
+            fd.set("name", product.name ?? "");
+            fd.set("description", descriptionValue);
+            fd.set("price", product.price?.toString() ?? "");
+            fd.set("category", product.category?._id ?? "");
+            fd.set("material", product.material ?? "");
+            fd.set("medium", product.medium ?? "");
+            fd.set("framing", product.framing ?? "");
+            fd.set("quality", product.quality ?? "");
+            fd.set("additionalDetails", product.additionalDetails ?? "");
+            fd.set("weight", product.weight?.toString() ?? "");
+            fd.set("width", product.width?.toString() ?? "");
+            fd.set("height", product.height?.toString() ?? "");
+            fd.set("length", product.length?.toString() ?? "");
+
+            (product.colors ?? []).forEach((color: string) => {
+                fd.append("colors", color);
+            });
+
+            formData.current = fd;
+
+            setValues((prev) => ({
+                ...prev,
+                name: product.name ?? "",
+                description: descriptionValue,
+                price: product.price?.toString() ?? "",
+                category: product.category?._id ?? "",
+                material: product.material ?? "",
+                medium: product.medium ?? "",
+                framing: product.framing ?? "",
+                quality: product.quality ?? "",
+                additionalDetails: product.additionalDetails ?? "",
+                colors: product.colors ?? [],
+                weight: product.weight?.toString() ?? "",
+                width: product.width?.toString() ?? "",
+                height: product.height?.toString() ?? "",
+                length: product.length?.toString() ?? "",
+            }));
+        } catch {
+            setValues((prev) => ({
+                ...prev,
+                error: "Failed to load product",
+                loading: false,
+            }));
+        }
+    };
 
     const handleInputChange =
         (field: ProductFormField) =>
-            (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+            (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
                 if (!formData.current) return;
-                const value = e.target.value;
+
+                const value = event.target.value;
                 formData.current.set(field, value);
-                setValues((p) => ({ ...p, [field]: value }));
+                setValues((prev) => ({ ...prev, [field]: value }));
             };
 
     const handleSelectChange =
         (field: ProductFormField) =>
-            (e: SelectChangeEvent<string>) => {
+            (event: SelectChangeEvent<string>) => {
                 if (!formData.current) return;
 
-                const value = e.target.value;
+                const value = event.target.value;
                 formData.current.set(field, value);
-                setValues((p) => ({ ...p, [field]: value }));
+                setValues((prev) => ({ ...prev, [field]: value }));
             };
 
-    const handlePhotoFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleCategoryChange = (event: SelectChangeEvent<string>) => {
         if (!formData.current) return;
-        const files = Array.from(e.target.files ?? []);
+        const value = event.target.value;
+        formData.current.set("category", value);
+        setValues((prev) => ({ ...prev, category: value }));
+    };
+
+    const handleColorToggle = (hex: string) => {
+        if (!formData.current) return;
+
+        const updatedColors = colors.includes(hex)
+            ? colors.filter((c) => c !== hex)
+            : [...colors, hex];
+
+        formData.current.delete("colors");
+        updatedColors.forEach((color) => formData.current!.append("colors", color));
+
+        setValues((prev) => ({
+            ...prev,
+            colors: updatedColors,
+        }));
+    };
+
+    const handlePhotoFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (!formData.current) return;
+
+        const files = Array.from(event.target.files ?? []);
         if (!files.length) return;
 
         for (const file of files) {
             if (!file.type.startsWith("image/")) {
-                setValues(p => ({ ...p, error: "File must be an image" }));
+                setValues((prev) => ({ ...prev, error: "File must be an image" }));
                 return;
             }
             if (file.size > 2 * 1024 * 1024) {
-                setValues(p => ({ ...p, error: "Each image must be less than 2MB" }));
+                setValues((prev) => ({
+                    ...prev,
+                    error: "Each image must be less than 2MB",
+                }));
                 return;
             }
         }
 
         formData.current.delete("photos");
-        files.forEach(file => formData.current!.append("photos", file));
-        setValues(p => ({ ...p, photos: files, error: "" }));
-        setPhotosPreview(files.map(file => URL.createObjectURL(file)));
+        files.forEach((file) => formData.current!.append("photos", file));
+
+        setValues((prev) => ({
+            ...prev,
+            photos: files,
+            error: "",
+        }));
+
+        setPhotosPreview(files.map((file) => URL.createObjectURL(file)));
     };
 
-    const clickSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+    const clickSubmit = async (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         if (!productId || !formData.current) return;
 
-        setValues((p) => ({ ...p, loading: true, error: "" }));
+        setValues((prev) => ({
+            ...prev,
+            loading: true,
+            error: "",
+        }));
 
         try {
             const res: ApiResponse<IProduct> = await updateProduct(
                 productId,
-                auth.user._id,
-                auth.token,
+                user._id,
+                token,
                 formData.current
             );
 
             if (res.error || !res.data) {
-                setValues((p) => ({
-                    ...p,
+                setValues((prev) => ({
+                    ...prev,
                     error: res.error ?? "Update failed",
                     loading: false,
                 }));
                 return;
             }
 
+            const rawName = res.data.name as any;
+
             setValues((prev) => ({
                 ...prev,
                 updatedProduct: true,
-                updatedProductName: res.data?.name ?? "",
-                loading: false
+                updatedProductName:
+                    typeof rawName === "object" ? rawName?.en : rawName ?? "",
+                loading: false,
             }));
         } catch {
-            setValues((p) => ({
-                ...p,
+            setValues((prev) => ({
+                ...prev,
                 error: "Update failed",
                 loading: false,
             }));
@@ -240,33 +345,52 @@ const UpdateProduct = () => {
                     <Box
                         component="form"
                         onSubmit={clickSubmit}
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: 2,
-                        }}
+                        sx={{ display: "flex", flexDirection: "column", gap: 2 }}
                     >
-                        <Button variant="outlined" component="label">
-                            Upload Image
-                            <input
-                                type="file"
-                                hidden
-                                accept="image/*"
-                                multiple
-                                onChange={handlePhotoFileChange}
-                            />
-                        </Button>
-                        {productId && photosPreview.length === 0 && (
-                            <img src={`${API}/product/photo/${productId}`} alt="Product preview" style={{ width: 200 }} />
-                        )}
-                        {photosPreview.map((src, i) => (
-                            <Box key={i} sx={{ mt: 2 }}>
-                                <img src={src} alt={`Product preview ${i + 1}`} style={{ width: 200 }} />
-                            </Box>
-                        ))}
+                        <Typography variant="h6">Painting Photo</Typography>
+
+                        <Box
+                            sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "space-around",
+                                gap: 2,
+                                flexWrap: "wrap",
+                            }}
+                        >
+                            <Button variant="outlined" component="label">
+                                Upload Image
+                                <input
+                                    hidden
+                                    type="file"
+                                    multiple
+                                    accept="image/*"
+                                    onChange={handlePhotoFileChange}
+                                />
+                            </Button>
+
+                            {productId && photosPreview.length === 0 && (
+                                <Box
+                                    component="img"
+                                    src={`${API}/product/photo/${productId}`}
+                                    alt="Product preview"
+                                    sx={{ width: 200, borderRadius: 1, border: "1px solid #ddd" }}
+                                />
+                            )}
+
+                            {photosPreview.map((src, i) => (
+                                <Box
+                                    key={i}
+                                    component="img"
+                                    src={src}
+                                    alt={`Painting photo preview ${i + 1}`}
+                                    sx={{ width: 200, borderRadius: 1, border: "1px solid #ddd" }}
+                                />
+                            ))}
+                        </Box>
 
                         <TextField
-                            label="Name"
+                            label="Title"
                             value={name}
                             onChange={handleInputChange("name")}
                             fullWidth
@@ -293,13 +417,9 @@ const UpdateProduct = () => {
 
                         <FormControl fullWidth>
                             <InputLabel>Category</InputLabel>
-                            <Select
-                                value={category}
-                                label="Category"
-                                onChange={handleSelectChange("category")}
-                            >
+                            <Select value={category} label="Category" onChange={handleCategoryChange}>
                                 <MenuItem value="">
-                                    <em>Select category</em>
+                                    <em>Please select</em>
                                 </MenuItem>
                                 {categories.map((c) => (
                                     <MenuItem key={c._id} value={c._id}>
@@ -308,13 +428,95 @@ const UpdateProduct = () => {
                                 ))}
                             </Select>
                         </FormControl>
-                        <TextField
-                            label="Weight (grams)"
-                            type="number"
-                            value={values.weight}
-                            onChange={handleInputChange("weight")}
-                            fullWidth
-                        />
+
+                        <FormControl fullWidth>
+                            <InputLabel>Material</InputLabel>
+                            <Select
+                                value={material}
+                                label="Material"
+                                onChange={handleSelectChange("material")}
+                            >
+                                <MenuItem value="">
+                                    <em>Please select</em>
+                                </MenuItem>
+                                <MenuItem value="Paper">Paper</MenuItem>
+                                <MenuItem value="Canvas">Canvas</MenuItem>
+                                <MenuItem value="Other">Other</MenuItem>
+                            </Select>
+                        </FormControl>
+
+                        <Box>
+                            <Typography fontWeight={600} sx={{ mb: 1 }}>
+                                Colors
+                            </Typography>
+
+                            <Box
+                                sx={{
+                                    display: "grid",
+                                    gridTemplateColumns: "repeat(30, 18px)",
+                                    gap: 1.2,
+                                    alignItems: "center",
+                                }}
+                            >
+                                {PAINT_COLOR_OPTIONS.map((color) => {
+                                    const selected = colors.includes(color.hex);
+
+                                    return (
+                                        <Box
+                                            key={color.hex}
+                                            onClick={() => handleColorToggle(color.hex)}
+                                            title={color.name}
+                                            sx={{
+                                                width: 20,
+                                                height: 20,
+                                                borderRadius: "50%",
+                                                cursor: "pointer",
+                                                backgroundColor: color.hex,
+                                                border: selected
+                                                    ? "3px solid #111"
+                                                    : "1px solid rgba(0,0,0,0.15)",
+                                                boxShadow: selected ? "0 0 0 3px rgba(0,0,0,0.12)" : "none",
+                                                transition: "all 0.2s ease",
+                                                "&:hover": {
+                                                    transform: "scale(1.08)",
+                                                },
+                                            }}
+                                        />
+                                    );
+                                })}
+                            </Box>
+
+                            {colors.length > 0 && (
+                                <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
+                                    Selected:{" "}
+                                    {PAINT_COLOR_OPTIONS
+                                        .filter((c) => colors.includes(c.hex))
+                                        .map((c) => c.name)
+                                        .join(", ")}
+                                </Typography>
+                            )}
+                        </Box>
+
+                        <FormControl fullWidth>
+                            <InputLabel>Medium</InputLabel>
+                            <Select
+                                value={medium}
+                                label="Medium"
+                                onChange={handleSelectChange("medium")}
+                            >
+                                <MenuItem value="">
+                                    <em>Please select</em>
+                                </MenuItem>
+                                <MenuItem value="Watercolour">Watercolour</MenuItem>
+                                <MenuItem value="Acrylic">Acrylic</MenuItem>
+                                <MenuItem value="Oil pastel">Oil pastel</MenuItem>
+                                <MenuItem value="Gouache">Gouache</MenuItem>
+                                <MenuItem value="Ink">Ink</MenuItem>
+                                <MenuItem value="Charcoal">Charcoal</MenuItem>
+                                <MenuItem value="Mixed media">Mixed media</MenuItem>
+                            </Select>
+                        </FormControl>
+
                         <TextField
                             label="Width (cm)"
                             type="number"
@@ -322,6 +524,7 @@ const UpdateProduct = () => {
                             onChange={handleInputChange("width")}
                             fullWidth
                         />
+
                         <TextField
                             label="Height (cm)"
                             type="number"
@@ -329,6 +532,57 @@ const UpdateProduct = () => {
                             onChange={handleInputChange("height")}
                             fullWidth
                         />
+
+                        <FormControl fullWidth>
+                            <InputLabel>Framing</InputLabel>
+                            <Select
+                                value={framing}
+                                label="Framing"
+                                onChange={handleSelectChange("framing")}
+                            >
+                                <MenuItem value="">
+                                    <em>Please select</em>
+                                </MenuItem>
+                                <MenuItem value="Unframed">Unframed</MenuItem>
+                                <MenuItem value="Ready to hang">Ready to hang</MenuItem>
+                            </Select>
+                        </FormControl>
+
+                        <FormControl fullWidth>
+                            <InputLabel>Quality</InputLabel>
+                            <Select
+                                value={quality}
+                                label="Quality"
+                                onChange={handleSelectChange("quality")}
+                            >
+                                <MenuItem value="">
+                                    <em>Please select</em>
+                                </MenuItem>
+                                <MenuItem value="Low quality">Low quality</MenuItem>
+                                <MenuItem value="Medium quality">Medium quality</MenuItem>
+                                <MenuItem value="High quality">High quality</MenuItem>
+                            </Select>
+                        </FormControl>
+
+                        <TextField
+                            label="Additional Details e.g: painting scuffed on the bottom left"
+                            value={additionalDetails}
+                            onChange={handleInputChange("additionalDetails")}
+                            multiline
+                            rows={4}
+                            fullWidth
+                        />
+
+                        <Typography>Only required for shipping:</Typography>
+
+                        <TextField
+                            label="Weight (grams)"
+                            type="number"
+                            value={values.weight}
+                            onChange={handleInputChange("weight")}
+                            fullWidth
+                        />
+
                         <TextField
                             label="Length (cm)"
                             type="number"
@@ -344,13 +598,13 @@ const UpdateProduct = () => {
                             sx={{ mt: 2 }}
                             disabled={loading}
                         >
-                            Update Product
+                            Update Painting
                         </Button>
                     </Box>
                 </Box>
             </Container>
         </Layout>
-    )
+    );
 };
 
 export default UpdateProduct;
