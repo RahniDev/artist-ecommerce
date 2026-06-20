@@ -3,6 +3,7 @@ import {
     Box,
     Typography,
     Checkbox,
+    Button,
     FormControlLabel,
     FormGroup,
     Divider,
@@ -18,7 +19,7 @@ import { PAINT_COLOR_OPTIONS } from "../constants/colourPalette";
 
 const Shop = () => {
     const [products, setProducts] = useState<IProduct[]>([]);
-
+    const [showFilters, setShowFilters] = useState(true);
     const [filters, setFilters] = useState({
         material: [] as string[],
         framing: [] as string[],
@@ -78,279 +79,301 @@ const Shop = () => {
             console.error(err);
         }
     };
-
+    const SIDEBAR_WIDTH = 260;
     return (
         <Layout title="" description="Browse all paintings">
-            <Box
-                sx={{
-                    display: "flex",
-                    gap: 4,
-                    alignItems: "flex-start",
-                }}
-            >
-                {/* Filters */}
-                <Paper
-                    elevation={0}
+            <Box>
+                {/* Top actions */}
+                <Box sx={{ mb: 3, display: "flex" }}>
+                    <Button
+                        onClick={() => setShowFilters(prev => !prev)}
+                        sx={{
+                            cursor: "pointer",
+                            textDecoration: "underline",
+                            fontSize: 14,
+                            border: "1px solid black",
+                            justifyContent: "center",
+                            color: "text.secondary",
+                            "&:hover": {
+                                color: "text.primary",
+                            },
+                        }}
+                    >
+                        {showFilters ? "Hide filters" : "Show filters"}
+                    </Button>
+                </Box>
+                <Box
                     sx={{
-                        width: 260,
-                        p: 3,
-                        position: "sticky",
-                        top: 100,
+                        display: "flex",
+                        gap: 4,
+                        alignItems: "flex-start",
+                        minHeight: "100vh"
                     }}
                 >
-                    <Typography variant="h6" gutterBottom>
-                        Filters
-                    </Typography>
-
-                    <Typography fontWeight={600}>
-                        Size
-                    </Typography>
-
-                    <FormGroup>
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={filters.size.includes("Small")}
-                                    onChange={() => handleCheckbox("size", "Small")}
-                                />
-                            }
-                            label="Small (<30 cm)"
-                        />
-
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={filters.size.includes("Medium")}
-                                    onChange={() => handleCheckbox("size", "Medium")}
-                                />
-                            }
-                            label="Medium (30–50 cm)"
-                        />
-
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={filters.size.includes("Large")}
-                                    onChange={() => handleCheckbox("size", "Large")}
-                                />
-                            }
-                            label="Large (50–70 cm)"
-                        />
-
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={filters.size.includes("Oversized")}
-                                    onChange={() => handleCheckbox("size", "Oversized")}
-                                />
-                            }
-                            label="Oversized (>70 cm)"
-                        />
-                    </FormGroup>
-                    <Divider sx={{ my: 2 }} />
-                    <Typography fontWeight={600} mb={1}>
-                        Colour
-                    </Typography>
-
-                    <Box
-                        sx={{
-                            display: "grid",
-                            gridTemplateColumns: "repeat(12, 15px)",
-                            gap: 1,
-                        }}
-                    >
-                        {PAINT_COLOR_OPTIONS.map((color) => {
-                            const selected = filters.colors.includes(color.hex);
-
-                            return (
-                                <Box
-                                    key={color.hex}
-                                    onClick={() => handleCheckbox("colors", color.hex)}
-                                    title={color.hex}
-                                    sx={{
-                                        width: 18,
-                                        height: 18,
-                                        borderRadius: "50%",
-                                        cursor: "pointer",
-                                        backgroundColor: color.hex,
-                                        border: selected
-                                            ? "3px solid #111"
-                                            : color.hex === "white"
-                                                ? "1px solid #ccc"
-                                                : "1px solid transparent",
-                                        boxSizing: "border-box",
-                                        transform: selected ? "scale(1.08)" : "scale(1)",
-                                        transition: "all 0.15s ease",
-                                    }}
-                                />
-                            );
-                        })}
-                    </Box>
-
-                    {filters.colors.length > 0 && (
-                        <Typography
+                    {/* Filters */}
+                    {showFilters && (
+                        <Paper
                             sx={{
-                                mt: 2,
-                                cursor: "pointer",
-                                textDecoration: "underline",
-                                fontSize: 14,
+                                width: SIDEBAR_WIDTH,
+                                flexShrink: 0,
                             }}
-                            onClick={() =>
-                                setFilters(prev => ({
-                                    ...prev,
-                                    colors: [],
-                                }))
-                            }
+                            elevation={0}
                         >
-                            Remove colour filter
-                        </Typography>
-                    )}
-                    <Divider sx={{ my: 2 }} />
+                            <Typography variant="h6" gutterBottom>
+                                Filters
+                            </Typography>
 
-                    <Typography fontWeight={600}>
-                        Material
-                    </Typography>
+                            <Typography fontWeight={600}>
+                                Size
+                            </Typography>
 
-                    <FormGroup>
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={filters.material.includes("Paper")}
-                                    onChange={() =>
-                                        handleCheckbox("material", "Paper")
+                            <FormGroup>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={filters.size.includes("Small")}
+                                            onChange={() => handleCheckbox("size", "Small")}
+                                        />
                                     }
+                                    label="Small (<30 cm)"
                                 />
-                            }
-                            label="Paper"
-                        />
 
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={filters.material.includes("Canvas")}
-                                    onChange={() =>
-                                        handleCheckbox("material", "Canvas")
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={filters.size.includes("Medium")}
+                                            onChange={() => handleCheckbox("size", "Medium")}
+                                        />
                                     }
+                                    label="Medium (30–50 cm)"
                                 />
-                            }
-                            label="Canvas"
-                        />
 
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={filters.material.includes("Other")}
-                                    onChange={() =>
-                                        handleCheckbox("material", "Other")
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={filters.size.includes("Large")}
+                                            onChange={() => handleCheckbox("size", "Large")}
+                                        />
                                     }
+                                    label="Large (50–70 cm)"
                                 />
-                            }
-                            label="Other"
-                        />
-                    </FormGroup>
 
-                    <Divider sx={{ my: 2 }} />
-                    <Typography fontWeight={600}>
-                        Medium
-                    </Typography>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={filters.size.includes("Oversized")}
+                                            onChange={() => handleCheckbox("size", "Oversized")}
+                                        />
+                                    }
+                                    label="Oversized (>70 cm)"
+                                />
+                            </FormGroup>
+                            <Divider sx={{ my: 2 }} />
+                            <Typography fontWeight={600} mb={1}>
+                                Colour
+                            </Typography>
 
-                    <FormGroup>
-                        {mediums.map(medium => (
-                            <FormControlLabel
-                                key={medium}
-                                control={
-                                    <Checkbox
-                                        checked={filters.medium.includes(medium)}
-                                        onChange={() => handleCheckbox("medium", medium)}
+                            <Box
+                                sx={{
+                                    display: "grid",
+                                    gridTemplateColumns: "repeat(12, 15px)",
+                                    gap: 1,
+                                }}
+                            >
+                                {PAINT_COLOR_OPTIONS.map((color) => {
+                                    const selected = filters.colors.includes(color.hex);
+
+                                    return (
+                                        <Box
+                                            key={color.hex}
+                                            onClick={() => handleCheckbox("colors", color.hex)}
+                                            title={color.hex}
+                                            sx={{
+                                                width: 18,
+                                                height: 18,
+                                                borderRadius: "50%",
+                                                cursor: "pointer",
+                                                backgroundColor: color.hex,
+                                                border: selected
+                                                    ? "3px solid #111"
+                                                    : color.hex === "white"
+                                                        ? "1px solid #ccc"
+                                                        : "1px solid transparent",
+                                                boxSizing: "border-box",
+                                                transform: selected ? "scale(1.08)" : "scale(1)",
+                                                transition: "all 0.15s ease",
+                                            }}
+                                        />
+                                    );
+                                })}
+                            </Box>
+
+                            {filters.colors.length > 0 && (
+                                <Typography
+                                    sx={{
+                                        mt: 2,
+                                        cursor: "pointer",
+                                        textDecoration: "underline",
+                                        fontSize: 14,
+                                    }}
+                                    onClick={() =>
+                                        setFilters(prev => ({
+                                            ...prev,
+                                            colors: [],
+                                        }))
+                                    }
+                                >
+                                    Remove colour filter
+                                </Typography>
+                            )}
+                            <Divider sx={{ my: 2 }} />
+
+                            <Typography fontWeight={600}>
+                                Material
+                            </Typography>
+
+                            <FormGroup>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={filters.material.includes("Paper")}
+                                            onChange={() =>
+                                                handleCheckbox("material", "Paper")
+                                            }
+                                        />
+                                    }
+                                    label="Paper"
+                                />
+
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={filters.material.includes("Canvas")}
+                                            onChange={() =>
+                                                handleCheckbox("material", "Canvas")
+                                            }
+                                        />
+                                    }
+                                    label="Canvas"
+                                />
+
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={filters.material.includes("Other")}
+                                            onChange={() =>
+                                                handleCheckbox("material", "Other")
+                                            }
+                                        />
+                                    }
+                                    label="Other"
+                                />
+                            </FormGroup>
+
+                            <Divider sx={{ my: 2 }} />
+                            <Typography fontWeight={600}>
+                                Medium
+                            </Typography>
+
+                            <FormGroup>
+                                {mediums.map(medium => (
+                                    <FormControlLabel
+                                        key={medium}
+                                        control={
+                                            <Checkbox
+                                                checked={filters.medium.includes(medium)}
+                                                onChange={() => handleCheckbox("medium", medium)}
+                                            />
+                                        }
+                                        label={medium}
                                     />
+                                ))}
+                            </FormGroup>
+                            <Divider sx={{ my: 2 }} />
+
+                            <Typography fontWeight={600}>
+                                Framing
+                            </Typography>
+
+                            <FormGroup>
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={filters.framing.includes(
+                                                "Ready to hang"
+                                            )}
+                                            onChange={() =>
+                                                handleCheckbox(
+                                                    "framing",
+                                                    "Ready to hang"
+                                                )
+                                            }
+                                        />
+                                    }
+                                    label="Ready to hang"
+                                />
+
+                                <FormControlLabel
+                                    control={
+                                        <Checkbox
+                                            checked={filters.framing.includes(
+                                                "Unframed"
+                                            )}
+                                            onChange={() =>
+                                                handleCheckbox(
+                                                    "framing",
+                                                    "Unframed"
+                                                )
+                                            }
+                                        />
+                                    }
+                                    label="Unframed"
+                                />
+                            </FormGroup>
+
+                            <Divider sx={{ my: 2 }} />
+
+                            <Typography fontWeight={600}>
+                                Price (€)
+                            </Typography>
+
+                            <Slider
+                                value={filters.price}
+                                onChange={(_, value) =>
+                                    setFilters(prev => ({
+                                        ...prev,
+                                        price: value as number[],
+                                    }))
                                 }
-                                label={medium}
+                                valueLabelDisplay="auto"
+                                min={0}
+                                max={5000}
                             />
-                        ))}
-                    </FormGroup>
-                    <Divider sx={{ my: 2 }} />
+                        </Paper>
+                    )}
 
-                    <Typography fontWeight={600}>
-                        Framing
-                    </Typography>
+                    {/* Products */}
+                    <Box sx={{ flex: 1, minWidth: 0, alignSelf: "flex-start" }}>
+                        <Typography color="text.secondary" mb={4}>
+                            {products.length} artworks found
+                        </Typography>
 
-                    <FormGroup>
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={filters.framing.includes(
-                                        "Ready to hang"
-                                    )}
-                                    onChange={() =>
-                                        handleCheckbox(
-                                            "framing",
-                                            "Ready to hang"
-                                        )
-                                    }
+                        <Masonry
+                            columns={{
+                                xs: 1,
+                                sm: 2,
+                                md: 3,
+                            }}
+                            spacing={3}
+                        >
+                            {products.map(product => (
+                                <ProductCard
+                                    key={product._id}
+                                    product={product}
                                 />
-                            }
-                            label="Ready to hang"
-                        />
-
-                        <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={filters.framing.includes(
-                                        "Unframed"
-                                    )}
-                                    onChange={() =>
-                                        handleCheckbox(
-                                            "framing",
-                                            "Unframed"
-                                        )
-                                    }
-                                />
-                            }
-                            label="Unframed"
-                        />
-                    </FormGroup>
-
-                    <Divider sx={{ my: 2 }} />
-
-                    <Typography fontWeight={600}>
-                        Price (€)
-                    </Typography>
-
-                    <Slider
-                        value={filters.price}
-                        onChange={(_, value) =>
-                            setFilters(prev => ({
-                                ...prev,
-                                price: value as number[],
-                            }))
-                        }
-                        valueLabelDisplay="auto"
-                        min={0}
-                        max={5000}
-                    />
-                </Paper>
-
-                {/* Products */}
-                <Box sx={{ flex: 1 }}>
-                    <Typography color="text.secondary" mb={4}>
-                        {products.length} artworks found
-                    </Typography>
-
-                    <Masonry
-                        columns={{
-                            xs: 1,
-                            sm: 2,
-                            md: 3,
-                        }}
-                        spacing={3}
-                    >
-                        {products.map(product => (
-                            <ProductCard
-                                key={product._id}
-                                product={product}
-                            />
-                        ))}
-                    </Masonry>
+                            ))}
+                        </Masonry>
+                    </Box>
                 </Box>
             </Box>
         </Layout>

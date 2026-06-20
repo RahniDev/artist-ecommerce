@@ -41,7 +41,7 @@ const AdminDashboard: React.FC = () => {
               {/* Admin Links */}
               <List disablePadding>
                 <ListItemButton component={RouterLink} to="/create/category">
-                  <ListItemText primary="Create Category" />
+                  <ListItemText primary="Add Collection" />
                 </ListItemButton>
                 <ListItemButton component={RouterLink} to="/add/painting">
                   <ListItemText primary="Add Painting" />
