@@ -33,6 +33,7 @@ export interface IProduct {
   framing: string;
   additionalDetails: string;
   quality: string;
+  colors: string[];
 }
 
 export interface IProductDocument extends IProduct, Document { }
@@ -105,6 +106,22 @@ const productSchema = new Schema<IProductDocument>({
     enum: ["Unframed", "Ready to hang"],
     default: "Unframed"
   },
+  colors: [{
+  type: String,
+  enum: [
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "blue",
+    "purple",
+    "pink",
+    "brown",
+    "black",
+    "white",
+    "grey"
+  ]
+}],
   additionalDetails: String,
   quality: String
 }, { timestamps: true });

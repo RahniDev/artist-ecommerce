@@ -94,6 +94,7 @@ export interface ProductFormBase {
   quantity?: string;
   material: string;
   medium: string;
+  colors: string[];
   loading: boolean;
   error: string;
 }

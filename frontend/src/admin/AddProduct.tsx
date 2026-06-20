@@ -45,6 +45,7 @@ const AddProduct: React.FC = () => {
     material: "",
     medium: "",
     additionalDetails: "",
+    colors: [],
     quality: ""
   });
 
@@ -63,6 +64,20 @@ const AddProduct: React.FC = () => {
     medium,
     material
   } = values;
+
+  const COLOR_OPTIONS = [
+    "red",
+    "orange",
+    "yellow",
+    "green",
+    "blue",
+    "purple",
+    "pink",
+    "brown",
+    "black",
+    "white",
+    "grey",
+  ];
 
   const formData = useRef<FormData | null>(null);
 
@@ -110,6 +125,24 @@ const AddProduct: React.FC = () => {
         const value = event.target.value;
         formData.current.set(field, value);
         setValues(prev => ({ ...prev, [field]: value }));
+      };
+
+  const handleMultiSelectChange =
+    (field: "colors") =>
+      (event: SelectChangeEvent<string[]>) => {
+        if (!formData.current) return;
+
+        const value = event.target.value;
+        const selectedValues =
+          typeof value === "string" ? value.split(",") : value;
+
+        formData.current.delete(field);
+        selectedValues.forEach(v => formData.current!.append(field, v));
+
+        setValues(prev => ({
+          ...prev,
+          [field]: selectedValues,
+        }));
       };
 
   const handleCategoryChange = (event: SelectChangeEvent<string>) => {
@@ -273,6 +306,22 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="Paper">Paper</MenuItem>
                 <MenuItem value="Canvas">Canvas</MenuItem>
                 <MenuItem value="Other">Other</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel>Colors</InputLabel>
+              <Select
+                multiple
+                value={values.colors}
+                label="Colors"
+                onChange={handleMultiSelectChange("colors")}
+                renderValue={(selected) => (selected as string[]).join(", ")}
+              >
+                {COLOR_OPTIONS.map(color => (
+                  <MenuItem key={color} value={color}>
+                    {color.charAt(0).toUpperCase() + color.slice(1)}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
             <FormControl fullWidth>

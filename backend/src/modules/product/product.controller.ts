@@ -157,9 +157,13 @@ export const create = async (req: Request, res: Response) => {
             });
         });
 
-        let { name, description, price, category, weight, width, height, length, framing, material, medium, additionalDetails, quality } = fields;
+        let { name, description, price, category, weight, width, height, length, framing, material, medium, additionalDetails, quality, colors } = fields;
         // normalize fields to ensure expected type
         const normalize = (v: string | string[] | undefined) => Array.isArray(v) ? v[0] : v;
+        const normalizeArray = (v: string | string[] | undefined) => {
+            if (!v) return [];
+            return Array.isArray(v) ? v : [v];
+        };
 
         const nameValue = normalize(name);
         const descriptionValue = normalize(description);
@@ -175,6 +179,7 @@ export const create = async (req: Request, res: Response) => {
         const materialValue = normalize(material);
         const mediumValue = normalize(medium);
         const quantityValue = 1;
+        const colorsValue = normalizeArray(colors);
 
         if (
             nameValue == null ||
@@ -204,7 +209,8 @@ export const create = async (req: Request, res: Response) => {
             material: materialValue,
             medium: mediumValue,
             additionalDetails: additionalDetailsValue,
-            quality: qualityValue
+            quality: qualityValue,
+            colors: colorsValue
         });
 
         const uploadedPhotos = Array.isArray(files.photos)
@@ -466,40 +472,58 @@ const sizeFilter = (sizes: string[]) => {
 };
 
 export const listByFilters = async (req: Request, res: Response) => {
-    const order = req.body.order ? req.body.order : "desc";
-    const sortBy = req.body.sortBy ? req.body.sortBy : "_id";
+    const order = req.body.order || "desc";
+    const sortBy = req.body.sortBy || "_id";
     const limit = req.body.limit ? Number(req.body.limit) : 100;
     const skip = req.body.skip ? Number(req.body.skip) : 0;
-    const { lang = 'en' } = req.query;
+    const { lang = "en" } = req.query;
 
+    const filters = req.body.filters || {};
     const findArgs: Record<string, any> = {
         quantity: { $gt: 0 }
     };
 
-    for (const key in req.body.filters) {
-        const value = req.body.filters[key];
+    for (const key in filters) {
+        const value = filters[key];
 
-        if (!value?.length) continue;
+        if (!value || value.length === 0) continue;
 
         if (key === "price") {
             findArgs.price = {
                 $gte: value[0],
-                $lte: value[1]
+                $lte: value[1],
             };
-        }
-        else if (key === "size") {
+        } else if (key === "size") {
             Object.assign(findArgs, sizeFilter(value));
-        }
-        else {
-            findArgs[key] = {
-                $in: value
-            };
+        } else if (key === "colors") {
+            findArgs.colors = { $in: value };
+        } else {
+            findArgs[key] = { $in: value };
         }
     }
-    
+
     try {
         const data = await Product.find(findArgs)
-            .select("name description price category quantity material medium framing sold weight width height length photos.url photos.key photos.contentType createdAt")
+            .select(`
+        name
+        description
+        price
+        category
+        quantity
+        sold
+        material
+        medium
+        colors
+        framing
+        weight
+        width
+        height
+        length
+        photos.url
+        photos.key
+        photos.contentType
+        createdAt
+      `)
             .populate("category")
             .sort({ [sortBy]: order })
             .skip(skip)
@@ -508,8 +532,10 @@ export const listByFilters = async (req: Request, res: Response) => {
 
         const transformedData = data.map(p => applyLang(p, lang as string));
 
-        return res.json({ size: transformedData.length, data: transformedData });
-
+        return res.json({
+            size: transformedData.length,
+            data: transformedData
+        });
     } catch (err) {
         return res.status(400).json({ error: "Products not found" });
     }

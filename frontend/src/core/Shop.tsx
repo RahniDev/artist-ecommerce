@@ -23,17 +23,26 @@ const Shop = () => {
         framing: [] as string[],
         price: [0, 5000] as number[],
         size: [] as string[],
-        medium: [] as string[]
+        medium: [] as string[],
+        colors: [] as string[]
     });
 
-    type FilterKey =
-        | "material"
-        | "framing"
-        | "size"
-        | "medium";
+    const COLOR_SWATCHES = [
+        { label: "red", hex: "#C62828" },
+        { label: "orange", hex: "#EF6C00" },
+        { label: "yellow", hex: "#FDD835" },
+        { label: "green", hex: "#43A047" },
+        { label: "blue", hex: "#1E88E5" },
+        { label: "purple", hex: "#8E24AA" },
+        { label: "pink", hex: "#D81B60" },
+        { label: "brown", hex: "#6D4C41" },
+        { label: "black", hex: "#212121" },
+        { label: "white", hex: "#FFFFFF" },
+        { label: "grey", hex: "#9E9E9E" },
+    ];
 
     const handleCheckbox = (
-        filterName: FilterKey,
+        filterName: "material" | "framing" | "size" | "medium" | "colors",
         value: string
     ) => {
         const current = [...filters[filterName]];
@@ -47,7 +56,7 @@ const Shop = () => {
             [filterName]: updated,
         }));
     };
-    
+
     const mediums = [
         "Watercolour",
         "Acrylic",
@@ -151,6 +160,64 @@ const Shop = () => {
                             label="Oversized (>70 cm)"
                         />
                     </FormGroup>
+                    <Divider sx={{ my: 2 }} />
+                    <Typography fontWeight={600} mb={1}>
+                        Colour
+                    </Typography>
+
+                    <Box
+                        sx={{
+                            display: "grid",
+                            gridTemplateColumns: "repeat(5, 32px)",
+                            gap: 1,
+                        }}
+                    >
+                        {COLOR_SWATCHES.map((color) => {
+                            const selected = filters.colors.includes(color.label);
+
+                            return (
+                                <Box
+                                    key={color.label}
+                                    onClick={() => handleCheckbox("colors", color.label)}
+                                    title={color.label}
+                                    sx={{
+                                        width: 32,
+                                        height: 32,
+                                        borderRadius: "50%",
+                                        cursor: "pointer",
+                                        backgroundColor: color.hex,
+                                        border: selected
+                                            ? "3px solid #111"
+                                            : color.label === "white"
+                                                ? "1px solid #ccc"
+                                                : "1px solid transparent",
+                                        boxSizing: "border-box",
+                                        transform: selected ? "scale(1.08)" : "scale(1)",
+                                        transition: "all 0.15s ease",
+                                    }}
+                                />
+                            );
+                        })}
+                    </Box>
+
+                    {filters.colors.length > 0 && (
+                        <Typography
+                            sx={{
+                                mt: 2,
+                                cursor: "pointer",
+                                textDecoration: "underline",
+                                fontSize: 14,
+                            }}
+                            onClick={() =>
+                                setFilters(prev => ({
+                                    ...prev,
+                                    colors: [],
+                                }))
+                            }
+                        >
+                            Remove colour filter
+                        </Typography>
+                    )}
                     <Divider sx={{ my: 2 }} />
 
                     <Typography fontWeight={600}>
