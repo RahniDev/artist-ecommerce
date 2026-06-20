@@ -77,6 +77,8 @@ export type ProductFormField =
   | "length"
   | "framing"
   | "additionalDetails"
+  | "medium"
+  | "material"
   | "quality";
 
 export interface ProductFormBase {
@@ -90,6 +92,8 @@ export interface ProductFormBase {
   categories: Category[];
   category: string;
   quantity?: string;
+  material: string;
+  medium: string;
   loading: boolean;
   error: string;
 }
@@ -98,9 +102,9 @@ export interface AddProductValues extends ProductFormBase {
   photos: File[] | [];
   createdProduct: boolean;
   createdProductName?: string;
-  framing: "";
-  additionalDetails?: "";
-  quality: "";
+  framing: string;
+  additionalDetails?: string;
+  quality: string;
 }
 
 export interface UpdateProductValues extends ProductFormBase {

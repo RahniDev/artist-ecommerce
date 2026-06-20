@@ -42,6 +42,8 @@ const AddProduct: React.FC = () => {
     createdProduct: false,
     createdProductName: "",
     framing: "",
+    material: "",
+    medium: "",
     additionalDetails: "",
     quality: ""
   });
@@ -57,7 +59,9 @@ const AddProduct: React.FC = () => {
     createdProduct,
     framing,
     additionalDetails,
-    quality
+    quality,
+    medium,
+    material
   } = values;
 
   const formData = useRef<FormData | null>(null);
@@ -148,7 +152,9 @@ const AddProduct: React.FC = () => {
           length: "",
           photos: [],
           additionalDetails: "",
-          quality: ""
+          quality: "",
+          material: "",
+          medium: ""
         }));
         setImgPreviews([]);
         formData.current = new FormData();
@@ -225,14 +231,13 @@ const AddProduct: React.FC = () => {
             />
 
             <TextField
-              label="Painting Details: size, material, medium"
+              label="Description"
               value={description}
               onChange={handleInputChange("description")}
               multiline
               rows={4}
               fullWidth
             />
-
             <TextField
               label="Price"
               type="number"
@@ -253,6 +258,46 @@ const AddProduct: React.FC = () => {
                 ))}
               </Select>
             </FormControl>
+
+            <FormControl fullWidth>
+              <InputLabel>Material</InputLabel>
+              <Select
+                value={material}
+                label="Material"
+                onChange={handleSelectChange("material")}
+              >
+                <MenuItem value="">
+                  <em>Please select</em>
+                </MenuItem>
+
+                <MenuItem value="Paper">Paper</MenuItem>
+                <MenuItem value="Canvas">Canvas</MenuItem>
+                <MenuItem value="Other">Other</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth>
+              <InputLabel>Medium</InputLabel>
+              <Select
+                value={medium}
+                label="Medium"
+                onChange={handleSelectChange("medium")}
+              >
+                <MenuItem value="">
+                  <em>Please select</em>
+                </MenuItem>
+
+                <MenuItem value="Watercolour">Watercolour</MenuItem>
+                <MenuItem value="Acrylic">Acrylic</MenuItem>
+                <MenuItem value="Oil pastel">Oil pastel</MenuItem>
+                <MenuItem value="Gouache">Gouache</MenuItem>
+                <MenuItem value="Ink">Ink</MenuItem>
+                <MenuItem value="Charcoal">Charcoal</MenuItem>
+                <MenuItem value="Mixed media">Mixed media</MenuItem>
+              </Select>
+            </FormControl>
+
+
+
             <TextField
               label="Width (cm)"
               type="number"
