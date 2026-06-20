@@ -306,7 +306,7 @@ const AddProduct: React.FC = () => {
               <Box
                 sx={{
                   display: "grid",
-                  gridTemplateColumns: "repeat(6, 34px)",
+                  gridTemplateColumns: "repeat(30, 18px)",
                   gap: 1.2,
                   alignItems: "center",
                 }}

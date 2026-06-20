@@ -155,7 +155,7 @@ const Shop = () => {
                     <Box
                         sx={{
                             display: "grid",
-                            gridTemplateColumns: "repeat(5, 32px)",
+                            gridTemplateColumns: "repeat(12, 15px)",
                             gap: 1,
                         }}
                     >
