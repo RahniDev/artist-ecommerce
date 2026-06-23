@@ -14,7 +14,6 @@ import {
   ListItemText,
   useMediaQuery,
   useTheme,
-  Button,
 } from "@mui/material";
 import Person2OutlinedIcon from "@mui/icons-material/Person2Outlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
