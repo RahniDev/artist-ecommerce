@@ -18,7 +18,7 @@ import {
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { PAINT_COLOR_OPTIONS } from "../../../shared/colourPalette";
 
 const AddProduct: React.FC = () => {
@@ -42,6 +42,7 @@ const AddProduct: React.FC = () => {
     error: "",
     createdProduct: false,
     createdProductName: "",
+    createdProductId: "",
     framing: "",
     additionalDetails: "",
     material: "",
@@ -164,6 +165,7 @@ const AddProduct: React.FC = () => {
           ...p,
           createdProduct: true,
           createdProductName: typeof rawName === "object" ? rawName?.en : rawName ?? "",
+           createdProductId: res.data?._id ?? "",   
           name: "",
           description: "",
           price: "",
@@ -201,7 +203,7 @@ const AddProduct: React.FC = () => {
 
           {createdProduct && (
             <Alert severity="success" sx={{ mb: 2 }}>
-              {values.createdProductName} is created!
+              <Link to={`/product/${values.createdProductId}`}>{values.createdProductName} is created!</Link>
             </Alert>
           )}
 

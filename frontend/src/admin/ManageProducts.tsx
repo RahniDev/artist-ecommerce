@@ -75,7 +75,7 @@ const ManageProducts: React.FC = () => {
 
                 <Box sx={{ mt: 3 }}>
                     <Typography variant="h5" align="center" gutterBottom>
-                        Total {products.length} {products.length === 1 ? "product" : "products"}
+                        Total: {products.length} {products.length === 1 ? "product" : "products"}
                     </Typography>
 
                     <Divider sx={{ mb: 2 }} />

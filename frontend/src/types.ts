@@ -106,6 +106,7 @@ export interface AddProductValues extends ProductFormBase {
   photos: File[] | [];
   createdProduct: boolean;
   createdProductName?: string;
+  createdProductId: string;
 }
 
 export interface UpdateProductValues extends ProductFormBase {
