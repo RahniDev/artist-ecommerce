@@ -12,7 +12,7 @@ Using React Compiler for optimal performance
 
 - User Signin/Signup (hashed passwords with bcrypt)
 - User Dashboard (update profile details & view order history)
-- Admin Dashboard (Create, update & delete products & categories and view orders)
+- Admin Dashboard (Create, update & delete products, create categories, view orders & update order status)
 - Checkout (payment with Braintree)
 - Emails to user and admin after every order placed
 - Email to user when order is shipped
@@ -24,3 +24,5 @@ Using React Compiler for optimal performance
 - React multi-language translation using I18n
 - Translation of product names & descriptions using DeepL
 - Newsletter signup form - Mailchimp
+- Product images stored on Cloudfare
+- Shop page: filter paintings by colour, material, medium, size, framing and price
