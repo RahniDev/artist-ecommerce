@@ -14,6 +14,9 @@ import {
     Alert,
     Link,
 } from "@mui/material";
+import { IconButton, InputAdornment } from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const Signup: React.FC = () => {
     const [values, setValues] = useState<SignupFormState>({
@@ -23,6 +26,7 @@ const Signup: React.FC = () => {
         error: "",
         success: false,
     });
+    const [showPassword, setShowPassword] = useState(false);
 
     const { t } = useTranslation();
     const { name, email, password, success, error } = values;
@@ -98,10 +102,25 @@ const Signup: React.FC = () => {
 
                         <TextField
                             label={t("password")}
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={handleChange("password")}
                             fullWidth
+                            slotProps={{
+                                input: {
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() => setShowPassword((prev) => !prev)}
+                                                edge="end"
+                                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }
+                            }}
                         />
                         <Box textAlign="right">
                             <Link component={RouterLink} to="/forgot-password">

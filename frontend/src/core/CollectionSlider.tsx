@@ -3,6 +3,8 @@ import type { IProduct } from "../types";
 import { API } from "../config";
 import type { Swiper as SwiperType } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
+// @ts-ignore: side-effect import lacks type declarations
+import "swiper/css";
 import ProductCard from "./ProductCard";
 import { Box, Typography } from "@mui/material";
 import SlidePrevButton from "./SlidePrevButton";

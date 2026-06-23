@@ -10,12 +10,16 @@ import { Box, TextField, Button, Alert, Link, Typography } from "@mui/material";
 import AuthCard from "./AuthCard";
 import { setAuth } from "../redux/slices/authSlice";
 import { useDispatch } from "react-redux";
+import { IconButton, InputAdornment } from "@mui/material";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
 const Signin: React.FC = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const { t } = useTranslation();
 
+    const [showPassword, setShowPassword] = useState(false);
     const [values, setValues] = useState<SigninState>({
         email: "",
         password: "",
@@ -86,10 +90,25 @@ const Signin: React.FC = () => {
 
                         <TextField
                             label={t("password")}
-                            type="password"
+                            type={showPassword ? "text" : "password"}
                             value={password}
                             onChange={handleChange("password")}
                             fullWidth
+                            slotProps={{
+                                input: {
+                                    endAdornment: (
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() => setShowPassword((prev) => !prev)}
+                                                edge="end"
+                                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                            >
+                                                {showPassword ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    ),
+                                }
+                            }}
                         />
                         <Box textAlign="right">
                             <Link component={RouterLink} to="/forgot-password">
