@@ -87,17 +87,17 @@ const productSchema = new Schema<IProductDocument>({
     default: "Canvas"
   },
   medium: {
-  type: String,
-  enum: [
-    "Watercolour",
-    "Acrylic",
-    "Oil pastel",
-    "Gouache",
-    "Ink",
-    "Charcoal",
-    "Mixed media"
-  ]
-},
+    type: String,
+    enum: [
+      "Watercolour",
+      "Acrylic",
+      "Oil pastel",
+      "Gouache",
+      "Ink",
+      "Charcoal",
+      "Mixed media"
+    ]
+  },
   // cm
   width: Number,
   height: Number,
@@ -107,11 +107,11 @@ const productSchema = new Schema<IProductDocument>({
     enum: ["Unframed", "Ready to hang"],
     default: "Unframed"
   },
-colors: {
-  type: [String],
-  enum: PAINT_COLOR_HEXES,
-  default: [],
-},
+  colors: {
+    type: [String],
+    enum: PAINT_COLOR_HEXES,
+    default: [],
+  },
   additionalDetails: String,
   quality: String
 }, { timestamps: true });

@@ -10,7 +10,9 @@ import { useLocalizedDescription } from "../hooks/useLocalizedDescription";
 
 const ProductCard: React.FC<CardProps> = ({
     product,
-    redirect = false
+    redirect = false,
+    textColor,
+    secondaryColor
 }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -55,28 +57,30 @@ const ProductCard: React.FC<CardProps> = ({
                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             {product.quantity > 0 && (
                                 <>
-                                    <Typography variant="body1">
+                                    <Typography variant="body1" color={textColor}>
                                         € {product.price}
                                     </Typography>
                                 </>
                             )}
-                            <ShoppingBagOutlinedIcon onClick={() => { handleAddToCart() }} fontSize="medium" sx={{ mt: 1, color: 'black' }} />
+                            <ShoppingBagOutlinedIcon onClick={() => { handleAddToCart() }} fontSize="medium" sx={{ mt: 1, color: textColor }} />
                         </Box>
                         <Typography
                             variant="subtitle1"
-                            component="div">
+                            component="div"
+                            color={textColor}>
                             {product.nameEn}
                         </Typography>
                         <Box component={Link} to={`/product/${product._id}`}>
 
                             {product.nameEn !== product.name && (
-                                <Typography variant="body1" fontStyle="italic">
+                                <Typography variant="body1" 
+                                 fontStyle="italic">
                                     {product.name}
                                 </Typography>
                             )}
                         </Box>
                         {product.quantity !== 0 && (
-                            <Typography sx={{ whiteSpace: "pre-wrap" }} color="#6c757d"> {description}</Typography>
+                            <Typography sx={{ whiteSpace: "pre-wrap" }} color={secondaryColor}> {description}</Typography>
                         )}
                         <SoldBadge quantity={product.quantity} />
                     </Stack>

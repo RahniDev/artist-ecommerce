@@ -31,7 +31,7 @@ const Category = () => {
   if (loading) return <div>Loading...</div>;
   if (!category) return null;
   const products = category.products || [];
-  console.log("PRODUCT RENDER:", products);
+
   if (!products.length) {
     return (
       <Layout title="" description="">
@@ -45,25 +45,50 @@ const Category = () => {
   }
 
   const categoryColors: Record<string, string> = {
-    Reality: "#E6E1D8",
-    Solitude: "#D9D0C2",
-    "Worlds & Dimensions": "#D7DFE6",
-    "Darker Depths": "#353739",
-    Memory: "#E4D5C6",
-    Guidance: "#DCCAA5",
+    Reality: "#DCD2C3",
+    Solitude: "#E6EBF1",
+    "Worlds & Dimensions": "#C8D0E0",
+    "Darker Depths": "#5E5752",
+    Memory: "#D8C3B2",
+    Guidance: "#D7E0E4",
     Vibration: "#D9D0E4",
     Emotions: "#DCC5BF",
-    Essence: "#E3E6DD",
-    Truth: "#D7DDD7",
-    "The Unknown": "#C9D2D4",
+    Essence: "#EADDD7",
+    Truth: "#E7E0D6",
+    "The Unknown": "#B7BEC5",
   };
 
+  const categoryFonts: Record<string, string> = {
+    Reality: "Work Sans, sans-serif",
+    Solitude: "Cormorant Garamond, serif",
+    Memory: "Crimson Text",
+    "Worlds & Dimensions": "Bodoni Moda, serif",
+    "Darker Depths": "Cormorant Garamond, serif",
+    Guidance: "Spectral, serif",
+    Vibration: "Manrope, sans-serif",
+    //  Emotions: ,
+    Essence: "Crimson Text",
+    Truth: "Cormorant Garamond, serif",
+    "The Unknown": "Fraunces, serif",
+  }
+
+
+  const categoryTextColors: Record<string, string> = {
+    "Darker Depths": "#F1E8DE"
+  }
+  const secondaryTextColors: Record<string, string> = {
+    "Darker Depths": "#BFB3A9"
+  }
+
   const bgColor = categoryColors[category.name] || "#FFFFFF";
+  const fontFamily = categoryFonts[category.name] || "Inter, sans-serif";
+  const textColor = categoryTextColors[category.name] || "#000000"
+  const secondaryColor = secondaryTextColors[category.name] || "#333333"
 
   return (
-    <Box sx={{ backgroundColor: bgColor }}>
+    <Box sx={{ backgroundColor: bgColor, color: textColor }}>
       <Layout title="" description="">
-        <h1>{category.name}</h1>
+        <h1 style={{ fontFamily: fontFamily, textAlign: "center" }}>{category.name}</h1>
         <Masonry
           columns={{
             xs: 1,
@@ -77,6 +102,8 @@ const Category = () => {
             <ProductCard
               key={product._id}
               product={product}
+              textColor={textColor}
+              secondaryColor={secondaryColor}
             />
           ))}
         </Masonry>

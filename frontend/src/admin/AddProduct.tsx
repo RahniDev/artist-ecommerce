@@ -93,6 +93,10 @@ const AddProduct: React.FC = () => {
 
         if (field === "photo" && event.target instanceof HTMLInputElement && event.target.files) {
           const files = Array.from(event.target.files);
+
+          // Clear any previously selected photos from FormData
+          formData.current.delete("photos");
+
           if (files.length > 0) {
             files.forEach((file) => formData.current!.append("photos", file));
             setValues(prev => ({ ...prev, photos: files }));

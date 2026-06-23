@@ -106,9 +106,6 @@ export interface AddProductValues extends ProductFormBase {
   photos: File[] | [];
   createdProduct: boolean;
   createdProductName?: string;
-  framing: string;
-  additionalDetails?: string;
-  quality: string;
 }
 
 export interface UpdateProductValues extends ProductFormBase {
@@ -412,6 +409,8 @@ export interface CardProps {
   setRun?: (value: boolean) => void;
   run?: boolean;
   redirect?: boolean;
+    textColor?: string;
+    secondaryColor?: string;
 }
 
 export interface AddToCartButtonProps {

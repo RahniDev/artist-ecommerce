@@ -133,52 +133,53 @@ const Navbar: React.FC = () => {
         About
       </NavLink>
       <NavLink to="/shop" style={linkStyle}>Shop</NavLink>
-      <Box
-        sx={{ position: "relative" }}
-        onMouseEnter={() => setCollectionsOpen(true)}
-        onMouseLeave={() => setCollectionsOpen(false)}
-      >
-        <Button
-          sx={{
-            color: "#3a3535",
-            textTransform: "uppercase",
-            fontWeight: 500,
-          }}
-        >
-          Collections
-        </Button>
+     <Box
+  sx={{ position: "relative" }}
+  onMouseEnter={() => setCollectionsOpen(true)}
+  onMouseLeave={() => setCollectionsOpen(false)}
+>
+  <Box
+    component="span"
+    sx={{
+      ...linkStyle,
+      cursor: "pointer",
+      display: "inline-block",
+    }}
+  >
+    Collections
+  </Box>
 
-        {collectionsOpen && (
-          <Box
-            sx={{
-              position: "absolute",
-              top: "100%",
-              left: "50%",
-              transform: "translateX(-50%)",
-              bgcolor: "white",
-              color: "#3a3535",
-              boxShadow: 3,
-              minWidth: 220,
-              zIndex: 1300,
-            }}
-          >
-            {categories.map(category => (
-              <Box
-                key={category._id}
-                sx={{
-                  px: 2,
-                  py: 1,
-                  cursor: "pointer",
-                  "&:hover": { bgcolor: "#f5f5f5" },
-                }}
-                onClick={() => navigate(`/category/${category._id}`)}
-              >
-                {category.name}
-              </Box>
-            ))}
-          </Box>
-        )}
-      </Box>
+  {collectionsOpen && (
+    <Box
+      sx={{
+        position: "absolute",
+        top: "100%",
+        left: "5%",
+        transform: "translateX(-5%)",
+        bgcolor: "white",
+        color: "#3a3535",
+        boxShadow: 3,
+        minWidth: 220,
+        zIndex: 1300,
+      }}
+    >
+      {categories.map((category) => (
+        <Box
+          key={category._id}
+          sx={{
+            px: 2,
+            py: 1,
+            cursor: "pointer",
+            "&:hover": { bgcolor: "#f5f5f5" },
+          }}
+          onClick={() => navigate(`/category/${category._id}`)}
+        >
+          {category.name}
+        </Box>
+      ))}
+    </Box>
+  )}
+</Box>
     </Box>
   );
 
