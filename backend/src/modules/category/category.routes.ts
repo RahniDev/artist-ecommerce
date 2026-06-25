@@ -4,6 +4,7 @@ import {
   create,
   categoryById,
   getCategory,
+  getFeaturedCategory,
   update,
   remove,
   list,
@@ -13,6 +14,7 @@ import { userById } from '../user/user.controller.js';
 const router = Router();
 
 // Public routes
+router.get('/category/featured', getFeaturedCategory)
 router.get('/category/:categoryId', getCategory);
 router.get('/categories', list);
 

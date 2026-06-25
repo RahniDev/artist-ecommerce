@@ -59,6 +59,69 @@ export const getCategory = async (
   }
 };
 
+export const getFeaturedCategory = async (req: Request, res: Response) => {
+  try {
+    const lang = typeof req.query.lang === "string" ? req.query.lang : "en";
+
+    // 1) Find category with the most high-quality paintings
+    const topCategory = await Product.aggregate([
+      {
+        $match: {
+          quality: "High quality",
+          quantity: { $gt: 0 } // optional, but usually good for storefront
+        }
+      },
+      {
+        $group: {
+          _id: "$category",
+          highQualityCount: { $sum: 1 }
+        }
+      },
+      {
+        $sort: { highQualityCount: -1 }
+      },
+      {
+        $limit: 1
+      }
+    ]);
+
+    if (!topCategory.length) {
+      return res.json({
+        category: null,
+        products: []
+      });
+    }
+
+    const categoryId = topCategory[0]._id;
+
+    // 2) Load the category
+    const category = await Category.findById(categoryId).lean();
+
+    if (!category) {
+      return res.status(404).json({ error: "Featured category not found" });
+    }
+
+    // 3) Load all products in that category
+    const products = await Product.find({
+      category: categoryId,
+      quantity: { $gt: 0 }
+    })
+      .select("-photo")
+      .lean();
+
+    const transformedProducts = products.map((p) => applyLang(p, lang));
+
+    return res.json({
+      ...category,
+      products: transformedProducts,
+      highQualityCount: topCategory[0].highQualityCount
+    });
+  } catch (err) {
+    console.error("getFeaturedCategory error:", err);
+    return res.status(400).json({ error: "Failed to load featured category" });
+  }
+};
+
 export const update = async (req: CustomRequest, res: Response) => {
   try {
     if (!req.category) {
