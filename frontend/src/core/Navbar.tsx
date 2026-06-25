@@ -106,7 +106,7 @@ const Navbar: React.FC = () => {
           <ListItem key={category._id} disablePadding>
             <ListItemButton
               onClick={() => {
-                navigate(`/category/${category._id}`);
+                navigate(`/collection/${category._id}`);
                 setDrawerOpen(false);
               }}
             >
@@ -171,7 +171,7 @@ const Navbar: React.FC = () => {
             cursor: "pointer",
             "&:hover": { bgcolor: "#f5f5f5" },
           }}
-          onClick={() => navigate(`/category/${category._id}`)}
+          onClick={() => navigate(`/collection/${category._id}`)}
         >
           {category.name}
         </Box>

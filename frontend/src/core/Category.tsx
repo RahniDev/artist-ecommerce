@@ -37,7 +37,7 @@ const Category = () => {
       <Layout title="" description="">
         <Box p={4}>
           <Alert severity="info">
-            No products found in this category
+            No products found in this collection
           </Alert>
         </Box>
       </Layout>
@@ -47,11 +47,11 @@ const Category = () => {
   const categoryColors: Record<string, string> = {
     Reality: "#DCD2C3",
     Solitude: "#E6EBF1",
-    "Worlds & Dimensions": "#C8D0E0",
+    "Worlds & Dimensions": "#39454B",
     "Darker Depths": "#5E5752",
-    Memory: "#D8C3B2",
-    Guidance: "#D7E0E4",
-    Vibration: "#D9D0E4",
+    Memory: "#C9B3A1",
+    Guidance: "#b8b19e",
+    Vibration: "#353C4B",
     Emotions: "#DCC5BF",
     Essence: "#EADDD7",
     Truth: "#E7E0D6",
@@ -59,14 +59,14 @@ const Category = () => {
   };
 
   const categoryFonts: Record<string, string> = {
-    Reality: "Work Sans, sans-serif",
+    Reality: "Bebas Neue, sans-serif",
     Solitude: "Cormorant Garamond, serif",
-    Memory: "Crimson Text",
+    Memory: "Baskervville, serif",
     "Worlds & Dimensions": "Bodoni Moda, serif",
-    "Darker Depths": "Cormorant Garamond, serif",
-    Guidance: "Spectral, serif",
-    Vibration: "Manrope, sans-serif",
-    //  Emotions: ,
+    "Darker Depths": "Passion One, sans-serif",
+    Guidance: "Rouge Script, cursive",
+    Vibration: "Chakra Petch, sans-serif",
+    Emotions: "Playwrite BE WAL, cursive",
     Essence: "Crimson Text",
     Truth: "Cormorant Garamond, serif",
     "The Unknown": "Fraunces, serif",
@@ -74,15 +74,20 @@ const Category = () => {
 
 
   const categoryTextColors: Record<string, string> = {
-    "Darker Depths": "#F1E8DE"
+    "Darker Depths": "#F1E8DE",
+    "Worlds & Dimensions": "#F1E8DE",
+    "Vibration": "#e5eafb",
+    "Essence": "#4b3c4b"
   }
   const secondaryTextColors: Record<string, string> = {
-    "Darker Depths": "#BFB3A9"
+    "Darker Depths": "#BFB3A9",
+    "Worlds & Dimensions": "#BFB3A9",
+    "Vibration": "#e5eafb"
   }
 
   const bgColor = categoryColors[category.name] || "#FFFFFF";
   const fontFamily = categoryFonts[category.name] || "Inter, sans-serif";
-  const textColor = categoryTextColors[category.name] || "#000000"
+  const textColor = categoryTextColors[category.name] || "#222020"
   const secondaryColor = secondaryTextColors[category.name] || "#333333"
 
   return (
