@@ -165,7 +165,7 @@ const AddProduct: React.FC = () => {
           ...p,
           createdProduct: true,
           createdProductName: typeof rawName === "object" ? rawName?.en : rawName ?? "",
-           createdProductId: res.data?._id ?? "",   
+          createdProductId: res.data?._id ?? "",
           name: "",
           description: "",
           price: "",

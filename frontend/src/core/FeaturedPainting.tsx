@@ -8,11 +8,11 @@ import { useLocalizedDescription } from "../hooks/useLocalizedDescription";
 
 const FeaturedPainting = () => {
   const dispatch = useDispatch<AppDispatch>();
-  
+
   const { product, loading, error } = useSelector(
     (state: RootState) => state.product
   );
-const { description } = useLocalizedDescription(product);
+  const { description } = useLocalizedDescription(product);
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
 
   useEffect(() => {
@@ -37,7 +37,7 @@ const { description } = useLocalizedDescription(product);
     );
   }
 
-   // Show message if no product
+  // Show message if no product
   if (!product) {
     return (
       <Box bgcolor="#e8e8e8" p={4}>
@@ -48,7 +48,7 @@ const { description } = useLocalizedDescription(product);
       </Box>
     );
   }
- 
+
   return (
     <Box style={{ backgroundColor: "#e7e7e7", padding: "20px", display: "flex", justifyContent: "space-between", marginTop: "20px" }}>
       <Box style={{ width: "50%" }}>

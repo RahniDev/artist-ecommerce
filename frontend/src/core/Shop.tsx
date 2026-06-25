@@ -18,16 +18,17 @@ import { API } from '../config'
 import { PAINT_COLOR_OPTIONS } from "../../../shared/colourPalette";
 
 const Shop = () => {
-    const [products, setProducts] = useState<IProduct[]>([]);
-    const [showFilters, setShowFilters] = useState(true);
-    const [filters, setFilters] = useState({
+    const DEFAULT_FILTERS = {
         material: [] as string[],
         framing: [] as string[],
         price: [0, 5000] as number[],
         size: [] as string[],
         medium: [] as string[],
         colors: [] as string[]
-    });
+    };
+    const [products, setProducts] = useState<IProduct[]>([]);
+    const [showFilters, setShowFilters] = useState<boolean>(true);
+    const [filters, setFilters] = useState(DEFAULT_FILTERS);
 
     const handleCheckbox = (
         filterName: "material" | "framing" | "size" | "medium" | "colors",
@@ -79,6 +80,72 @@ const Shop = () => {
             console.error(err);
         }
     };
+    const isDefaultPrice =
+        filters.price[0] === DEFAULT_FILTERS.price[0] &&
+        filters.price[1] === DEFAULT_FILTERS.price[1];
+
+    const clearAllFilters = () => {
+        setFilters(DEFAULT_FILTERS);
+    };
+
+    const removeFilter = (
+        filterName: "material" | "framing" | "size" | "medium" | "colors" | "price",
+        value?: string
+    ) => {
+        if (filterName === "price") {
+            setFilters(prev => ({
+                ...prev,
+                price: DEFAULT_FILTERS.price,
+            }));
+            return;
+        }
+
+        setFilters(prev => ({
+            ...prev,
+            [filterName]: prev[filterName].filter(item => item !== value),
+        }));
+    };
+    const selectedFilterBadges = [
+        ...filters.size.map(value => ({
+            key: `size-${value}`,
+            label: value,
+            filterName: "size" as const,
+            value,
+        })),
+        ...filters.material.map(value => ({
+            key: `material-${value}`,
+            label: value,
+            filterName: "material" as const,
+            value,
+        })),
+        ...filters.medium.map(value => ({
+            key: `medium-${value}`,
+            label: value,
+            filterName: "medium" as const,
+            value,
+        })),
+        ...filters.framing.map(value => ({
+            key: `framing-${value}`,
+            label: value,
+            filterName: "framing" as const,
+            value,
+        })),
+        ...filters.colors.map(value => ({
+            key: `color-${value}`,
+            label: value, // we'll render this differently below
+            filterName: "colors" as const,
+            value,
+        })),
+        ...(!isDefaultPrice
+            ? [
+                {
+                    key: "price",
+                    label: `€${filters.price[0]} – €${filters.price[1]}`,
+                    filterName: "price" as const,
+                },
+            ]
+            : []),
+    ];
     const SIDEBAR_WIDTH = 260;
     return (
         <Layout title="" description="Browse all paintings">
@@ -354,6 +421,122 @@ const Shop = () => {
 
                     {/* Products */}
                     <Box sx={{ flex: 1, minWidth: 0, alignSelf: "flex-start" }}>
+                        {selectedFilterBadges.length > 0 && (
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    flexWrap: "wrap",
+                                    gap: 1,
+                                    mb: 2,
+                                }}
+                            >
+                                <Button
+                                    onClick={clearAllFilters}
+                                    variant="text"
+                                    sx={{
+                                        minWidth: "auto",
+                                        p: 0,
+                                        mr: 1,
+                                        textTransform: "none",
+                                        textDecoration: "underline",
+                                        color: "text.primary",
+                                        fontWeight: 500,
+                                    }}
+                                >
+                                    Clear all
+                                </Button>
+
+                                {selectedFilterBadges.map((badge) => {
+                                    if (badge.filterName === "colors") {
+                                        return (
+                                            <Box
+                                                key={badge.key}
+                                                sx={{
+                                                    display: "inline-flex",
+                                                    alignItems: "center",
+                                                    gap: 1,
+                                                    px: 1.5,
+                                                    py: 0.75,
+                                                    border: "1px solid #ddd",
+                                                    borderRadius: "999px",
+                                                    bgcolor: "#fafafa",
+                                                    fontSize: 14,
+                                                }}
+                                            >
+                                                <Box
+                                                    sx={{
+                                                        width: 14,
+                                                        height: 14,
+                                                        borderRadius: "50%",
+                                                        backgroundColor: badge.value,
+                                                        border:
+                                                            badge.value === "#FFFFFF" || badge.value === "white"
+                                                                ? "1px solid #ccc"
+                                                                : "1px solid transparent",
+                                                    }}
+                                                />
+                                                <Box
+                                                    component="button"
+                                                    onClick={() => removeFilter("colors", badge.value)}
+                                                    sx={{
+                                                        border: "none",
+                                                        background: "transparent",
+                                                        cursor: "pointer",
+                                                        p: 0,
+                                                        fontSize: 16,
+                                                        lineHeight: 1,
+                                                    }}
+                                                >
+                                                    ×
+                                                </Box>
+                                            </Box>
+                                        );
+                                    }
+
+                                    return (
+                                        <Box
+                                            key={badge.key}
+                                            sx={{
+                                                display: "inline-flex",
+                                                alignItems: "center",
+                                                gap: 1,
+                                                px: 1.5,
+                                                py: 0.75,
+                                                border: "1px solid #ddd",
+                                                borderRadius: "999px",
+                                                bgcolor: "#fafafa",
+                                                fontSize: 14,
+                                            }}
+                                        >
+                                            <Typography sx={{ fontSize: 14 }}>
+                                                {badge.label}
+                                            </Typography>
+
+                                            <Box
+                                                component="button"
+                                                onClick={() =>
+                                                    badge.filterName === "price"
+                                                        ? removeFilter("price")
+                                                        : removeFilter(badge.filterName, badge.value)
+                                                }
+                                                sx={{
+                                                    border: "none",
+                                                    background: "transparent",
+                                                    cursor: "pointer",
+                                                    p: 0,
+                                                    fontSize: 16,
+                                                    lineHeight: 1,
+                                                }}
+                                            >
+                                                ×
+                                            </Box>
+                                        </Box>
+                                    );
+                                })}
+                            </Box>
+                        )}
+
                         <Typography color="text.secondary" mb={4}>
                             {products.length} artworks found
                         </Typography>
