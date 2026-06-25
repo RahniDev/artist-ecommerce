@@ -9,6 +9,7 @@ import {
     Divider,
     Slider,
     Paper,
+    Chip
 } from "@mui/material";
 import Masonry from "@mui/lab/Masonry";
 import ProductCard from "./ProductCard";
@@ -105,7 +106,7 @@ const Shop = () => {
             [filterName]: prev[filterName].filter(item => item !== value),
         }));
     };
-    const selectedFilterBadges = [
+    const selectedFilters = [
         ...filters.size.map(value => ({
             key: `size-${value}`,
             label: value,
@@ -132,7 +133,7 @@ const Shop = () => {
         })),
         ...filters.colors.map(value => ({
             key: `color-${value}`,
-            label: value, // we'll render this differently below
+            label: value,
             filterName: "colors" as const,
             value,
         })),
@@ -421,12 +422,12 @@ const Shop = () => {
 
                     {/* Products */}
                     <Box sx={{ flex: 1, minWidth: 0, alignSelf: "flex-start" }}>
-                        {selectedFilterBadges.length > 0 && (
+                        {selectedFilters.length > 0 && (
                             <Box
                                 sx={{
                                     display: "flex",
-                                    alignItems: "center",
                                     flexWrap: "wrap",
+                                    alignItems: "center",
                                     gap: 1,
                                     mb: 2,
                                 }}
@@ -447,91 +448,61 @@ const Shop = () => {
                                     Clear all
                                 </Button>
 
-                                {selectedFilterBadges.map((badge) => {
-                                    if (badge.filterName === "colors") {
+                                {selectedFilters.map(filter => {
+                                    if (filter.filterName === "colors") {
                                         return (
-                                            <Box
-                                                key={badge.key}
+                                            <Chip
+                                                key={filter.key}
+                                                label={
+                                                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                                                        <Box
+                                                            sx={{
+                                                                width: 14,
+                                                                height: 14,
+                                                                borderRadius: "50%",
+                                                                backgroundColor: filter.value,
+                                                                border:
+                                                                    filter.value === "#FFFFFF" || filter.value === "white"
+                                                                        ? "1px solid #ccc"
+                                                                        : "1px solid transparent",
+                                                            }}
+                                                        />
+                                                    </Box>
+                                                }
+                                                onDelete={() => removeFilter("colors", filter.value)}
                                                 sx={{
-                                                    display: "inline-flex",
-                                                    alignItems: "center",
-                                                    gap: 1,
-                                                    px: 1.5,
-                                                    py: 0.75,
-                                                    border: "1px solid #ddd",
+                                                    height: 36,
                                                     borderRadius: "999px",
                                                     bgcolor: "#fafafa",
-                                                    fontSize: 14,
+                                                    border: "1px solid #ddd",
+                                                    "& .MuiChip-deleteIcon": {
+                                                        fontSize: 18,
+                                                    },
                                                 }}
-                                            >
-                                                <Box
-                                                    sx={{
-                                                        width: 14,
-                                                        height: 14,
-                                                        borderRadius: "50%",
-                                                        backgroundColor: badge.value,
-                                                        border:
-                                                            badge.value === "#FFFFFF" || badge.value === "white"
-                                                                ? "1px solid #ccc"
-                                                                : "1px solid transparent",
-                                                    }}
-                                                />
-                                                <Box
-                                                    component="button"
-                                                    onClick={() => removeFilter("colors", badge.value)}
-                                                    sx={{
-                                                        border: "none",
-                                                        background: "transparent",
-                                                        cursor: "pointer",
-                                                        p: 0,
-                                                        fontSize: 16,
-                                                        lineHeight: 1,
-                                                    }}
-                                                >
-                                                    ×
-                                                </Box>
-                                            </Box>
+                                            />
                                         );
                                     }
 
                                     return (
-                                        <Box
-                                            key={badge.key}
+                                        <Chip
+                                            key={filter.key}
+                                            label={filter.label}
+                                            onDelete={() =>
+                                                filter.filterName === "price"
+                                                    ? removeFilter("price")
+                                                    : removeFilter(filter.filterName, filter.value)
+                                            }
                                             sx={{
-                                                display: "inline-flex",
-                                                alignItems: "center",
-                                                gap: 1,
-                                                px: 1.5,
-                                                py: 0.75,
-                                                border: "1px solid #ddd",
+                                                height: 36,
                                                 borderRadius: "999px",
                                                 bgcolor: "#fafafa",
+                                                border: "1px solid #ddd",
                                                 fontSize: 14,
+                                                "& .MuiChip-deleteIcon": {
+                                                    fontSize: 18,
+                                                },
                                             }}
-                                        >
-                                            <Typography sx={{ fontSize: 14 }}>
-                                                {badge.label}
-                                            </Typography>
-
-                                            <Box
-                                                component="button"
-                                                onClick={() =>
-                                                    badge.filterName === "price"
-                                                        ? removeFilter("price")
-                                                        : removeFilter(badge.filterName, badge.value)
-                                                }
-                                                sx={{
-                                                    border: "none",
-                                                    background: "transparent",
-                                                    cursor: "pointer",
-                                                    p: 0,
-                                                    fontSize: 16,
-                                                    lineHeight: 1,
-                                                }}
-                                            >
-                                                ×
-                                            </Box>
-                                        </Box>
+                                        />
                                     );
                                 })}
                             </Box>

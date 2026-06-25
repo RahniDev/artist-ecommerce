@@ -104,7 +104,7 @@ const Home: React.FC = () => {
           <ListProducts products={productsByArrival} />
         )}
       </Box>
-      <CollectionSlider categoryId="69a6d38a38bf6fdd8d8b84e9" />
+      <CollectionSlider />
 
     </Layout>
   );
