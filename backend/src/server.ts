@@ -21,6 +21,8 @@ app.use(compression());
 await connectDB();
 app.use(morgan('dev'))
 
+app.set("trust proxy", process.env.NODE_ENV === "production");
+
 app.use(cookieParser())
 app.use((req, res, next) => {
   if (req.headers["content-type"]?.includes("multipart/form-data")) {
@@ -29,9 +31,9 @@ app.use((req, res, next) => {
   express.json()(req, res, next);
 });
 app.use(cors({
-  origin: [ 
+  origin: [
     "http://localhost:5173",
-  "https://artist-ecommerce.vercel.app"
+    "https://artist-ecommerce.vercel.app"
   ],
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
