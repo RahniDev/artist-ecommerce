@@ -14,12 +14,22 @@ import orderRoutes from './modules/order/order.routes.js'
 import braintreeRoutes from './modules/braintree/braintree.routes.js'
 import contactRoutes from './modules/contact/contact.routes.js'
 import shippingRoutes from "./modules/shipping/shipping.routes.js";
+import helmet from "helmet";
 
 const app = express()
+
+app.use(
+    helmet({
+      // backend returns JSON, not HTML
+        contentSecurityPolicy: false,
+        // avoid unexpected cross-origin issues
+        crossOriginEmbedderPolicy: false,
+    })
+);
 app.use(compression());
+app.use(morgan('dev'))
 
 await connectDB();
-app.use(morgan('dev'))
 
 app.set("trust proxy", process.env.NODE_ENV === "production");
 

@@ -31,9 +31,9 @@ export const forgotPassword = async (req: Request, res: Response) => {
     try {
         const user = await User.findOne({ email }) as UserResetPassword | null;
         if (!user) return res.json({
-        message:
-            "If an account with that email exists, a password reset link has been sent."
-    })
+            message:
+                "If an account with that email exists, a password reset link has been sent."
+        })
 
         const token = crypto.randomBytes(32).toString('hex');
         const expiry = Date.now() + 3600000; // 1 hour
@@ -103,18 +103,19 @@ export const signin = async (req: Request, res: Response) => {
         const user: IUser | null = await User.findOne({ email }).select(
             "+hashed_password +salt"
         );
-
         if (!user) {
-            return res.status(400).json({
-                error: "User with that email does not exist. Please sign up."
+            return res.status(401).json({
+                error: "Invalid email or password."
             });
         }
 
         const match = await bcrypt.compare(password, user.hashed_password);
-        if (!match) {
-            return res.status(401).json({ error: "Email and password do not match" });
-        }
 
+        if (!match) {
+            return res.status(401).json({
+                error: "Invalid email or password."
+            });
+        }
         // generate JWT
         const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET!, {
             expiresIn: "30d"
