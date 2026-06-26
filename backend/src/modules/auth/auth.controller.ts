@@ -30,7 +30,10 @@ export const forgotPassword = async (req: Request, res: Response) => {
     const { email } = req.body;
     try {
         const user = await User.findOne({ email }) as UserResetPassword | null;
-        if (!user) return res.json("email not in db");
+        if (!user) return res.json({
+        message:
+            "If an account with that email exists, a password reset link has been sent."
+    })
 
         const token = crypto.randomBytes(32).toString('hex');
         const expiry = Date.now() + 3600000; // 1 hour

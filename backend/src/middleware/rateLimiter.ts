@@ -25,3 +25,17 @@ export const signupLimiter = rateLimit({
         error: "Too many signup attempts. Please try again later."
     }
 });
+
+ export const forgotPasswordLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 3,
+    standardHeaders: true,
+    legacyHeaders: false,
+
+    keyGenerator: (req) => {
+        return `${ipKeyGenerator(req.ip!)}-${req.body.email}`;
+    },
+    message: {
+        error: "Too many password reset requests. Please try again later."
+    }
+});
