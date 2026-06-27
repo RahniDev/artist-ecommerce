@@ -279,7 +279,6 @@ export interface FilterState {
 export interface SigninState {
   email: string;
   password: string;
-  error: string;
   loading: boolean;
   redirectToReferrer: boolean;
 }

@@ -6,7 +6,7 @@ import { signin, authenticate, isAuthenticated } from "../auth";
 import type { SigninState } from "../types";
 import { useTranslation } from "react-i18next";
 import Loader from "../core/Loader";
-import { Box, TextField, Button, Alert, Link, Typography } from "@mui/material";
+import { Box, TextField, Alert, Button, Link, Typography } from "@mui/material";
 import AuthCard from "./AuthCard";
 import { setAuth } from "../redux/slices/authSlice";
 import { useDispatch } from "react-redux";
@@ -23,29 +23,71 @@ const Signin: React.FC = () => {
     const [values, setValues] = useState<SigninState>({
         email: "",
         password: "",
-        error: "",
         loading: false,
         redirectToReferrer: false,
     });
+    const [errors, setErrors] = useState({
+        email: "",
+        password: "",
+        general: ""
+    });
 
-    const { email, password, loading, error } = values;
+    const { email, password, loading } = values;
     const auth = isAuthenticated();
 
     const handleChange =
         (name: keyof SigninState) =>
             (event: ChangeEvent<HTMLInputElement>) => {
-                setValues({ ...values, error: "", [name]: event.target.value });
+                setValues({
+                    ...values,
+                    [name]: event.target.value
+                });
+
+                setErrors(prev => ({
+                    ...prev,
+                    [name]: "",
+                    general: ""
+                }));
             };
 
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
-        setValues({ ...values, error: "", loading: true });
+        setErrors({
+            email: "",
+            password: "",
+            general: ""
+        });
+        if (!email.trim()) {
+            return setErrors({
+                email: "Email is required.",
+                password: "",
+                general: ""
+            });
+        }
+        if (!/\S+@\S+\.\S+/.test(email)) {
+            return setErrors({
+                email: "Please enter a valid email.",
+                password: "",
+                general: ""
+            });
+        }
+
+        if (!password.trim()) {
+            return setErrors({
+                email: "",
+                password: "Password is required.",
+                general: ""
+            });
+        }
+
+        setValues({ ...values, loading: true });
 
         try {
-            const data = await signin({ email, password });
+            const data = await signin({ email: email.trim(), password: password.trim() });
 
             if ("error" in data) {
-                setValues({ ...values, error: data.error, loading: false });
+                setValues({ ...values, loading: false });
+                setErrors({ email: "", password: "", general: data.error })
             } else {
                 // keep localStorage in sync
                 authenticate(data, () => { });
@@ -58,7 +100,16 @@ const Signin: React.FC = () => {
                 }
             }
         } catch (exc: any) {
-            setValues({ ...values, error: exc?.message ?? "Signin error", loading: false });
+            setValues({
+                ...values,
+                loading: false
+            });
+
+            setErrors({
+                email: "",
+                password: "",
+                general: exc?.message ?? "Signin error"
+            });
         }
     };
 
@@ -76,16 +127,21 @@ const Signin: React.FC = () => {
                 minHeight="46vh"
                 px={2}
             >
-                <form onSubmit={handleSubmit}>
+                {errors.general && (
+                    <Alert severity="error" sx={{ mb: 2 }}>
+                        {errors.general}
+                    </Alert>
+                )}
+                <form onSubmit={handleSubmit} noValidate>
                     <AuthCard title="">
-                        {error && <Alert severity="error">{error}</Alert>}
-
                         <TextField
                             label={t("email")}
                             type="email"
                             value={email}
                             onChange={handleChange("email")}
                             fullWidth
+                            error={!!errors.email}
+                            helperText={errors.email}
                         />
 
                         <TextField
@@ -94,6 +150,8 @@ const Signin: React.FC = () => {
                             value={password}
                             onChange={handleChange("password")}
                             fullWidth
+                            error={!!errors.password}
+                            helperText={errors.password}
                             slotProps={{
                                 input: {
                                     endAdornment: (
@@ -120,6 +178,7 @@ const Signin: React.FC = () => {
                             size="large"
                             fullWidth
                             type="submit"
+                            disabled={loading}
                         >
                             {t("signin")}
                         </Button>
