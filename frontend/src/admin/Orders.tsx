@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
 import { listOrders, getStatusValues, updateOrderStatus } from "./apiAdmin";
-import moment from "moment";
+import { format } from "date-fns";
 import type { IOrder, IAuthData } from "../types";
 import {
     Box,
@@ -29,7 +29,7 @@ const Orders: React.FC = () => {
     const loadOrders = async () => {
         try {
             const res = await listOrders(user._id, token);
-            if (!res.error) setOrders(res as any);
+            if (!res.error) setOrders(res as IOrder[]);
         } catch (err) {
             console.error("Failed to load orders", err);
         }
@@ -45,10 +45,11 @@ const Orders: React.FC = () => {
     };
 
     useEffect(() => {
-        loadOrders();
-        console.log(orders)
-        loadStatusValues();
-    }, []);
+        if (user?._id && token) {
+            loadOrders();
+            loadStatusValues();
+        }
+    }, [user?._id, token]);
 
     const handleStatusChange = async (
         e: SelectChangeEvent<string>,
@@ -97,7 +98,7 @@ const Orders: React.FC = () => {
                                 <InputLabel>Status</InputLabel>
                                 <Select
                                     label="Status"
-                                    value={order.status}
+                                    value={order.status || ""}
                                     onChange={(e) => handleStatusChange(e, order._id)}
                                 >
                                     {statusValues.map((status) => (
@@ -113,7 +114,7 @@ const Orders: React.FC = () => {
                                 <ListItem>Total: £{order.amount}</ListItem>
                                 <ListItem>Ordered by: {order.firstName} {order.lastName}</ListItem>
                                 <ListItem>
-                                    Ordered on: {moment(order.createdAt).format('D-MM-YY')}
+                                    Ordered on: {format(new Date(order.createdAt), "dd-MM-yy")}
                                 </ListItem>
                                 <ListItem>Delivery address: {order.address}</ListItem>
                             </List>
@@ -125,7 +126,6 @@ const Orders: React.FC = () => {
                             </Typography>
 
                             {order.products.map((p) => {
-                                console.log("p:", JSON.stringify(p, null, 2));
                                 return (
                                     <Paper
                                         key={p._id}

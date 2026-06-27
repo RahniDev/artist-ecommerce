@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import moment from "moment";
+import { formatDistanceToNow } from "date-fns";
 import { useTranslation } from 'react-i18next';
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
@@ -120,7 +120,7 @@ const UserDashboard = () => {
                                     </Typography>
                                     {product.createdAt && (
                                         <Typography variant="body2" color="text.secondary">
-                                            Purchased: {moment(product.createdAt).fromNow()}
+                                            Purchased: {formatDistanceToNow(new Date(product.createdAt), { addSuffix: true })}
                                         </Typography>
                                     )}
                                 </Box>
