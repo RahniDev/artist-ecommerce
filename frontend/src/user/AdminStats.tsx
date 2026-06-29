@@ -18,7 +18,7 @@ const AdminStats: React.FC = () => {
         const loadTotalOrders = async () => {
             try {
                 const res = await listOrders(user._id, token);
-                setTotalOrders(Array.isArray(res.data) ? res.data.length : 0);
+                setTotalOrders(Array.isArray(res) ? res.length : 0);
             } catch (err) {
                 console.error("Failed to load total orders", err);
             }

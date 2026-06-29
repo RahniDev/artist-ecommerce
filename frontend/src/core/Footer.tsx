@@ -34,7 +34,7 @@ const Footer: React.FC = () => {
                     <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
                         {topLevel.map(c => (
                             <li key={c._id}>
-                                <Link component={RouterLink} to={`/category/${c._id}`} underline="hover" color="textPrimary">
+                                <Link component={RouterLink} to={`/collection/${c._id}`} underline="hover" color="textPrimary">
                                     {c.name}
                                 </Link>
                             </li>
