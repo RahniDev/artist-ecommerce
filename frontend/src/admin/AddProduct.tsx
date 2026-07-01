@@ -29,7 +29,6 @@ const AddProduct: React.FC = () => {
   const [imgPreviews, setImgPreviews] = useState<string[]>([]);
   const [values, setValues] = useState<AddProductValues>({
     name: "",
-    description: "",
     price: "",
     weight: "",
     width: "",
@@ -53,7 +52,6 @@ const AddProduct: React.FC = () => {
 
   const {
     name,
-    description,
     price,
     categories,
     category,
@@ -167,7 +165,6 @@ const AddProduct: React.FC = () => {
           createdProductName: typeof rawName === "object" ? rawName?.en : rawName ?? "",
           createdProductId: res.data?._id ?? "",
           name: "",
-          description: "",
           price: "",
           category: "",
           weight: "",
@@ -254,15 +251,6 @@ const AddProduct: React.FC = () => {
               label="Title"
               value={name}
               onChange={handleInputChange("name")}
-              fullWidth
-            />
-
-            <TextField
-              label="Description"
-              value={description}
-              onChange={handleInputChange("description")}
-              multiline
-              rows={4}
               fullWidth
             />
 

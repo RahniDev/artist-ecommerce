@@ -1,7 +1,7 @@
 import { S3Client, PutObjectCommand, DeleteObjectCommand } from "@aws-sdk/client-s3";
 import crypto from "crypto";
-import path from "path";
 import * as fs from "fs";
+import sharp from "sharp";
 
 const bucket = process.env.R2_BUCKET_NAME!;
 const publicUrl = process.env.R2_PUBLIC_URL!;
@@ -14,8 +14,6 @@ export const r2 = new S3Client({
     secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
   },
 });
-
-import sharp from "sharp";
 
 export async function uploadProductPhoto(photo: any) {
   const key = `products/${crypto.randomUUID()}.webp`;

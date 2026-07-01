@@ -15,11 +15,6 @@ declare global {
 }
 
 export const applyLang = (product: any, lang: string) => {
-    const description = typeof product.description === 'object'
-        ? product.description[lang] || product.description.en || ''
-        : product.description || '';
-
-
     const name = typeof product.name === 'object'
         ? product.name[lang] || product.name.en || ''
         : product.name || '';
@@ -28,7 +23,7 @@ export const applyLang = (product: any, lang: string) => {
         ? product.name.en || ''
         : product.name || '';
 
-    return { ...product, name, nameEn, description };
+    return { ...product, name, nameEn };
 };
 
 export const productById = async (
@@ -44,7 +39,7 @@ export const productById = async (
 
         const product = await Product.findById(id)
             .populate("category")
-            .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType material medium createdAt")
+            .select("name price category quantity sold weight width height length photos.url photos.key photos.contentType material medium createdAt")
 
 
         if (!product) {
@@ -90,7 +85,7 @@ export const list = async (req: Request, res: Response) => {
         const products = await Product.find({
             quantity: { $gt: 0 }
         })
-            .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType material medium createdAt")
+            .select("name price category quantity sold weight width height length photos.url photos.key photos.contentType material medium createdAt")
             .sort({ createdAt: -1 })
             .limit(12)
             .lean();
@@ -133,6 +128,9 @@ export const photo = async (req: Request, res: Response) => {
     try {
         const product = await Product.findById(req.params.productId).select("photos");
 
+        console.log("Requested:", req.params.productId);
+        console.log("Found product:", !!product);
+        console.log("Photos:", product?.photos);
         const index = Number(req.query.index) || 0;
         const img = product?.photos?.[index];
 
@@ -157,7 +155,7 @@ export const create = async (req: Request, res: Response) => {
             });
         });
 
-        let { name, description, price, category, weight, width, height, length, framing, material, medium, additionalDetails, quality, colors } = fields;
+        let { name, price, category, weight, width, height, length, framing, material, medium, additionalDetails, quality, colors } = fields;
         // normalize fields to ensure expected type
         const normalize = (v: string | string[] | undefined) => Array.isArray(v) ? v[0] : v;
         const normalizeArray = (v: string | string[] | undefined) => {
@@ -166,7 +164,6 @@ export const create = async (req: Request, res: Response) => {
         };
 
         const nameValue = normalize(name);
-        const descriptionValue = normalize(description);
         const priceValue = Number(normalize(price));
         const categoryValue = normalize(category);
         const weightValue = Number(normalize(weight));
@@ -183,21 +180,17 @@ export const create = async (req: Request, res: Response) => {
 
         if (
             nameValue == null ||
-            descriptionValue == null ||
             isNaN(priceValue) ||
             categoryValue == null
         ) {
             return res.status(400).json({ error: "All fields are required" });
         }
 
-        const [nameTranslations, descTranslations] = await Promise.all([
-            translateToAll(nameValue),
-            translateToAll(descriptionValue)
-        ]);
+        const [nameTranslations] = await Promise.all([
+            translateToAll(nameValue),]);
 
         const product = new Product({
             name: { en: nameValue, ...nameTranslations },
-            description: { en: descriptionValue, ...descTranslations },
             price: priceValue,
             category: categoryValue,
             quantity: quantityValue,
@@ -231,11 +224,13 @@ export const create = async (req: Request, res: Response) => {
 
         }
         const result = await product.save();
-        return res.json({ data: result });
+        return res.status(201).json({ data: result });
 
-    } catch (err) {
-        console.error("ERROR in create:", err);
-        return res.status(400).json({ error: "Product creation failed" });
+    } catch (err: any) {
+        return res.status(400).json({
+            error: err.message,
+            details: err.errors
+        });
     }
 };
 
@@ -289,43 +284,16 @@ export const update = async (req: Request, res: Response) => {
                 };
             }
         }
-        if (fields.description) {
 
-            const descriptionField = fields.description;
-            const descriptionValue = Array.isArray(descriptionField)
-                ? descriptionField[0]
-                : descriptionField;
+        const otherFields = Object.entries(fields)
+            .filter(([key]) => key !== 'name')
+            .reduce((acc, [key, value]) => {
+                acc[key] = Array.isArray(value) ? value[0] : value;
+                return acc;
+            }, {} as Record<string, any>);
 
-            if (descriptionValue && typeof descriptionValue === 'string') {
-                const translations = await translateToAll(descriptionValue);
-                product.description = {
-                    en: descriptionValue,
-                    de: translations.de ?? '',
-                    es: translations.es ?? '',
-                    it: translations.it ?? '',
-                    fr: translations.fr ?? ''
-                };
-            }
+        Object.assign(product, otherFields);
 
-            // You can't delete from fields, so skip it in the Object.assign
-            // by creating a new object without description
-            const otherFields = Object.entries(fields)
-                .filter(([key]) => key !== 'description' && key !== 'name')
-                .reduce((acc, [key, value]) => {
-                    acc[key] = Array.isArray(value) ? value[0] : value;
-                    return acc;
-                }, {} as Record<string, any>);
-
-            Object.assign(product, otherFields);
-        } else {
-            const otherFields = Object.entries(fields)
-                .filter(([key]) => key !== 'name')
-                .reduce((acc, [key, value]) => {
-                    acc[key] = Array.isArray(value) ? value[0] : value;
-                    return acc;
-                }, {} as Record<string, any>);
-            Object.assign(product, otherFields);
-        }
 
         // Keep a copy of the existing photos
         const oldPhotos = [...product.photos];
@@ -389,7 +357,7 @@ export const listSearch = async (req: Request, res: Response) => {
 
     try {
         const products = await Product.find(query)
-            .select("name description price category quantity sold weight width height length photos.url photos.key photos.contentType createdAt")
+            .select("name price category quantity sold weight width height length photos.url photos.key photos.contentType createdAt")
             .lean();
 
         const transformedProducts = products.map(p => applyLang(p, lang as string));
@@ -506,7 +474,6 @@ export const listByFilters = async (req: Request, res: Response) => {
         const data = await Product.find(findArgs)
             .select(`
         name
-        description
         price
         category
         quantity

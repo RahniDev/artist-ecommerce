@@ -76,7 +76,7 @@ export const create = async (req: CustomRequest, res: Response) => {
       })
     ]);
 
-    return res.json(savedOrder);
+    return res.status(201).json(savedOrder);
   } catch (err) {
     return res.status(400).json({ error: errorHandler(err as MongoError) });
   }

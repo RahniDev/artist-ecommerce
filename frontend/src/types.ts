@@ -83,7 +83,6 @@ export type ProductFormField =
 
 export interface ProductFormBase {
   name: string;
-  description: string;
   price: string;
   weight: string;
   width: string;

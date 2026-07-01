@@ -114,7 +114,9 @@ const Orders: React.FC = () => {
                                 <ListItem>Total: £{order.amount}</ListItem>
                                 <ListItem>Ordered by: {order.firstName} {order.lastName}</ListItem>
                                 <ListItem>
-                                    Ordered on: {format(new Date(order.createdAt), "dd-MM-yy")}
+                                    Ordered on:  {order.createdAt
+                                        ? format(new Date(order.createdAt), "dd-MM-yy")
+                                        : "Unknown"}
                                 </ListItem>
                                 <ListItem>Delivery address: {order.address}</ListItem>
                             </List>

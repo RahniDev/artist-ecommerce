@@ -1,4 +1,3 @@
-// La Poste Label Service
 import axios from "axios";
 import { calculateParcel, CartItem } from "./shipping.utils.js";
 

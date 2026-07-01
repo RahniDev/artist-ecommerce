@@ -30,7 +30,7 @@ export const create = async (req: Request, res: Response) => {
   try {
     const category = new Category(req.body);
     const savedCategory = await category.save();
-    res.json(savedCategory);
+    res.status(201).json(savedCategory);
   } catch (err) {
     return res.status(400).json({ error: errorHandler(err as MongoError) });
   }

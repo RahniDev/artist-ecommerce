@@ -47,13 +47,6 @@ const productSchema = new Schema<IProductDocument>({
     it: { type: String, default: '' },
     fr: { type: String, default: '' }
   },
-  description: {
-    en: { type: String, required: true },
-    de: { type: String, default: '' },
-    es: { type: String, default: '' },
-    it: { type: String, default: '' },
-    fr: { type: String, default: '' }
-  },
   price: {
     type: Number,
     trim: true,
