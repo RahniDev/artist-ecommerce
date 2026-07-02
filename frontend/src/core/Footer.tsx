@@ -66,7 +66,7 @@ const Footer: React.FC = () => {
             </Grid>
             <Divider sx={{ my: 3 }} />
             <Typography variant="body2" color="textSecondary" align="center">
-                &copy; {new Date().getFullYear()} . All rights reserved.
+                &copy; {new Date().getFullYear()} Sakari De-Meis. All rights reserved.
             </Typography>
         </Box>
     );

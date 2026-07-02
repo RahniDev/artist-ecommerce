@@ -15,6 +15,7 @@ const AdminStats: React.FC = () => {
             setTotalOrders(0);
             return;
         }
+        
         const loadTotalOrders = async () => {
             try {
                 const res = await listOrders(user._id, token);

@@ -43,7 +43,6 @@ const UpdateProduct = () => {
     const [photosPreview, setPhotosPreview] = useState<string[]>([]);
     const [values, setValues] = useState<UpdateProductValues>({
         name: "",
-        description: "",
         price: "",
         weight: "",
         width: "",
@@ -66,7 +65,6 @@ const UpdateProduct = () => {
 
     const {
         name,
-        description,
         price,
         categories,
         category,
@@ -149,14 +147,8 @@ const UpdateProduct = () => {
 
             const product = res.data;
 
-            const descriptionValue =
-                typeof product.description === "string"
-                    ? product.description
-                    : JSON.stringify(product.description);
-
             const fd = new FormData();
             fd.set("name", product.name ?? "");
-            fd.set("description", descriptionValue);
             fd.set("price", product.price?.toString() ?? "");
             fd.set("category", product.category?._id ?? "");
             fd.set("material", product.material ?? "");
@@ -178,7 +170,6 @@ const UpdateProduct = () => {
             setValues((prev) => ({
                 ...prev,
                 name: product.name ?? "",
-                description: descriptionValue,
                 price: product.price?.toString() ?? "",
                 category: product.category?._id ?? "",
                 material: product.material ?? "",
@@ -395,15 +386,6 @@ const UpdateProduct = () => {
                             onChange={handleInputChange("name")}
                             fullWidth
                             required
-                        />
-
-                        <TextField
-                            label="Description"
-                            value={description}
-                            onChange={handleInputChange("description")}
-                            multiline
-                            rows={4}
-                            fullWidth
                         />
 
                         <TextField

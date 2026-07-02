@@ -37,8 +37,8 @@ const Navbar: React.FC = () => {
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
   const [categories, setCategories] = useState<Category[]>([]);
-  const [drawerOpen, setDrawerOpen] = useState<boolean>(false);
-  const [collectionsOpen, setCollectionsOpen] = useState<boolean>(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [collectionsOpen, setCollectionsOpen] = useState(false);
   const { user } = useSelector((state: RootState) => state.auth);
   const cartItems = useSelector((state: RootState) => state.cart.items);
   const cartCount = cartItems.reduce((total, item) => total + (item.count ?? 1), 0);
@@ -59,22 +59,21 @@ const Navbar: React.FC = () => {
     navigate("/");
   };
 
-  const loadCategories = async () => {
-    try {
-      const res = await getCategories();
-
-      if (res.error) {
-        console.error(res.error);
-        return;
-      }
-
-      setCategories(res.data ?? []);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const res = await getCategories();
+
+        if (res.error) {
+          console.error(res.error);
+          return;
+        }
+
+        setCategories(res.data ?? []);
+      } catch (err) {
+        console.error(err);
+      }
+    };
     loadCategories();
   }, []);
 
@@ -132,53 +131,53 @@ const Navbar: React.FC = () => {
         About
       </NavLink>
       <NavLink to="/shop" style={linkStyle}>Shop</NavLink>
-     <Box
-  sx={{ position: "relative" }}
-  onMouseEnter={() => setCollectionsOpen(true)}
-  onMouseLeave={() => setCollectionsOpen(false)}
->
-  <Box
-    component="span"
-    sx={{
-      ...linkStyle,
-      cursor: "pointer",
-      display: "inline-block",
-    }}
-  >
-    Collections
-  </Box>
-
-  {collectionsOpen && (
-    <Box
-      sx={{
-        position: "absolute",
-        top: "100%",
-        left: "5%",
-        transform: "translateX(-5%)",
-        bgcolor: "white",
-        color: "#3a3535",
-        boxShadow: 3,
-        minWidth: 220,
-        zIndex: 1300,
-      }}
-    >
-      {categories.map((category) => (
+      <Box
+        sx={{ position: "relative" }}
+        onMouseEnter={() => setCollectionsOpen(true)}
+        onMouseLeave={() => setCollectionsOpen(false)}
+      >
         <Box
-          key={category._id}
+          component="span"
           sx={{
-            px: 2,
-            py: 1,
+            ...linkStyle,
             cursor: "pointer",
-            "&:hover": { bgcolor: "#f5f5f5" },
+            display: "inline-block",
           }}
-          onClick={() => navigate(`/collection/${category._id}`)}
         >
-          {category.name}
+          Collections
         </Box>
-      ))}
-    </Box>
-  )}
-</Box>
+
+        {collectionsOpen && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: "100%",
+              left: "5%",
+              transform: "translateX(-5%)",
+              bgcolor: "white",
+              color: "#3a3535",
+              boxShadow: 3,
+              minWidth: 220,
+              zIndex: 1300,
+            }}
+          >
+            {categories.map((category) => (
+              <Box
+                key={category._id}
+                sx={{
+                  px: 2,
+                  py: 1,
+                  cursor: "pointer",
+                  "&:hover": { bgcolor: "#f5f5f5" },
+                }}
+                onClick={() => navigate(`/collection/${category._id}`)}
+              >
+                {category.name}
+              </Box>
+            ))}
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 
@@ -214,10 +213,7 @@ const Navbar: React.FC = () => {
                 disableAutoFocus
                 disableEnforceFocus
                 open={open}
-                onClose={handleMouseLeave}
-                MenuListProps={{
-                  autoFocusItem: false,
-                }}
+                onClose={handleMouseLeave}              
                 slotProps={{
                   paper: {
                     onMouseLeave: handleMouseLeave,
