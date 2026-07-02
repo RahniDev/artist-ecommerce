@@ -81,7 +81,7 @@ export const read = async (req: Request, res: Response): Promise<Response> => {
 export const list = async (req: Request, res: Response) => {
     try {
         const { lang = 'en' } = req.query;
-
+        // const start = Date.now();
         const products = await Product.find({
             quantity: { $gt: 0 }
         })
@@ -89,6 +89,7 @@ export const list = async (req: Request, res: Response) => {
             .sort({ createdAt: -1 })
             .limit(12)
             .lean();
+        //console.log("Query:", Date.now() - start, "ms");
 
         const transformedProducts = products.map(p => applyLang(p, lang as string));
 

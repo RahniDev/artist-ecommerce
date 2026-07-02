@@ -50,6 +50,8 @@ const ShowImage: React.FC<ShowImageProps> = (props) => {
       <Box
         component="img"
         src={getPhotoUrl(0)}
+        loading="lazy"
+        decoding="async"
         alt={item.name ?? "Product Image"}
         sx={imgSx}
       />
