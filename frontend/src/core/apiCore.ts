@@ -54,7 +54,7 @@ sortBy: string): Promise<ApiResponse<{ data: IProduct[] }>> {
 export async function getProduct(
   productId: string
 ): Promise<ApiResponse<IProduct>> {
-  return fetchJSON<IProduct>(`${API}/product/${productId}`);
+  return fetchJSON<IProduct>(`${API}/products/${productId}`);
 }
 
 export async function listRelated(
@@ -116,7 +116,7 @@ export const createOrder = async ({
   orderData: CreateOrderInput;
 }): Promise<ApiResponse<IOrder>> => {
   try {
-    const url = addLanguageParam(`${API}/order/create`);
+    const url = addLanguageParam(`${API}/orders/create`);
     const res = await fetch(
       url,
       {

@@ -14,14 +14,14 @@ import { userById } from '../user/user.controller.js';
 const router = Router();
 
 // Public routes
-router.get('/category/featured', getFeaturedCategory)
-router.get('/category/:categoryId', getCategory);
+router.get('/categories/featured', getFeaturedCategory)
+router.get('/categories/:categoryId', getCategory);
 router.get('/categories', list);
 
 // Admin routes
-router.post('/category/create/:userId', requireSignin, isAuth, isAdmin, create);
-router.put('/category/:categoryId/:userId', requireSignin, isAuth, isAdmin, update);
-router.delete('/category/:categoryId/:userId', requireSignin, isAuth, isAdmin, remove);
+router.post('/categories/create/:userId', requireSignin, isAuth, isAdmin, create);
+router.put('/categories/:categoryId/:userId', requireSignin, isAuth, isAdmin, update);
+router.delete('/categories/:categoryId/:userId', requireSignin, isAuth, isAdmin, remove);
 
 router.param('categoryId', categoryById);
 router.param('userId', userById);

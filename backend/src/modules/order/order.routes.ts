@@ -14,7 +14,7 @@ import { decreaseQuantity } from "../product/product.controller.js";
 const router: Router = Router();
 
 router.post(
-    "/order/create",
+    "/orders/create",
     optionalSignin,
     loadProfileFromAuth,
     addOrderToUserHistory,
@@ -22,16 +22,16 @@ router.post(
     create
 );
 
-router.get("/order/list/:userId", requireSignin, isAuth, isAdmin, listOrders);
+router.get("/orders/list/:userId", requireSignin, isAuth, isAdmin, listOrders);
 router.get(
-    "/order/status-values/:userId",
+    "/orders/status-values/:userId",
     requireSignin,
     isAuth,
     isAdmin,
     getStatusValues
 );
 router.put(
-    "/order/:orderId/status/:userId",
+    "/orders/:orderId/status/:userId",
     requireSignin,
     isAuth,
     isAdmin,

@@ -28,7 +28,7 @@ export const update = async (
   user: Partial<IUser>
 ): Promise<ApiResponse<IUser>> => {
   try {
-    const res = await fetch(`${API}/user/${userId}`, {
+    const res = await fetch(`${API}/users/${userId}`, {
       method: "PUT",
       headers: {
         Accept: "application/json",

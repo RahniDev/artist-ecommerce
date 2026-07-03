@@ -24,7 +24,7 @@ export const createCategory = async (
     token: string,
     category: CategoryInput
 ): Promise<ApiResponse<Category>> => {
-    const res = await fetch(`${API}/category/create/${userId}`, {
+    const res = await fetch(`${API}/categories/create/${userId}`, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -43,7 +43,7 @@ export const updateCategory = async (
     category: Category
 ): Promise<ApiResponse> => {
     try {
-        const res = await fetch(`${API}/category/${categoryId}/${userId}`, {
+        const res = await fetch(`${API}/categories/${categoryId}/${userId}`, {
             method: 'PUT',
             headers: {
                 Accept: 'application/json',
@@ -65,7 +65,7 @@ export const createProduct = async (
     product: FormData
 ): Promise<ApiResponse<IProduct>> => {
     try {
-        const res = await fetch(`${API}/product/create/${userId}`, {
+        const res = await fetch(`${API}/products/create/${userId}`, {
             method: 'POST',
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -81,7 +81,7 @@ export const createProduct = async (
 
 export const getCategory = async (categoryId: string): Promise<ApiResponse> => {
     try {
-        const res = await fetch(`${API}/category/${categoryId}`);
+        const res = await fetch(`${API}/categories/${categoryId}`);
         return await res.json();
     } catch (err) {
         console.error(err);
@@ -111,7 +111,7 @@ export const listOrders = async (
     token: string
 ): Promise<ApiResponse<IOrder[]>> => {
     try {
-        const res = await fetch(`${API}/order/list/${userId}`, {
+        const res = await fetch(`${API}/orders/list/${userId}`, {
             method: "GET",
             headers: {
                 Accept: "application/json",
@@ -130,7 +130,7 @@ export const getStatusValues = async (
     userId: string,
     token: string
 ): Promise<string[]> => {
-    const res = await fetch(`${API}/order/status-values/${userId}`, {
+    const res = await fetch(`${API}/orders/status-values/${userId}`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -146,7 +146,7 @@ export const updateOrderStatus = async (
     status: string
 ): Promise<ApiResponse> => {
     try {
-        const res = await fetch(`${API}/order/${orderId}/status/${userId}`, {
+        const res = await fetch(`${API}/orders/${orderId}/status/${userId}`, {
             method: 'PUT',
             headers: {
                 Accept: 'application/json',
@@ -180,7 +180,7 @@ export const deleteProduct = async (
     token: string
 ): Promise<ApiResponse> => {
     try {
-        const res = await fetch(`${API}/product/${productId}/${userId}`, {
+        const res = await fetch(`${API}/products/${productId}/${userId}`, {
             method: 'DELETE',
             headers: {
                 Accept: 'application/json',
@@ -202,7 +202,7 @@ export const updateProduct = async (
     productData: FormData
 ): Promise<ApiResponse<IProduct>> => {
     try {
-        const res = await fetch(`${API}/product/${productId}/${userId}`, {
+        const res = await fetch(`${API}/products/${productId}/${userId}`, {
             method: "PUT",
             headers: {
                 Authorization: `Bearer ${token}`,

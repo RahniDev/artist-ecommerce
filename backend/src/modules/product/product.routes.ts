@@ -28,11 +28,11 @@ router.param('userId', userById);
 router.param('productId', productById);
 
 // routes that use params
-router.get('/product/photo/:productId', photo);
-router.get('/product/:productId', read);
-router.post('/product/create/:userId', requireSignin, isAuth, isAdmin, create);
-router.delete('/product/:productId/:userId', requireSignin, isAuth, isAdmin, deleteProduct);
-router.put('/product/:productId/:userId', requireSignin, isAuth, isAdmin, update);
+router.get('/products/photo/:productId', photo);
+router.get('/products/:productId', read);
+router.post('/products/create/:userId', requireSignin, isAuth, isAdmin, create);
+router.delete('/products/:productId/:userId', requireSignin, isAuth, isAdmin, deleteProduct);
+router.put('/products/:productId/:userId', requireSignin, isAuth, isAdmin, update);
 router.get('/products/related/:productId', listRelated);
 
 export default router;
