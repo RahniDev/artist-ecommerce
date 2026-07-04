@@ -12,7 +12,6 @@ import ProductBreadcrumbs from "./ProductBreadcrumbs";
 import ShowImage from "./ShowImage";
 import { Box, Typography, Grid } from "@mui/material";
 import ImageModal from "./ImageModal";
-import { API } from "../config";
 import { toCartItem } from "../redux/slices/cartSlice";
 import { useLocalizedDescription } from "../hooks/useLocalizedDescription";
 
@@ -24,10 +23,10 @@ const Product: React.FC = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [modalSrc, setModalSrc] = useState<string>("");
 
-  const handleImageClick = (src: string) => {
-    setModalSrc(src);
-    setModalOpen(true);
-  };
+const handleImageClick = (src: string) => {
+  setModalSrc(src);
+  setModalOpen(true);
+};
 
   const { product, related, loading, error } = useSelector(
     (state: RootState) => state.product
@@ -60,7 +59,7 @@ const Product: React.FC = () => {
 
               <Grid container mt={1} width="100%">
                 <Grid size={{ xs: 12, md: 6 }} mb={2}>
-                  <Box onClick={() => handleImageClick(`${API}/product/photo/${product._id}`)}
+                  <Box
                     sx={{ cursor: "zoom-in" }}>
                     <ShowImage
                       item={product}

@@ -70,7 +70,7 @@ const ProductCard: React.FC<CardProps> = ({
                             color={textColor}>
                             {product.nameEn}
                         </Typography>
-                        <Box component={Link} to={`/product/${product._id}`}>
+                        <Box component={Link} to={`/products/${product._id}`}>
 
                             {product.nameEn !== product.name && (
                                 <Typography variant="body1" 
