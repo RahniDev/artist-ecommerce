@@ -19,12 +19,12 @@ import helmet from "helmet";
 const app = express()
 
 app.use(
-    helmet({
-      // backend returns JSON, not HTML
-        contentSecurityPolicy: false,
-        // avoid unexpected cross-origin issues
-        crossOriginEmbedderPolicy: false,
-    })
+  helmet({
+    // backend returns JSON, not HTML
+    contentSecurityPolicy: false,
+    // avoid unexpected cross-origin issues
+    crossOriginEmbedderPolicy: false,
+  })
 );
 app.use(compression());
 app.use(morgan('dev'))
@@ -40,6 +40,7 @@ app.use((req, res, next) => {
   }
   express.json()(req, res, next);
 });
+
 app.use(cors({
   origin: [
     "http://localhost:5173",
@@ -49,6 +50,7 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 }));
+
 app.use((req, res, next) => {
   if (req.method === "OPTIONS") {
     return res.sendStatus(204);

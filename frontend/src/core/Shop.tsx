@@ -9,7 +9,8 @@ import {
     Divider,
     Slider,
     Paper,
-    Chip
+    Chip,
+    Pagination
 } from "@mui/material";
 import Masonry from "@mui/lab/Masonry";
 import ProductCard from "./ProductCard";
@@ -30,7 +31,11 @@ const Shop = () => {
     const [products, setProducts] = useState<IProduct[]>([]);
     const [showFilters, setShowFilters] = useState<boolean>(true);
     const [filters, setFilters] = useState(DEFAULT_FILTERS);
+    const PRODUCTS_PER_PAGE = 12;
 
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [totalProducts, setTotalProducts] = useState(0);
     const handleCheckbox = (
         filterName: "material" | "framing" | "size" | "medium" | "colors",
         value: string
@@ -58,8 +63,12 @@ const Shop = () => {
     ];
 
     useEffect(() => {
-        loadProducts();
+        setPage(1);
     }, [filters]);
+
+    useEffect(() => {
+        loadProducts();
+    }, [filters, page]);
 
     const loadProducts = async () => {
         try {
@@ -72,15 +81,22 @@ const Shop = () => {
                     order: "desc",
                     sortBy: "createdAt",
                     filters,
+                    limit: PRODUCTS_PER_PAGE,
+                    skip: (page - 1) * PRODUCTS_PER_PAGE,
                 }),
             });
 
             const data = await response.json();
+
             setProducts(data.data || []);
+            setTotalPages(data.totalPages);
+            setTotalProducts(data.total);
+
         } catch (err) {
             console.error(err);
         }
     };
+
     const isDefaultPrice =
         filters.price[0] === DEFAULT_FILTERS.price[0] &&
         filters.price[1] === DEFAULT_FILTERS.price[1];
@@ -106,6 +122,14 @@ const Shop = () => {
             [filterName]: prev[filterName].filter(item => item !== value),
         }));
     };
+
+    useEffect(() => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    }, [page]);
+
     const selectedFilters = [
         ...filters.size.map(value => ({
             key: `size-${value}`,
@@ -509,7 +533,7 @@ const Shop = () => {
                         )}
 
                         <Typography color="text.secondary" mb={4}>
-                            {products.length} artworks found
+                            {totalProducts} artworks found
                         </Typography>
 
                         <Masonry
@@ -527,6 +551,20 @@ const Shop = () => {
                                 />
                             ))}
                         </Masonry>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                mt: 5,
+                            }}
+                        >
+                            <Pagination
+                                count={totalPages}
+                                page={page}
+                                onChange={(_, value) => setPage(value)}
+                                color="primary"
+                            />
+                        </Box>
                     </Box>
                 </Box>
             </Box>

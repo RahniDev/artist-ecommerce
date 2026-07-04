@@ -472,37 +472,42 @@ export const listByFilters = async (req: Request, res: Response) => {
     }
 
     try {
-        const data = await Product.find(findArgs)
-            .select(`
-        name
-        price
-        category
-        quantity
-        sold
-        material
-        medium
-        colors
-        framing
-        weight
-        width
-        height
-        length
-        photos.url
-        photos.key
-        photos.contentType
-        createdAt
-      `)
-            .populate("category")
-            .sort({ [sortBy]: order })
-            .skip(skip)
-            .limit(limit)
-            .lean();
+        const [total, data] = await Promise.all([
+            Product.countDocuments(findArgs),
+            Product.find(findArgs)
+                .select(`
+            name
+            price
+            category
+            quantity
+            sold
+            material
+            medium
+            colors
+            framing
+            weight
+            width
+            height
+            length
+            photos.url
+            photos.key
+            photos.contentType
+            createdAt
+        `)
+                .populate("category")
+                .sort({ [sortBy]: order })
+                .skip(skip)
+                .limit(limit)
+                .lean(),
+        ]);
 
         const transformedData = data.map(p => applyLang(p, lang as string));
 
         return res.json({
-            size: transformedData.length,
-            data: transformedData
+            data: transformedData,
+            total,
+            page: skip / limit + 1,
+            totalPages: Math.ceil(total / limit)
         });
     } catch (err) {
         return res.status(400).json({ error: "Products not found" });
