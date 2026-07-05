@@ -1,4 +1,8 @@
-import { createSlice, createAsyncThunk, type PayloadAction } from "@reduxjs/toolkit";
+import {
+  createSlice,
+  createAsyncThunk,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import { getCategories, listSearchedProducts } from "../../core/apiCore";
 import type { Category, IProduct } from "../../types";
 
@@ -19,6 +23,7 @@ const initialState: SearchState = {
   results: [],
   searched: false,
   loading: false,
+  error: undefined,
 };
 
 export const fetchCategories = createAsyncThunk(
@@ -37,7 +42,11 @@ export const fetchSearchResults = createAsyncThunk(
     { rejectWithValue }
   ) => {
     const res = await listSearchedProducts(params);
-    if (res.error) return rejectWithValue(res.error);
+
+    if (res.error) {
+      return rejectWithValue(res.error);
+    }
+
     return Array.isArray(res.data) ? res.data : [];
   }
 );
@@ -48,30 +57,37 @@ const searchSlice = createSlice({
   reducers: {
     setCategory(state, action: PayloadAction<string>) {
       state.category = action.payload;
-      state.searched = false;
     },
+
     setSearch(state, action: PayloadAction<string>) {
       state.search = action.payload;
-      state.searched = false;
     },
+
     resetSearch(state) {
       state.results = [];
       state.searched = false;
+      state.error = undefined;
     },
   },
+
   extraReducers: builder => {
     builder
       .addCase(fetchCategories.fulfilled, (state, action) => {
         state.categories = action.payload;
       })
+
       .addCase(fetchSearchResults.pending, state => {
         state.loading = true;
+        state.error = undefined;
       })
+
       .addCase(fetchSearchResults.fulfilled, (state, action) => {
         state.loading = false;
         state.results = action.payload;
         state.searched = true;
+        state.error = undefined;
       })
+
       .addCase(fetchSearchResults.rejected, (state, action) => {
         state.loading = false;
         state.results = [];
@@ -82,4 +98,5 @@ const searchSlice = createSlice({
 });
 
 export const { setCategory, setSearch, resetSearch } = searchSlice.actions;
+
 export default searchSlice.reducer;

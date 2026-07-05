@@ -5,12 +5,12 @@ import {
   fetchCategories,
   fetchSearchResults,
   setSearch,
+  resetSearch,
 } from "../redux/slices/searchSlice";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,
   TextField,
-  Button,
   Typography,
 } from "@mui/material";
 import { useTranslation } from "react-i18next";
@@ -31,11 +31,20 @@ const Search = () => {
     dispatch(fetchCategories());
   }, [dispatch]);
 
-  const searchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!search) return;
-    dispatch(fetchSearchResults({ search, category }));
-  };
+  useEffect(() => {
+    const trimmedSearch = search.trim();
+
+    if (!trimmedSearch) {
+      dispatch(resetSearch());
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      dispatch(fetchSearchResults({ search: trimmedSearch, category }));
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search, category, dispatch]);
 
   const searchMessage = () => {
     if (!searched) return "";
@@ -47,8 +56,6 @@ const Search = () => {
   return (
     <>
       <Box
-        component="form"
-        onSubmit={searchSubmit}
         sx={{
           display: "flex",
           flexWrap: "nowrap",
@@ -61,28 +68,13 @@ const Search = () => {
           size="small"
           label={t("search")}
           value={search}
-          onChange={e => dispatch(setSearch(e.target.value))}
-          sx={{
-            minWidth: 190,
-            "& .MuiOutlinedInput-root": {
-              borderRadius: 0,
+          onChange={(e) => dispatch(setSearch(e.target.value))}
+          slotProps={{
+            input: {
+              endAdornment: <SearchIcon />,
             },
           }}
         />
-
-        <Button
-          type="submit"
-          variant="contained"
-          size="large"
-          sx={{
-            minWidth: 48,
-            borderTopLeftRadius: 0,
-            borderBottomLeftRadius: 0,
-            boxShadow: "none",
-          }}
-        >
-          <SearchIcon />
-        </Button>
       </Box>
       <Box>
         <Typography variant="h6" aria-live="polite"
