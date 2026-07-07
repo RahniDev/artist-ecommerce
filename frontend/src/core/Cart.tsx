@@ -15,7 +15,7 @@ import {
     Container,
 } from "@mui/material";
 import CartItemControls from "./CartItemControls";
-import ShowImage from "./ShowImage";
+import ProductImage from "./ProductImage";
 import { Link as RouterLink, Navigate } from "react-router-dom";
 import CartBreadcrumbs from "./CartBreadcrumbs";
 import { useState } from "react";
@@ -52,11 +52,12 @@ const Cart: React.FC = () => {
                                     to={`/product/${product._id}`}
                                     underline="none"
                                 >
-                                    <ShowImage
+                                    <ProductImage
                                         item={product}
                                         width="120px"
                                         height="120px"
                                         url="product"
+                                        sizes="(max-width: 600px) 100vw, 33vw"
                                     />
                                 </Link>
                             </Grid>

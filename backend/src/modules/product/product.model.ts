@@ -65,11 +65,16 @@ const productSchema = new Schema<IProductDocument>({
     type: Number,
     default: 0
   },
-  photos: [{
-    key: { type: String, required: true },
-    url: { type: String, required: true },
-    contentType: String
-  }],
+ photos: [{
+    key: String,
+    contentType: String,
+    sizes: {
+        sm: String,
+        md: String,
+        lg: String,
+        xl: String
+    }
+}],
   weight: {
     type: Number, // grams
     required: true

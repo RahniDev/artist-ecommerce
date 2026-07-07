@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import ShowImage from "./ShowImage";
+import ProductImage from "./ProductImage";
 import type { CardProps } from "../types";
 import { Card, CardContent, Typography, Box, Stack } from "@mui/material";
 import SoldBadge from "./SoldBadge";
@@ -40,9 +40,10 @@ const ProductCard: React.FC<CardProps> = ({
             >
                 <Box component={Link}
                     to={`/product/${product._id}`}>
-                    <ShowImage
+                    <ProductImage
                         item={product}
                         url="product"
+                        sizes="(max-width: 600px) 100vw, 33vw"
                         width="100%"
                         showAll={false}
                     />
@@ -73,8 +74,8 @@ const ProductCard: React.FC<CardProps> = ({
                         <Box component={Link} to={`/products/${product._id}`}>
 
                             {product.nameEn !== product.name && (
-                                <Typography variant="body1" 
-                                 fontStyle="italic">
+                                <Typography variant="body1"
+                                    fontStyle="italic">
                                     {product.name}
                                 </Typography>
                             )}

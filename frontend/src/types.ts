@@ -316,13 +316,14 @@ export interface SoldBadgeProps {
 
 export type LightingMode = "daylight" | "evening" | "gallery";
 
-export interface ShowImageProps {
+export interface ProductImageProps {
   item: {
     _id: string;
     name?: string;
     photos?: any[];
     photoCount?: number;
   };
+  sizes?: string;
   url: string;
   width?: number | string;
   height?: number | string;
@@ -408,8 +409,8 @@ export interface CardProps {
   setRun?: (value: boolean) => void;
   run?: boolean;
   redirect?: boolean;
-    textColor?: string;
-    secondaryColor?: string;
+  textColor?: string;
+  secondaryColor?: string;
 }
 
 export interface AddToCartButtonProps {

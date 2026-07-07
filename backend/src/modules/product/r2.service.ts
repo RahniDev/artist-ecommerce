@@ -16,40 +16,75 @@ export const r2 = new S3Client({
 });
 
 export async function uploadProductPhoto(photo: any) {
-  const key = `products/${crypto.randomUUID()}.webp`;
 
-  const originalBuffer = await fs.promises.readFile(photo.filepath);
+    const imageId = crypto.randomUUID();
 
-  const optimizedBuffer = await sharp(originalBuffer)
-    .resize({
-      width: 1600,
-      withoutEnlargement: true,
-    })
-    .webp({
-      quality: 100,
-    })
-    .toBuffer();
+    const originalBuffer = await fs.promises.readFile(photo.filepath);
 
-  await r2.send(
-    new PutObjectCommand({
-      Bucket: bucket,
-      Key: key,
-      Body: optimizedBuffer,
-      ContentType: "image/webp",
-      CacheControl: "public, max-age=31536000, immutable",
-    })
-  );
+    const imageSizes = [
+        { name: "sm", width: 320 },
+        { name: "md", width: 640 },
+        { name: "lg", width: 960 },
+        { name: "xl", width: 1600 }
+    ];
 
-  return {
-    key,
-    url: `${publicUrl}/${key}`,
-    contentType: "image/webp",
-  };
+    const urls: Record<string, string> = {};
+
+    await Promise.all(
+
+        imageSizes.map(async ({ name, width }) => {
+
+            const key = `products/${imageId}-${name}.webp`;
+
+            const buffer = await sharp(originalBuffer)
+                .rotate()
+                .resize({
+                    width,
+                    fit: "inside",
+                    withoutEnlargement: true
+                })
+                .webp({
+                    quality: 82,
+                    effort: 6
+                })
+                .toBuffer();
+
+            await r2.send(
+                new PutObjectCommand({
+                    Bucket: bucket,
+                    Key: key,
+                    Body: buffer,
+                    ContentType: "image/webp",
+                    CacheControl: "public,max-age=31536000,immutable"
+                })
+            );
+
+            urls[name] = `${publicUrl}/${key}`;
+
+        })
+    );
+
+    return {
+        key: imageId,
+        contentType: "image/webp",
+        sizes: urls
+    };
 }
 
 export async function deleteProductPhoto(key: string) {
-  await r2.send(new DeleteObjectCommand({
-    Bucket: bucket,
-    Key: key,
-  }));
+
+    const sizes = ["sm", "md", "lg", "xl"];
+
+    await Promise.all(
+
+        sizes.map(size =>
+            r2.send(
+                new DeleteObjectCommand({
+                    Bucket: bucket,
+                    Key: `products/${key}-${size}.webp`
+                })
+            )
+        )
+
+    );
 }

@@ -9,7 +9,7 @@ import ProductCard from "./ProductCard";
 import SoldBadge from "./SoldBadge";
 import AddToCartButton from "./AddToCartButton";
 import ProductBreadcrumbs from "./ProductBreadcrumbs";
-import ShowImage from "./ShowImage";
+import ProductImage from "./ProductImage";
 import { Box, Typography, Grid } from "@mui/material";
 import ImageModal from "./ImageModal";
 import { toCartItem } from "../redux/slices/cartSlice";
@@ -61,9 +61,10 @@ const handleImageClick = (src: string) => {
                 <Grid size={{ xs: 12, md: 6 }} mb={2}>
                   <Box
                     sx={{ cursor: "zoom-in" }}>
-                    <ShowImage
+                    <ProductImage
                       item={product}
                       url="product"
+                      sizes="(max-width: 900px) 100vw, 50vw"
                       width={380}
                       height={380}
                       showAll={true}

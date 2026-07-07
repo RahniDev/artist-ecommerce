@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChangeEvent, FormEvent } from "react";
-import { API } from "../config";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
@@ -28,6 +27,7 @@ import {
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { PAINT_COLOR_OPTIONS } from "../../../shared/colourPalette";
+import ProductImage from "../core/ProductImage";
 
 const UpdateProduct = () => {
     const { productId } = useParams<{ productId: string }>();
@@ -361,21 +361,23 @@ const UpdateProduct = () => {
                             </Button>
 
                             {productId && photosPreview.length === 0 && (
-                                <Box
-                                    component="img"
-                                    src={`${API}/product/photo/${productId}`}
-                                    alt="Product preview"
-                                    sx={{ width: 200, borderRadius: 1, border: "1px solid #ddd" }}
+                                <ProductImage
+                                    item={{ _id: productId }}
+                                    url="product"
+                                    sizes="(max-width: 600px) 100vw, 33vw"
+                                    width={200}
+                                    height={200}
                                 />
                             )}
 
-                            {photosPreview.map((src, i) => (
-                                <Box
+                            {photosPreview.map((i) => (
+                                <ProductImage
                                     key={i}
-                                    component="img"
-                                    src={src}
-                                    alt={`Painting photo preview ${i + 1}`}
-                                    sx={{ width: 200, borderRadius: 1, border: "1px solid #ddd" }}
+                                    item={{ _id: "" }}
+                                    url="product"
+                                    sizes="(max-width: 600px) 100vw, 33vw"
+                                    width={200}
+                                    height={200}
                                 />
                             ))}
                         </Box>

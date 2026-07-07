@@ -22,7 +22,7 @@ const CollectionSlider = () => {
   );
 
   useEffect(() => {
-    fetch(`${API}/category/featured?lang=${currentLanguage}`)
+    fetch(`${API}/categories/featured?lang=${currentLanguage}`)
       .then((res) => res.json())
       .then((data) => {
         setProducts(data.products ?? []);

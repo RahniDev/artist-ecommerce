@@ -7,7 +7,7 @@ import {
     Chip,
     Typography
 } from "@mui/material";
-import ShowImage from "../core/ShowImage";
+import ShowImage from "../core/ProductImage";
 
 const ManageProductRow: React.FC<ManageProductRowProps> = ({ product, onDelete }) => (
     <ListItem

@@ -20,6 +20,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 import { useNavigate, Link } from "react-router-dom";
 import { PAINT_COLOR_OPTIONS } from "../../../shared/colourPalette";
+import ProductImage from "../core/ProductImage";
 
 const AddProduct: React.FC = () => {
   const navigate = useNavigate();
@@ -236,13 +237,14 @@ const AddProduct: React.FC = () => {
                 />
               </Button>
 
-              {imgPreviews.map((src, i) => (
-                <Box
+              {imgPreviews.map((i) => (
+                <ProductImage
                   key={i}
-                  component="img"
-                  src={src}
-                  alt="Painting photo preview"
-                  sx={{ width: 200, borderRadius: 1, border: "1px solid #ddd" }}
+                  item={{ _id: "" }}
+                  url="product"
+                  sizes="(max-width: 600px) 100vw, 33vw"
+                  width={200}
+                  height={200}
                 />
               ))}
             </Box>
