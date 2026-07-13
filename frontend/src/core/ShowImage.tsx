@@ -17,22 +17,24 @@ const ShowImage: React.FC<ShowImageProps> = (props) => {
     "&:hover": { transform: "scale(1.02)" }
   };
 
-if (!item.photos?.length) {
+  const photos = item.photos ?? [];
+
+  if (!photos.length) {
     return null;
-}
-  const photoCount = Array.isArray(item.photos) && item.photos.length > 0
-    ? item.photos.length
+  }
+
+  const photoCount = photos.length > 0
+    ? photos.length
     : item.photoCount ?? 1;
+
   const indices = Array.from({ length: photoCount }, (_, i) => i);
   const safeIndex = Math.max(0, Math.min(activeIndex, photoCount - 1));
-
-
 
   // Single image
   if (!showAll) {
     return (
       <ResponsiveImage
-        photo={item.photos[0]}
+        photo={photos[0]}
         alt={item.name ?? "Product Image"}
         sizes={sizes ?? "(max-width:600px) 100vw, 33vw"}
         sx={imgSx}
@@ -51,15 +53,11 @@ if (!item.photos?.length) {
       }}>
         {indices.map((index) => (
           <ResponsiveImage
-            photo={item.photos[index]}
+            photo={photos[index]}
             alt={`Thumbnail ${index + 1}`}
             sizes="60px"
             onClick={() => setActiveIndex(index)}
             sx={{
-              width: 60,
-              height: 60,
-              minWidth: 60,
-              minHeight: 60,
               objectFit: "cover",
               cursor: "pointer",
               borderRadius: 1,
@@ -109,14 +107,9 @@ if (!item.photos?.length) {
           }}
         >
           <ResponsiveImage
-            photo={item.photos[safeIndex]}
+            photo={photos[safeIndex]}
             alt={`${item.name} photo ${safeIndex + 1}`}
             sizes={sizes ?? "(max-width:600px) 100vw, 50vw"}
-            onClick={() =>
-              props.onImageClick?.(
-                item.photos[safeIndex].sizes.xl
-              )
-            }
             sx={{
               ...imgSx,
               display: "block",

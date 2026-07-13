@@ -6,14 +6,26 @@ export interface CategoryData {
   name: string;
 }
 
+export interface ProductPhoto {
+  url: string;
+  sizes: {
+    xs: string;
+    sm: string;
+    md: string;
+    lg: string;
+    xl: string;
+  };
+}
+
 export interface ShowImageProps {
   item: {
     _id: string;
     name?: string;
-    photos: any[];
+    photos?: ProductPhoto[];
     photoCount?: number;
   };
   url: string;
+  sizes?: string;
   width?: number | string;
   height?: number | string;
   showAll?: boolean;
