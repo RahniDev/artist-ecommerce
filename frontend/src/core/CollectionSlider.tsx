@@ -22,16 +22,27 @@ const CollectionSlider = () => {
   );
 
   useEffect(() => {
-    fetch(`${API}/categories/featured?lang=${currentLanguage}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setProducts(data.products ?? []);
-        setCollectionTitle(data.name ?? "");
-      })
-      .catch((err) => {
-        console.error("Failed to load featured collection", err);
-      });
-  }, [currentLanguage]);
+  fetch(`${API}/categories/featured?lang=${currentLanguage}`)
+    .then(async (res) => {
+      if (!res.ok) {
+        console.warn("Featured collection unavailable:", res.status);
+        return {
+          products: [],
+          name: "",
+        };
+      }
+
+      return res.json();
+    })
+    .then((data) => {
+      setProducts(data.products ?? []);
+      setCollectionTitle(data.name ?? "");
+    })
+    .catch((err) => {
+      console.error("Failed to load featured collection", err);
+      setProducts([]);
+    });
+}, [currentLanguage]);
 
   if (!products.length) return null;
 

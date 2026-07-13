@@ -18,14 +18,26 @@ const ResponsiveImage = ({
   onClick,
 }: Props) => {
 
-  if (!photo.sizes) {
-    console.error("MISSING PHOTO SIZES", photo);
-  }
+if (!photo?.sizes) {
+  console.error("Invalid photo object:", photo);
+
+  return (
+    <Box
+      component="img"
+      src={photo.url}
+      alt={alt}
+      sizes={sizes}
+      loading="lazy"
+      decoding="async"
+      sx={sx}
+    />
+  );
+}
 
 const fallback =
-    sizes === "60px"
-        ? photo.sizes.xs
-        : photo.sizes.md;
+  sizes === "60px"
+    ? photo.sizes.xs
+    : photo.sizes.md;
   const srcSet = [
     `${photo.sizes.xs} 160w`,
     `${photo.sizes.sm} 320w`,

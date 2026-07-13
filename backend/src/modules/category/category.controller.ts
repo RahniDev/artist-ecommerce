@@ -97,7 +97,10 @@ export const getFeaturedCategory = async (req: Request, res: Response) => {
     const category = await Category.findById(categoryId).lean();
 
     if (!category) {
-      return res.status(404).json({ error: "Featured category not found" });
+      return res.json({
+        category: null,
+        products: []
+      });
     }
 
     const products = await Product.find({
