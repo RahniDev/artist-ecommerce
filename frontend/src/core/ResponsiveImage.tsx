@@ -17,6 +17,11 @@ const ResponsiveImage = ({
   sx,
   onClick,
 }: Props) => {
+
+  if (!photo.sizes) {
+    console.error("MISSING PHOTO SIZES", photo);
+  }
+
 const fallback =
     sizes === "60px"
         ? photo.sizes.xs
