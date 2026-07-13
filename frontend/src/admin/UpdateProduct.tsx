@@ -27,7 +27,7 @@ import {
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { PAINT_COLOR_OPTIONS } from "../../../shared/colourPalette";
-import ProductImage from "../core/ProductImage";
+import ProductImage from "../core/ShowImage";
 
 const UpdateProduct = () => {
     const { productId } = useParams<{ productId: string }>();

@@ -1,6 +1,5 @@
-import { Dialog, DialogContent, IconButton } from "@mui/material";
+import { Box, Dialog, DialogContent, IconButton } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
-import ProductImage from "./ProductImage";
 
 interface ImageModalProps {
   open: boolean;
@@ -9,7 +8,10 @@ interface ImageModalProps {
   onClose: () => void;
 }
 
-const ImageModal: React.FC<ImageModalProps> = ({ open, onClose }) => {
+const ImageModal: React.FC<ImageModalProps> = ({ open,
+  src,
+  alt,
+  onClose }) => {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="lg" fullWidth>
       <IconButton
@@ -19,13 +21,14 @@ const ImageModal: React.FC<ImageModalProps> = ({ open, onClose }) => {
         <CloseIcon />
       </IconButton>
       <DialogContent sx={{ p: 0, display: "flex", justifyContent: "center", bgcolor: "black" }}>
-        <ProductImage
-          item={{ _id: "" }}
-          url="product"
-          sizes="(max-width: 600px) 100vw, 33vw"
-          width="100%"
-          height="auto"
-        //objectFit: "contain"
+        <Box
+          component="img"
+          src={src}
+          alt={alt}
+          sx={{
+            width: "100%",
+            objectFit: "contain"
+          }}
         />
       </DialogContent>
     </Dialog>

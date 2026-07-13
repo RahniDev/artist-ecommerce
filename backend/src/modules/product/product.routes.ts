@@ -9,7 +9,6 @@ update,
 list,
 listRelated,
 listCategories,
-photo,
 listSearch,
 listByFilters
 } from './product.controller.js';
@@ -28,7 +27,6 @@ router.param('userId', userById);
 router.param('productId', productById);
 
 // routes that use params
-router.get('/products/photo/:productId', photo);
 router.get('/products/:productId', read);
 router.post('/products/create/:userId', requireSignin, isAuth, isAdmin, create);
 router.delete('/products/:productId/:userId', requireSignin, isAuth, isAdmin, deleteProduct);

@@ -15,7 +15,7 @@ import {
     Container,
 } from "@mui/material";
 import CartItemControls from "./CartItemControls";
-import ProductImage from "./ProductImage";
+import ProductImage from "./ShowImage";
 import { Link as RouterLink, Navigate } from "react-router-dom";
 import CartBreadcrumbs from "./CartBreadcrumbs";
 import { useState } from "react";

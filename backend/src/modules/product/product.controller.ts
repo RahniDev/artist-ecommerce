@@ -39,7 +39,7 @@ export const productById = async (
 
         const product = await Product.findById(id)
             .populate("category")
-            .select("name price category quantity sold weight width height length photos.url photos.key photos.contentType material medium createdAt")
+            .select("name price category quantity sold weight width height length photos material medium createdAt")
 
 
         if (!product) {
@@ -85,7 +85,7 @@ export const list = async (req: Request, res: Response) => {
         const products = await Product.find({
             quantity: { $gt: 0 }
         })
-            .select("name price category quantity sold weight width height length photos.url photos.key photos.contentType material medium createdAt")
+            .select("name price category quantity sold weight width height length photos material medium createdAt")
             .sort({ createdAt: -1 })
             .limit(12)
             .lean();
@@ -124,26 +124,6 @@ export const listCategories = async (req: Request, res: Response) => {
         return res.json(categories)
     } catch (err) { return res.status(400).json({ error: 'Categories not found' }) }
 }
-
-export const photo = async (req: Request, res: Response) => {
-    try {
-        const product = await Product.findById(req.params.productId).select("photos");
-
-        console.log("Requested:", req.params.productId);
-        console.log("Found product:", !!product);
-        console.log("Photos:", product?.photos);
-        const index = Number(req.query.index) || 0;
-        const img = product?.photos?.[index];
-
-        if (!product || !img?.url) {
-            return res.status(404).send("No image");
-        }
-
-        return res.redirect(302, img.url);
-    } catch (err) {
-        return res.status(500).send("Image error");
-    }
-};
 
 export const create = async (req: Request, res: Response) => {
     const form = formidable({ multiples: true });
@@ -358,7 +338,7 @@ export const listSearch = async (req: Request, res: Response) => {
 
     try {
         const products = await Product.find(query)
-            .select("name price category quantity sold weight width height length photos.url photos.key photos.contentType createdAt")
+            .select("name price category quantity sold weight width height length photos createdAt")
             .lean();
 
         const transformedProducts = products.map(p => applyLang(p, lang as string));
@@ -489,9 +469,7 @@ export const listByFilters = async (req: Request, res: Response) => {
             width
             height
             length
-            photos.url
-            photos.key
-            photos.contentType
+            photos
             createdAt
         `)
                 .populate("category")

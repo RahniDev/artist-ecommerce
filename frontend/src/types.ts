@@ -6,6 +6,21 @@ export interface CategoryData {
   name: string;
 }
 
+export interface ShowImageProps {
+  item: {
+    _id: string;
+    name?: string;
+    photos: any[];
+    photoCount?: number;
+  };
+  url: string;
+  width?: number | string;
+  height?: number | string;
+  showAll?: boolean;
+  lightingMode?: LightingMode;
+  onImageClick?: (src: string) => void;
+}
+
 export interface CheckoutState {
   loading: boolean;
   success: boolean;

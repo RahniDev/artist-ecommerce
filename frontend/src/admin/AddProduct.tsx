@@ -20,7 +20,7 @@ import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 import { useNavigate, Link } from "react-router-dom";
 import { PAINT_COLOR_OPTIONS } from "../../../shared/colourPalette";
-import ProductImage from "../core/ProductImage";
+import ProductImage from "../core/ShowImage";
 
 const AddProduct: React.FC = () => {
   const navigate = useNavigate();

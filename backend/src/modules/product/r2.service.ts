@@ -7,12 +7,12 @@ const bucket = process.env.R2_BUCKET_NAME!;
 const publicUrl = process.env.R2_PUBLIC_URL!;
 
 export const r2 = new S3Client({
-  region: "auto",
-  endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
-  credentials: {
-    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
-    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
-  },
+    region: "auto",
+    endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
+    credentials: {
+        accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+        secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
+    },
 });
 
 export async function uploadProductPhoto(photo: any) {
@@ -21,14 +21,23 @@ export async function uploadProductPhoto(photo: any) {
 
     const originalBuffer = await fs.promises.readFile(photo.filepath);
 
-    const imageSizes = [
+    type ImageSize = "xs" | "sm" | "md" | "lg" | "xl";
+
+    const imageSizes: { name: ImageSize; width: number }[] = [
+        { name: "xs", width: 160 },
         { name: "sm", width: 320 },
         { name: "md", width: 640 },
         { name: "lg", width: 960 },
         { name: "xl", width: 1600 }
     ];
 
-    const urls: Record<string, string> = {};
+    const urls: Record<ImageSize, string> = {
+        xs: "",
+        sm: "",
+        md: "",
+        lg: "",
+        xl: "",
+    };
 
     await Promise.all(
 
@@ -71,20 +80,17 @@ export async function uploadProductPhoto(photo: any) {
     };
 }
 
-export async function deleteProductPhoto(key: string) {
-
-    const sizes = ["sm", "md", "lg", "xl"];
+export async function deleteProductPhoto(imageId: string) {
+    const sizes = ["xs", "sm", "md", "lg", "xl"];
 
     await Promise.all(
-
-        sizes.map(size =>
+        sizes.map((size) =>
             r2.send(
                 new DeleteObjectCommand({
                     Bucket: bucket,
-                    Key: `products/${key}-${size}.webp`
+                    Key: `products/${imageId}-${size}.webp`,
                 })
             )
         )
-
     );
 }

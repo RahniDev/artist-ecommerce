@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import ProductImage from "./ProductImage";
+import ProductImage from "./ShowImage";
 import type { CardProps } from "../types";
 import { Card, CardContent, Typography, Box, Stack } from "@mui/material";
 import SoldBadge from "./SoldBadge";

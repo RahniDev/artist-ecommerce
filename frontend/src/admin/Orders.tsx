@@ -18,7 +18,7 @@ import {
     Divider
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
-import ShowImage from "../core/ProductImage";
+import ShowImage from "../core/ShowImage";
 
 const Orders: React.FC = () => {
     const [orders, setOrders] = useState<IOrder[]>([]);

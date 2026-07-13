@@ -22,8 +22,14 @@ export interface IProduct {
   sold: number;
   photos: {
     key: string;
-    url: string;
     contentType: string;
+    sizes: {
+      xs: string;
+      sm: string;
+      md: string;
+      lg: string;
+      xl: string;
+    };
   }[];
   material: string;
   medium: string;
@@ -65,16 +71,17 @@ const productSchema = new Schema<IProductDocument>({
     type: Number,
     default: 0
   },
- photos: [{
+  photos: [{
     key: String,
     contentType: String,
     sizes: {
-        sm: String,
-        md: String,
-        lg: String,
-        xl: String
+      xs: String,
+      sm: String,
+      md: String,
+      lg: String,
+      xl: String
     }
-}],
+  }],
   weight: {
     type: Number, // grams
     required: true

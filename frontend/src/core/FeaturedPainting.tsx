@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { fetchProduct } from "../redux/slices/productSlice";
 import type { RootState, AppDispatch } from "../redux/store";
-import ShowImage from "./ProductImage";
+import ShowImage from "./ShowImage";
 import { useLocalizedDescription } from "../hooks/useLocalizedDescription";
 
 const FeaturedPainting = () => {

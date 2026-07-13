@@ -9,7 +9,7 @@ import ProductCard from "./ProductCard";
 import SoldBadge from "./SoldBadge";
 import AddToCartButton from "./AddToCartButton";
 import ProductBreadcrumbs from "./ProductBreadcrumbs";
-import ProductImage from "./ProductImage";
+import ProductImage from "./ShowImage";
 import { Box, Typography, Grid } from "@mui/material";
 import ImageModal from "./ImageModal";
 import { toCartItem } from "../redux/slices/cartSlice";
