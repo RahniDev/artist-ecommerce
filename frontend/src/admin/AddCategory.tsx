@@ -57,7 +57,9 @@ const AddCategory = () => {
   return (
     <Layout title="" description="">
       <Link component={RouterLink} to="/admin/dashboard">Back to Dashboard</Link>
-      <Typography variant="h1" gutterBottom>
+      <Typography variant="h1" gutterBottom  sx={{
+    pt: { xs: 3, sm: 0 },
+  }}>
         Add a new collection
       </Typography>
       <form onSubmit={clickSubmit}>
