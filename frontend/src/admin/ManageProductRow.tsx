@@ -18,8 +18,10 @@ const ManageProductRow: React.FC<ManageProductRowProps> = ({ product, onDelete }
             alignItems: "center",
         }}
     >
-        <ShowImage item={product}
+        <ShowImage
+            item={product}
             url="product"
+            sizes="(max-width: 600px) 100vw, 33vw"
             width="100px" />
         <ListItemText
             primary={

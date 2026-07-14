@@ -144,6 +144,7 @@ const Orders: React.FC = () => {
                                                 name: p.name,
                                             }}
                                             url="product"
+                                            sizes="(max-width: 600px) 100vw, 33vw"
                                             width="100px"
                                             height="100%"
                                         />

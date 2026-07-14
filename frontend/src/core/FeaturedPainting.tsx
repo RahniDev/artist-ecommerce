@@ -60,7 +60,8 @@ const FeaturedPainting = () => {
         </Typography>
       </Box>
       <Box style={{ width: "50%" }}>
-        <ShowImage item={product} url='product' />
+        <ShowImage item={product} url='product'
+          sizes="(max-width: 600px) 100vw, 33vw" />
       </Box>
     </Box>
   );
