@@ -7,7 +7,7 @@
     "dev": "tsx watch src/server.ts",
     "translate": "node src/scripts/langbly-translate.js",
     "build": "tsc",
-    "start": "node dist/server.js"
+    "start": "node dist/backend/src/server.js"
   },
   "author": "",
   "license": "ISC",
