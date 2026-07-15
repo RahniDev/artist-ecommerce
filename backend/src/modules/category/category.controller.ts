@@ -28,8 +28,32 @@ export const categoryById = async (
 
 export const create = async (req: Request, res: Response) => {
   try {
-    const category = new Category(req.body);
+    const { name, parent } = req.body;
+
+    let level = 1;
+    if (parent) {
+      const parentCategory = await Category.findById(parent);
+
+      if (!parentCategory) {
+        return res.status(400).json({
+          error: "Parent category not found",
+        });
+      }
+      level = parentCategory.level + 1;
+
+      if (level > 3) {
+        return res.status(400).json({
+          error: "Only 3 levels are allowed",
+        });
+      }
+    }
+    const category = new Category({
+      name,
+      parent: parent || null,
+      level,
+    });
     const savedCategory = await category.save();
+
     res.status(201).json(savedCategory);
   } catch (err) {
     return res.status(400).json({ error: errorHandler(err as MongoError) });
@@ -161,10 +185,23 @@ export const remove = async (req: CustomRequest, res: Response) => {
 
 export const list = async (req: Request, res: Response) => {
   try {
-    const categories = await Category.find()
-      .select('_id name')
-      .lean();
-    return res.json(categories);
+    const categories = await Category.find().lean();
+
+    const level1 = categories.filter(c => !c.parent);
+
+    const result = level1.map(top => ({
+      ...top,
+      subcategories: categories
+        .filter(c => String(c.parent) === String(top._id))
+        .map(sub => ({
+          ...sub,
+          subcategories: categories.filter(
+            c => String(c.parent) === String(sub._id)
+          ),
+        })),
+    }));
+
+    res.json(result);
   } catch (err) {
     return res.status(400).json({ error: 'Categories not found' });
   }

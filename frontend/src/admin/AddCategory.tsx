@@ -1,8 +1,8 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
 import { Link as RouterLink } from 'react-router-dom';
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
-import { createCategory } from "./apiAdmin";
+import { createCategory, getCategories } from "./apiAdmin";
 import type { IAuthData, Category } from "../types";
 import {
   Box,
@@ -10,7 +10,8 @@ import {
   Button,
   TextField,
   Link,
-  Alert
+  Alert,
+  MenuItem,
 } from "@mui/material";
 
 const AddCategory = () => {
@@ -18,6 +19,8 @@ const AddCategory = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [createdCategory, setCreatedCategory] = useState<Category | null>(null);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [parent, setParent] = useState("");
 
   const { user, token } = isAuthenticated() as IAuthData;
 
@@ -26,14 +29,39 @@ const AddCategory = () => {
     setCreatedCategory(null);
     setName(e.target.value);
   };
+  useEffect(() => {
+    loadCategories();
+  }, []);
+
+
+  const loadCategories = async () => {
+    const response = await getCategories();
+
+    if (response.error) {
+      setError(response.error);
+      return;
+    }
+
+    setCategories(response.data ?? []);
+  };
+
+  const handleParentChange = (
+    e: ChangeEvent<HTMLInputElement>
+  ) => {
+    setParent(e.target.value);
+  };
 
   const clickSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setLoading(true);
+    setParent("");
 
     try {
-      const payload = { name };
+      const payload = {
+        name,
+        parent: parent || null,
+      };
 
       const data = await createCategory(
         user._id,
@@ -53,13 +81,21 @@ const AddCategory = () => {
       setLoading(false);
     }
   };
+  const getLabel = (category: Category) => {
+    if (category.level === 1) return category.name;
 
+    if (category.level === 2) {
+      return `-- ${category.name}`;
+    }
+
+    return `---- ${category.name}`;
+  };
   return (
     <Layout title="" description="">
       <Link component={RouterLink} to="/admin/dashboard">Back to Dashboard</Link>
-      <Typography variant="h1" gutterBottom  sx={{
-    pt: { xs: 3, sm: 0 },
-  }}>
+      <Typography variant="h1" gutterBottom sx={{
+        pt: { xs: 3, sm: 0 },
+      }}>
         Add a new collection
       </Typography>
       <form onSubmit={clickSubmit}>
@@ -73,6 +109,27 @@ const AddCategory = () => {
             mx: "auto",
           }}
         >
+          <TextField
+            select
+            label="Parent Category"
+            value={parent}
+            onChange={handleParentChange}
+            fullWidth
+          >
+            <MenuItem value="">
+              No parent (Top level category)
+            </MenuItem>
+
+            {categories.map((category) => (
+              <MenuItem
+                key={category._id}
+                value={category._id}
+                disabled={category.level === 3}
+              >
+                {getLabel(category)}
+              </MenuItem>
+            ))}
+          </TextField>
           {/* Name field */}
           <TextField
             label="Collection Name"

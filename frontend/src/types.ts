@@ -174,6 +174,7 @@ export interface ApiResponse<T = any> {
 export interface Category {
   _id: string;
   name: string;
+  level: number;
   parent?: string | Category | null;
 }
 
