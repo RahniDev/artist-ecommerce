@@ -8,7 +8,7 @@ export interface CategoryData {
 
 export interface ProductPhoto {
   url: string;
-  sizes: {
+  sizes?: {
     xs: string;
     sm: string;
     md: string;
@@ -25,7 +25,7 @@ export interface ShowImageProps {
     photoCount?: number;
   };
   url: string;
-  sizes: string;
+  sizes?: string;
   width?: number | string;
   height?: number | string;
   showAll?: boolean;

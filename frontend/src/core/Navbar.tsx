@@ -96,8 +96,11 @@ const Navbar: React.FC = () => {
         </ListItem>
 
         <ListItem disablePadding>
-          <ListItemButton>
-            <ListItemText primary="Collections" />
+          <ListItemButton onClick={() => {
+              navigate("/shop");
+              setDrawerOpen(false);
+            }}>
+            <ListItemText primary="Shop" />
           </ListItemButton>
         </ListItem>
 

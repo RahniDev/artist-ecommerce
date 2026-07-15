@@ -30,7 +30,7 @@ const About = () => {
           />
         </Box>
 
-        <Box sx={{ width: "60%", mx: "auto" }}>
+        <Box sx={{ width: {xs: "90%", md: "60%"}, mx: "auto" }}>
           <Typography sx={{fontSize: {xs: '38px', md: '50px'}}} variant="h1" component="h1" gutterBottom>
             {t("about_title")}
           </Typography>

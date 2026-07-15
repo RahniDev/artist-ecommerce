@@ -120,6 +120,13 @@ const Signin: React.FC = () => {
     return (
         <Layout title={t("signin")} description="">
             <Loader loading={loading} />
+            {errors.general && (
+                <Alert severity="error" sx={{
+                    mb: 2, width: "60%", mx: "auto"
+                }}>
+                    {errors.general}
+                </Alert>
+            )}
             <Box
                 display="flex"
                 justifyContent="center"
@@ -127,11 +134,7 @@ const Signin: React.FC = () => {
                 minHeight="46vh"
                 px={2}
             >
-                {errors.general && (
-                    <Alert severity="error" sx={{ mb: 2 }}>
-                        {errors.general}
-                    </Alert>
-                )}
+
                 <form onSubmit={handleSubmit} noValidate>
                     <AuthCard title="">
                         <TextField

@@ -27,7 +27,7 @@ import {
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { PAINT_COLOR_OPTIONS } from "../../../shared/colourPalette";
-import ProductImage from "../core/ShowImage";
+import ShowImage from "../core/ShowImage";
 
 const UpdateProduct = () => {
     const { productId } = useParams<{ productId: string }>();
@@ -41,6 +41,7 @@ const UpdateProduct = () => {
     const { user, token } = auth;
 
     const [photosPreview, setPhotosPreview] = useState<string[]>([]);
+    const [product, setProduct] = useState<IProduct | null>(null);
     const [values, setValues] = useState<UpdateProductValues>({
         name: "",
         price: "",
@@ -142,11 +143,12 @@ const UpdateProduct = () => {
                     ...prev,
                     error: res.error ?? "Failed to load product",
                 }));
+                
                 return;
             }
 
             const product = res.data;
-
+setProduct(product);
             const fd = new FormData();
             fd.set("name", product.name ?? "");
             fd.set("price", product.price?.toString() ?? "");
@@ -311,7 +313,12 @@ const UpdateProduct = () => {
             }));
         }
     };
-
+   const productPhoto = photosPreview.length > 0
+        ? {
+              _id: product?._id ?? "",
+              photos: photosPreview.map((url) => ({ url })),
+          }
+        : product;
     return (
         <Layout
             title="Update product"
@@ -360,26 +367,16 @@ const UpdateProduct = () => {
                                 />
                             </Button>
 
-                            {productId && photosPreview.length === 0 && (
-                                <ProductImage
-                                    item={{ _id: productId }}
+                            {productPhoto && (
+                                <ShowImage
+                                    item={productPhoto}
                                     url="product"
-                                    sizes="(max-width: 600px) 100vw, 33vw"
-                                    width={200}
-                                    height={200}
+                                    sizes="60px"
+                                    width={60}
+                                    height={60}
+                                    showAll
                                 />
                             )}
-
-                            {photosPreview.map((i) => (
-                                <ProductImage
-                                    key={i}
-                                    item={{ _id: "" }}
-                                    url="product"
-                                    sizes="(max-width: 600px) 100vw, 33vw"
-                                    width={200}
-                                    height={200}
-                                />
-                            ))}
                         </Box>
 
                         <TextField
