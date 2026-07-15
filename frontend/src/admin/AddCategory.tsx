@@ -55,7 +55,6 @@ const AddCategory = () => {
     e.preventDefault();
     setError(null);
     setLoading(true);
-    setParent("");
 
     try {
       const payload = {
@@ -73,6 +72,7 @@ const AddCategory = () => {
       } else {
         setCreatedCategory(data as Category);
         setName("");
+        setParent("");
       }
     } catch (err) {
       console.error("Error creating the collection:", err);
@@ -81,15 +81,18 @@ const AddCategory = () => {
       setLoading(false);
     }
   };
-  const getLabel = (category: Category) => {
-    if (category.level === 1) return category.name;
 
-    if (category.level === 2) {
-      return `-- ${category.name}`;
-    }
+  const categoryOptions = categories.flatMap((category) => [
+    {
+      ...category,
+      displayName: category.name,
+    },
+    ...(category.subcategories || []).map((subcategory: Category) => ({
+      ...subcategory,
+      displayName: `-- ${subcategory.name}`,
+    })),
+  ]);
 
-    return `---- ${category.name}`;
-  };
   return (
     <Layout title="" description="">
       <Link component={RouterLink} to="/admin/dashboard">Back to Dashboard</Link>
@@ -120,16 +123,16 @@ const AddCategory = () => {
               No parent (Top level category)
             </MenuItem>
 
-            {categories.map((category) => (
+            {categoryOptions.map((category) => (
               <MenuItem
                 key={category._id}
                 value={category._id}
-                disabled={category.level === 3}
               >
-                {getLabel(category)}
+                {category.displayName}
               </MenuItem>
             ))}
           </TextField>
+
           {/* Name field */}
           <TextField
             label="Collection Name"
