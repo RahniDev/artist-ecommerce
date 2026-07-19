@@ -123,10 +123,7 @@ const Navbar: React.FC = () => {
         fontWeight: 500,
       }}
     >
-      <NavLink to="/about" style={linkStyle}>
-        About
-      </NavLink>
-      <NavLink to="/shop" style={linkStyle}>Shop</NavLink>
+      <NavLink to="/" style={linkStyle}>Home</NavLink>
       <Box
         sx={{ position: "relative" }}
         onMouseEnter={() => setCollectionsOpen(true)}
@@ -165,6 +162,9 @@ const Navbar: React.FC = () => {
           </Box>
         )}
       </Box>
+      <NavLink to="/about" style={linkStyle}>About</NavLink>
+      <NavLink to="/collect" style={linkStyle}>Collect</NavLink>
+      <NavLink to="/contact" style={linkStyle}>Contact</NavLink>
     </Box>
   );
 
