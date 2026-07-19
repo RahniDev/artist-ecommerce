@@ -31,6 +31,7 @@ export const create = async (req: Request, res: Response) => {
     const { name, parent } = req.body;
 
     let level = 1;
+
     if (parent) {
       const parentCategory = await Category.findById(parent);
 
@@ -39,24 +40,29 @@ export const create = async (req: Request, res: Response) => {
           error: "Parent category not found",
         });
       }
+
       level = parentCategory.level + 1;
 
-      if (level > 3) {
+      if (level > 2) {
         return res.status(400).json({
-          error: "Only 3 levels are allowed",
+          error: "Only 2 levels are allowed",
         });
       }
     }
+
     const category = new Category({
       name,
       parent: parent || null,
       level,
     });
+
     const savedCategory = await category.save();
 
     res.status(201).json(savedCategory);
   } catch (err) {
-    return res.status(400).json({ error: errorHandler(err as MongoError) });
+    return res.status(400).json({
+      error: errorHandler(err as MongoError),
+    });
   }
 };
 
@@ -182,27 +188,35 @@ export const remove = async (req: CustomRequest, res: Response) => {
     return res.status(400).json({ error: errorHandler(err as MongoError) });
   }
 };
-
 export const list = async (req: Request, res: Response) => {
   try {
     const categories = await Category.find().lean();
 
-    const level1 = categories.filter(c => !c.parent);
+    const buildTree = (parentId: string | null = null): any[] => {
+      return categories
+        .filter((category) => {
+          if (!category.parent && parentId === null) {
+            return true;
+          }
 
-    const result = level1.map(top => ({
-      ...top,
-      subcategories: categories
-        .filter(c => String(c.parent) === String(top._id))
-        .map(sub => ({
-          ...sub,
-          subcategories: categories.filter(
-            c => String(c.parent) === String(sub._id)
-          ),
-        })),
-    }));
+          return (
+            category.parent &&
+            String(category.parent) === String(parentId)
+          );
+        })
+        .map((category) => ({
+          ...category,
+          subcategories: buildTree(String(category._id)),
+        }));
+    };
 
-    res.json(result);
+    const result = buildTree();
+
+    return res.json(result);
   } catch (err) {
-    return res.status(400).json({ error: 'Categories not found' });
+    console.error(err);
+    return res.status(400).json({
+      error: "Categories not found",
+    });
   }
 };

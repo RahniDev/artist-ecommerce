@@ -30,13 +30,10 @@ const About = () => {
           />
         </Box>
 
-        <Box sx={{ width: {xs: "90%", md: "60%"}, mx: "auto" }}>
-          <Typography sx={{fontSize: {xs: '38px', md: '50px'}}} variant="h1" component="h1" gutterBottom>
-            {t("about_title")}
-          </Typography>
+        <Box sx={{ width: { xs: "90%", md: "60%" }, mx: "auto" }}>
 
           <Typography textAlign="center"
-            variant="h2" component="h2" padding='40px' fontSize='32px' gutterBottom>
+            variant="h1" component="h1" padding='40px' fontSize='32px' gutterBottom>
             Sakari De-Meis
           </Typography>
 

@@ -25,6 +25,7 @@ import { clearAuth } from "../redux/slices/authSlice";
 import LangToggle from "./LangToggle";
 import type { Category } from "../types";
 import { getCategories } from "./apiCore";
+import CategoryDropdown from "./CategoryDropdown";
 
 const linkStyle = {
   color: "#3a3535",
@@ -97,25 +98,17 @@ const Navbar: React.FC = () => {
 
         <ListItem disablePadding>
           <ListItemButton onClick={() => {
-              navigate("/shop");
-              setDrawerOpen(false);
-            }}>
+            navigate("/shop");
+            setDrawerOpen(false);
+          }}>
             <ListItemText primary="Shop" />
           </ListItemButton>
         </ListItem>
 
-        {categories.map(category => (
-          <ListItem key={category._id} disablePadding>
-            <ListItemButton
-              onClick={() => {
-                navigate(`/collection/${category._id}`);
-                setDrawerOpen(false);
-              }}
-            >
-              <ListItemText primary={category.name} />
-            </ListItemButton>
-          </ListItem>
-        ))}
+        <CategoryDropdown
+          categories={categories}
+          navigate={navigate}
+        />
       </List>
     </Drawer>
   );
@@ -147,7 +140,7 @@ const Navbar: React.FC = () => {
             display: "inline-block",
           }}
         >
-          Collections
+          Works
         </Box>
 
         {collectionsOpen && (
@@ -162,22 +155,13 @@ const Navbar: React.FC = () => {
               boxShadow: 3,
               minWidth: 220,
               zIndex: 1300,
+              overflow: "visible",
             }}
           >
-            {categories.map((category) => (
-              <Box
-                key={category._id}
-                sx={{
-                  px: 2,
-                  py: 1,
-                  cursor: "pointer",
-                  "&:hover": { bgcolor: "#f5f5f5" },
-                }}
-                onClick={() => navigate(`/collection/${category._id}`)}
-              >
-                {category.name}
-              </Box>
-            ))}
+            <CategoryDropdown
+              categories={categories}
+              navigate={navigate}
+            />
           </Box>
         )}
       </Box>
@@ -216,7 +200,7 @@ const Navbar: React.FC = () => {
                 disableAutoFocus
                 disableEnforceFocus
                 open={open}
-                onClose={handleMouseLeave}              
+                onClose={handleMouseLeave}
                 slotProps={{
                   paper: {
                     onMouseLeave: handleMouseLeave,
