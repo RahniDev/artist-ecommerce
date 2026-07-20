@@ -1,5 +1,5 @@
 {
-  "add_to_cart": "Acheter l'Original",
+  "add_to_cart": "Acquérir",
   "similar_paintings": "Peintures similaires",
   "cart_items_count": "Votre panier contient {{count}} article",
   "empty_cart": "Votre panier est vide",
@@ -17,7 +17,7 @@
   "signout": "Se déconnecter",
   "password": "Mot de passe",
   "forgot_password": "Mot de passe oublié ?",
-  "existing_account": "Vous avez déjà un compte ?",
+  "existing_account": "Tu as déjà un compte ?",
   "no_account": "Vous n'avez pas encore de compte ?",
   "email": "E-mail",
   "name": "Nom",

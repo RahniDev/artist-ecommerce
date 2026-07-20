@@ -15,7 +15,7 @@ import Orders from './admin/Orders';
 import Profile from "./user/Profile";
 import ManageProducts from './admin/ManageProducts';
 import UpdateProduct from './admin/UpdateProduct'
-import Home from "./core/Home";
+import EntrancePage from "./core/EntrancePage";
 import ForgotPassword from "./user/ForgotPassword";
 import Contact from "./core/Contact";
 import About from "./core/About";
@@ -28,7 +28,7 @@ const AppRoutes: React.FC = () => {
     <BrowserRouter>
       <Routes>
         {/* Public Routes */}
-        <Route path="/" element={<Home />} />
+        <Route path="/" element={<EntrancePage />} />
         <Route path="/collect" element={<Shop />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />

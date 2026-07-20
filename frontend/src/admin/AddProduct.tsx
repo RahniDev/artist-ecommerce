@@ -1,33 +1,48 @@
-import { useState, useEffect, useRef, type ChangeEvent, type FormEvent } from "react";
+import {
+  useEffect, useMemo, useRef, useState,
+  type ChangeEvent, type FormEvent
+} from "react";
 import Layout from "../core/Layout";
 import { createProduct, getCategories } from "./apiAdmin";
-import type { AddProductValues, ProductFormField } from "../types";
+import type {
+  AddProductValues,
+  Category,
+  ProductFormField,
+} from "../types";
 import Loader from "../core/Loader";
 import {
+  Alert,
   Box,
   Button,
   Container,
-  TextField,
-  Select,
-  MenuItem,
-  InputLabel,
   FormControl,
-  Alert,
+  InputLabel,
+  MenuItem,
+  Select,
+  TextField,
   Typography,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
-import { useNavigate, Link } from "react-router-dom";
-import { PAINT_COLOR_OPTIONS } from "../../../shared/colourPalette";
+import { Link, useNavigate } from "react-router-dom";
 import ProductImage from "../core/ShowImage";
+
+type CategoryWithSubcategories = Category & {
+  parent?: string | null;
+  level?: number;
+  subcategories?: CategoryWithSubcategories[];
+};
 
 const AddProduct: React.FC = () => {
   const navigate = useNavigate();
+
   const auth = useSelector((state: RootState) => state.auth);
   const { user, token, isAuthenticated } = auth;
 
   const [imgPreviews, setImgPreviews] = useState<string[]>([]);
+  const [parentCategory, setParentCategory] = useState("");
+
   const [values, setValues] = useState<AddProductValues>({
     name: "",
     price: "",
@@ -48,7 +63,7 @@ const AddProduct: React.FC = () => {
     material: "",
     medium: "",
     colors: [],
-    quality: ""
+    quality: "",
   });
 
   const {
@@ -61,93 +76,216 @@ const AddProduct: React.FC = () => {
     createdProduct,
     framing,
     additionalDetails,
-    quality,
     medium,
-    colors,
-    material
+    material,
   } = values;
 
   const formData = useRef<FormData | null>(null);
 
+  const selectedParentCategory = useMemo(() => {
+    return (categories as CategoryWithSubcategories[]).find(
+      (item) => item._id === parentCategory
+    );
+  }, [categories, parentCategory]);
+
+  const subcategories = selectedParentCategory?.subcategories ?? [];
+
   useEffect(() => {
-    if (!isAuthenticated) navigate("/signin");
+    if (!isAuthenticated) {
+      navigate("/signin");
+    }
   }, [isAuthenticated, navigate]);
 
   useEffect(() => {
     const init = async () => {
-      const data = await getCategories();
-      if (data.error) {
-        setValues(p => ({ ...p, error: data.error || "" }));
-      } else {
-        setValues(p => ({ ...p, categories: data.data || [] }));
-        formData.current = new FormData();
+      formData.current = new FormData();
+
+      const response = await getCategories();
+
+      if (response.error) {
+        setValues((previous) => ({
+          ...previous,
+          error: response.error || "",
+        }));
+
+        return;
       }
+
+      setValues((previous) => ({
+        ...previous,
+        categories: response.data || [],
+      }));
     };
+
     init();
   }, []);
+
+  useEffect(() => {
+    return () => {
+      imgPreviews.forEach((preview) => {
+        URL.revokeObjectURL(preview);
+      });
+    };
+  }, [imgPreviews]);
 
   const handleInputChange =
     (field: ProductFormField) =>
       (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        if (!formData.current) return;
+        if (!formData.current) {
+          return;
+        }
 
-        if (field === "photo" && event.target instanceof HTMLInputElement && event.target.files) {
+        if (
+          field === "photo" &&
+          event.target instanceof HTMLInputElement &&
+          event.target.files
+        ) {
           const files = Array.from(event.target.files);
 
-          // Clear any previously selected photos from FormData
           formData.current.delete("photos");
 
+          imgPreviews.forEach((preview) => {
+            URL.revokeObjectURL(preview);
+          });
+
           if (files.length > 0) {
-            files.forEach((file) => formData.current!.append("photos", file));
-            setValues(prev => ({ ...prev, photos: files }));
-            setImgPreviews(files.map(file => URL.createObjectURL(file)));
+            files.forEach((file) => {
+              formData.current?.append("photos", file);
+            });
+
+            setValues((previous) => ({
+              ...previous,
+              photos: files,
+            }));
+
+            setImgPreviews(
+              files.map((file) => URL.createObjectURL(file))
+            );
+          } else {
+            setValues((previous) => ({
+              ...previous,
+              photos: [],
+            }));
+
+            setImgPreviews([]);
           }
-        } else {
-          const value = event.target.value;
-          formData.current.set(field, value);
-          setValues(prev => ({ ...prev, [field]: value }));
+
+          return;
         }
+
+        const value = event.target.value;
+
+        formData.current.set(field, value);
+
+        setValues((previous) => ({
+          ...previous,
+          [field]: value,
+        }));
       };
 
   const handleSelectChange =
     (field: ProductFormField) =>
       (event: SelectChangeEvent<string>) => {
-        if (!formData.current) return;
+        if (!formData.current) {
+          return;
+        }
+
         const value = event.target.value;
+
         formData.current.set(field, value);
-        setValues(prev => ({ ...prev, [field]: value }));
+
+        setValues((previous) => ({
+          ...previous,
+          [field]: value,
+        }));
       };
 
-  const handleColorToggle = (hex: string) => {
-    if (!formData.current) return;
+  const handleParentCategoryChange = (
+    event: SelectChangeEvent<string>
+  ) => {
+    const value = event.target.value;
 
-    const updatedColors = colors.includes(hex)
-      ? colors.filter(c => c !== hex)
-      : [...colors, hex];
+    setParentCategory(value);
 
-    formData.current.delete("colors");
-    updatedColors.forEach(c => formData.current!.append("colors", c));
+    formData.current?.delete("category");
 
-    setValues(prev => ({
-      ...prev,
-      colors: updatedColors,
+    setValues((previous) => ({
+      ...previous,
+      category: "",
     }));
   };
 
-  const handleCategoryChange = (event: SelectChangeEvent<string>) => {
-    if (!formData.current) return;
-    const value = event.target.value;
-    formData.current.set("category", value);
+  const handleSubcategoryChange = (
+    event: SelectChangeEvent<string>
+  ) => {
+    if (!formData.current) {
+      return;
+    }
 
-    setValues(prev => ({ ...prev, category: value }));
+    const subcategoryId = event.target.value;
+    formData.current.set("category", subcategoryId);
+
+    setValues((previous) => ({
+      ...previous,
+      category: subcategoryId,
+    }));
   };
 
-  const clickSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!formData.current || !user || !token) return;
+  const resetForm = () => {
+    imgPreviews.forEach((preview) => {
+      URL.revokeObjectURL(preview);
+    });
 
-    setValues(prev => ({
-      ...prev,
+    setParentCategory("");
+    setImgPreviews([]);
+    formData.current = new FormData();
+
+    setValues((previous) => ({
+      ...previous,
+      name: "",
+      price: "",
+      category: "",
+      weight: "",
+      width: "",
+      height: "",
+      length: "",
+      photos: [],
+      additionalDetails: "",
+      material: "",
+      medium: "",
+      framing: "",
+    }));
+  };
+
+  const clickSubmit = async (
+    event: FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+
+    if (!formData.current || !user || !token) {
+      return;
+    }
+
+    if (!parentCategory) {
+      setValues((previous) => ({
+        ...previous,
+        error: "Please select a category.",
+      }));
+
+      return;
+    }
+
+    if (!category) {
+      setValues((previous) => ({
+        ...previous,
+        error: "Please select a subcategory.",
+      }));
+
+      return;
+    }
+
+    setValues((previous) => ({
+      ...previous,
       loading: true,
       error: "",
       createdProduct: false,
@@ -155,45 +293,63 @@ const AddProduct: React.FC = () => {
     }));
 
     try {
-      const res = await createProduct(user._id, token, formData.current);
-      const rawName = res.data?.name as any;
-      if (res.error) {
-        setValues(p => ({ ...p, error: res.error || "", loading: false }));
-      } else if (res.data) {
-        setValues(p => ({
-          ...p,
-          createdProduct: true,
-          createdProductName: typeof rawName === "object" ? rawName?.en : rawName ?? "",
-          createdProductId: res.data?._id ?? "",
-          name: "",
-          price: "",
-          category: "",
-          weight: "",
-          width: "",
-          height: "",
-          length: "",
-          photos: [],
-          additionalDetails: "",
-          quality: "",
-          material: "",
-          medium: "",
-          colors: [],
-          framing: ""
+      const response = await createProduct(
+        user._id,
+        token,
+        formData.current
+      );
+
+      const rawName = response.data?.name as
+        | string
+        | { en?: string }
+        | undefined;
+
+      if (response.error) {
+        setValues((previous) => ({
+          ...previous,
+          error: response.error || "",
+          loading: false,
         }));
-        setImgPreviews([]);
-        formData.current = new FormData();
+
+        return;
       }
-    } catch {
-      setValues(p => ({ ...p, error: "Product creation failed", createdProduct: false }));
+
+      if (response.data) {
+        const createdProductName =
+          typeof rawName === "object"
+            ? rawName?.en || ""
+            : rawName || "";
+
+        setValues((previous) => ({
+          ...previous,
+          createdProduct: true,
+          createdProductName,
+          createdProductId: response.data?._id || "",
+        }));
+
+        resetForm();
+      }
+    } catch (err) {
+      console.error(err);
+
+      setValues((previous) => ({
+        ...previous,
+        error: "Product creation failed",
+        createdProduct: false,
+      }));
     } finally {
-      setValues(p => ({ ...p, loading: false }));
+      setValues((previous) => ({
+        ...previous,
+        loading: false,
+      }));
     }
   };
 
   return (
     <Layout
       title="Add a new painting"
-      description={`Hello ${user?.name || ""}, ready to add a new painting?`}
+      description={`Hello ${user?.name || ""
+        }, ready to add a new painting?`}
     >
       <Container maxWidth="md">
         <Box sx={{ mt: 4 }}>
@@ -201,7 +357,9 @@ const AddProduct: React.FC = () => {
 
           {createdProduct && (
             <Alert severity="success" sx={{ mb: 2 }}>
-              <Link to={`/product/${values.createdProductId}`}>{values.createdProductName} is created!</Link>
+              <Link to={`/product/${values.createdProductId}`}>
+                {values.createdProductName} is created!
+              </Link>
             </Alert>
           )}
 
@@ -214,20 +372,28 @@ const AddProduct: React.FC = () => {
           <Box
             component="form"
             onSubmit={clickSubmit}
-            sx={{ display: "flex", flexDirection: "column", gap: 2 }}
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: 2,
+            }}
           >
-            <Typography variant="h6">Painting Photo</Typography>
+            <Typography variant="h6">
+              Painting Photo
+            </Typography>
 
             <Box
               sx={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-around",
+                flexWrap: "wrap",
                 gap: 2,
               }}
             >
               <Button variant="outlined" component="label">
                 Upload Image
+
                 <input
                   hidden
                   type="file"
@@ -237,10 +403,13 @@ const AddProduct: React.FC = () => {
                 />
               </Button>
 
-              {imgPreviews.map((i) => (
+              {imgPreviews.map((preview) => (
                 <ProductImage
-                  key={i}
-                  item={{ _id: "" }}
+                  key={preview}
+                  item={{
+                    _id: "",
+                    photos: [{ url: preview }],
+                  }}
                   url="product"
                   sizes="(max-width: 600px) 100vw, 33vw"
                   width={200}
@@ -253,6 +422,7 @@ const AddProduct: React.FC = () => {
               label="Title"
               value={name}
               onChange={handleInputChange("name")}
+              required
               fullWidth
             />
 
@@ -261,18 +431,72 @@ const AddProduct: React.FC = () => {
               type="number"
               value={price}
               onChange={handleInputChange("price")}
+              required
               fullWidth
             />
 
-            <FormControl fullWidth>
-              <InputLabel>Category</InputLabel>
-              <Select value={category} label="Category" onChange={handleCategoryChange}>
+            <FormControl fullWidth required>
+              <InputLabel id="parent-category-label">
+                Category
+              </InputLabel>
+
+              <Select
+                labelId="parent-category-label"
+                value={parentCategory}
+                label="Category"
+                onChange={handleParentCategoryChange}
+              >
                 <MenuItem value="">
-                  <em>Please select</em>
+                  <em>Please select a category</em>
                 </MenuItem>
-                {categories.map(c => (
-                  <MenuItem key={c._id} value={c._id}>
-                    {c.name}
+
+                {(categories as CategoryWithSubcategories[]).map(
+                  (parent) => (
+                    <MenuItem
+                      key={parent._id}
+                      value={parent._id}
+                    >
+                      {parent.name}
+                    </MenuItem>
+                  )
+                )}
+              </Select>
+            </FormControl>
+
+            <FormControl
+              fullWidth
+              required
+              disabled={
+                !parentCategory ||
+                subcategories.length === 0
+              }
+            >
+              <InputLabel id="subcategory-label">
+                Subcategory
+              </InputLabel>
+
+              <Select
+                labelId="subcategory-label"
+                value={category}
+                label="Subcategory"
+                onChange={handleSubcategoryChange}
+              >
+                <MenuItem value="">
+                  <em>
+                    {!parentCategory
+                      ? "Select a category first"
+                      : subcategories.length === 0
+                        ? "No subcategories available"
+                        : "Please select a subcategory"}
+                  </em>
+                </MenuItem>
+
+                {subcategories.map((subcategory: any) => (
+                  <MenuItem
+                    key={subcategory._id}
+                    value={subcategory._id}
+                  >
+                    {subcategory.name}
                   </MenuItem>
                 ))}
               </Select>
@@ -280,6 +504,7 @@ const AddProduct: React.FC = () => {
 
             <FormControl fullWidth>
               <InputLabel>Material</InputLabel>
+
               <Select
                 value={material}
                 label="Material"
@@ -288,66 +513,16 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="">
                   <em>Please select</em>
                 </MenuItem>
-                <MenuItem value="Paper">Paper</MenuItem>
+
+                <MenuItem value="Paper">100% cotton premium paper</MenuItem>
                 <MenuItem value="Canvas">Canvas</MenuItem>
                 <MenuItem value="Other">Other</MenuItem>
               </Select>
             </FormControl>
 
-            <Box>
-              <Typography fontWeight={600} sx={{ mb: 1 }}>
-                Colors
-              </Typography>
-
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(30, 18px)",
-                  gap: 1.2,
-                  alignItems: "center",
-                }}
-              >
-                {PAINT_COLOR_OPTIONS.map((color) => {
-                  const selected = colors.includes(color.hex);
-
-                  return (
-                    <Box
-                      key={color.hex}
-                      onClick={() => handleColorToggle(color.hex)}
-                      title={color.name}
-                      sx={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: "50%",
-                        cursor: "pointer",
-                        backgroundColor: color.hex,
-                        border: selected
-                          ? "3px solid #111"
-                          : "1px solid rgba(0,0,0,0.15)",
-                        boxShadow: selected ? "0 0 0 3px rgba(0,0,0,0.12)" : "none",
-                        transition: "all 0.2s ease",
-                        "&:hover": {
-                          transform: "scale(1.08)",
-                        },
-                      }}
-                    />
-                  );
-                })}
-              </Box>
-
-              {colors.length > 0 && (
-                <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
-                  Selected:{" "}
-                  {PAINT_COLOR_OPTIONS
-                    .filter(c => colors.includes(c.hex))
-                    .map(c => c.name)
-                    .join(", ")}
-                </Typography>
-              )}
-            </Box>
-
             <FormControl fullWidth>
               <InputLabel>Medium</InputLabel>
+
               <Select
                 value={medium}
                 label="Medium"
@@ -356,13 +531,26 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="">
                   <em>Please select</em>
                 </MenuItem>
-                <MenuItem value="Watercolour">Watercolour</MenuItem>
-                <MenuItem value="Acrylic">Acrylic</MenuItem>
-                <MenuItem value="Oil pastel">Oil pastel</MenuItem>
-                <MenuItem value="Gouache">Gouache</MenuItem>
+
+                <MenuItem value="Watercolour">
+                  Watercolour
+                </MenuItem>
+                <MenuItem value="Acrylic">
+                  Acrylic
+                </MenuItem>
+                <MenuItem value="Oil pastel">
+                  Oil pastel
+                </MenuItem>
+                <MenuItem value="Gouache">
+                  Gouache
+                </MenuItem>
                 <MenuItem value="Ink">Ink</MenuItem>
-                <MenuItem value="Charcoal">Charcoal</MenuItem>
-                <MenuItem value="Mixed media">Mixed media</MenuItem>
+                <MenuItem value="Charcoal">
+                  Charcoal
+                </MenuItem>
+                <MenuItem value="Mixed media">
+                  Mixed media
+                </MenuItem>
               </Select>
             </FormControl>
 
@@ -384,39 +572,38 @@ const AddProduct: React.FC = () => {
 
             <FormControl fullWidth>
               <InputLabel>Framing</InputLabel>
+
               <Select
                 value={framing}
                 label="Framing"
                 onChange={handleSelectChange("framing")}
               >
-                <MenuItem value="Unframed">Unframed</MenuItem>
-                <MenuItem value="Ready to hang">Ready to hang</MenuItem>
-              </Select>
-            </FormControl>
-
-            <FormControl fullWidth>
-              <InputLabel>Quality</InputLabel>
-              <Select
-                value={quality}
-                label="Quality"
-                onChange={handleSelectChange("quality")}
-              >
-                <MenuItem value="Low quality">Low quality</MenuItem>
-                <MenuItem value="Medium quality">Medium quality</MenuItem>
-                <MenuItem value="High quality">High quality</MenuItem>
+                <MenuItem value="">
+                  <em>Please select</em>
+                </MenuItem>
+                <MenuItem value="Unframed">
+                  Unframed
+                </MenuItem>
+                <MenuItem value="Ready to hang">
+                  Ready to hang
+                </MenuItem>
               </Select>
             </FormControl>
 
             <TextField
-              label="Additional Details e.g: painting scuffed on the bottom left"
+              label="Additional Details e.g. painting scuffed on the bottom left"
               value={additionalDetails}
-              onChange={handleInputChange("additionalDetails")}
+              onChange={handleInputChange(
+                "additionalDetails"
+              )}
               multiline
               rows={4}
               fullWidth
             />
 
-            <Typography>Only required for shipping:</Typography>
+            <Typography>
+              Only required for shipping:
+            </Typography>
 
             <TextField
               label="Weight (grams)"
@@ -439,7 +626,11 @@ const AddProduct: React.FC = () => {
               variant="contained"
               size="large"
               sx={{ mt: 2 }}
-              disabled={loading}
+              disabled={
+                loading ||
+                !parentCategory ||
+                !category
+              }
             >
               Add Painting
             </Button>

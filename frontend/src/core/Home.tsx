@@ -11,13 +11,14 @@ import Layout from "./Layout";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 
+
 const Home: React.FC = () => {
   const currentLanguage = useSelector((state: RootState) => state.language.currentLanguage);
   const [productsByArrival, setProductsByArrival] = useState<IProduct[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const { t } = useTranslation();
- 
+
   const loadProducts = async () => {
     setLoading(true);
     setError(null);
@@ -44,26 +45,26 @@ const Home: React.FC = () => {
   return (
     <Layout title="" description="">
       <Box sx={{ display: "flex", justifyContent: "center", width: "100%" }}>
-        <Box>
+        {/* <Box>
           <Search />
-        </Box>
+        </Box> */}
       </Box>
-
+      {/* 
       {error && (
         <Alert severity="error">
           {error}
         </Alert>
-      )}
+      )} */}
 
       <Loader loading={loading} />
       {/* <FeaturedPainting /> */}
 
       {/* No new arrivals */}
-      <Typography sx={{ pb: 4 }} variant="h2" component="h2" textAlign="center">
+      {/* <Typography sx={{ pb: 4 }} variant="h2" component="h2" textAlign="center">
         {t("latest_originals")}
-      </Typography>
+      </Typography> 
 
-      {productsByArrival.length === 0 && !loading && !error && (
+       {productsByArrival.length === 0 && !loading && !error && (
         <Typography
           variant="body1"
           color="text.secondary"
@@ -72,15 +73,16 @@ const Home: React.FC = () => {
         >
           {t("no_new_arrivals")}
         </Typography>
-      )}
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
-        {/* New arrivals */}
+      )}*/}
+      {/* New arrivals */}
+      {/* <Box sx={{ display: "flex", justifyContent: "space-between", mb: 4 }}>
+      
         {productsByArrival.length > 0 && !loading && !error && (
           <ListProducts products={productsByArrival} />
         )}
-      </Box>
-      <CollectionSlider />
-
+      </Box> 
+       <CollectionSlider />  
+*/}
     </Layout>
   );
 };
