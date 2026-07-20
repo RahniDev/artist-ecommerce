@@ -47,8 +47,7 @@ const AddProduct: React.FC = () => {
     name: "",
     price: "",
     weight: "",
-    width: "",
-    height: "",
+    size: "",
     length: "",
     categories: [],
     category: "",
@@ -62,13 +61,13 @@ const AddProduct: React.FC = () => {
     additionalDetails: "",
     material: "",
     medium: "",
-    colors: [],
     quality: "",
   });
 
   const {
     name,
     price,
+    size,
     categories,
     category,
     loading,
@@ -244,6 +243,7 @@ const AddProduct: React.FC = () => {
       ...previous,
       name: "",
       price: "",
+      size: "",
       category: "",
       weight: "",
       width: "",
@@ -514,9 +514,12 @@ const AddProduct: React.FC = () => {
                   <em>Please select</em>
                 </MenuItem>
 
-                <MenuItem value="Paper">100% cotton premium paper</MenuItem>
-                <MenuItem value="Canvas">Canvas</MenuItem>
-                <MenuItem value="Other">Other</MenuItem>
+                <MenuItem value="100% Cotton Premium Paper">100% Cotton Premium Paper</MenuItem>
+                <MenuItem value="100% Linen Canvas">100% Linen Canvas</MenuItem>
+                <MenuItem value="100% Cotton Premium Canvas">100% Cotton Premium Canvas</MenuItem>
+                <MenuItem value="Recycled Canvas">Recycled Canvas - made from 6 recycled plastic bottles</MenuItem>
+                <MenuItem value="Premium Canvas">Premium Canvas</MenuItem>
+                <MenuItem value="Board">Board</MenuItem>
               </Select>
             </FormControl>
 
@@ -535,14 +538,20 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="Watercolour">
                   Watercolour
                 </MenuItem>
+                <MenuItem value="Watercolour & Gouache">
+                  Watercolour & Gouache
+                </MenuItem>
+                <MenuItem value="Watercolour & Other Media">
+                  Watercolour & Other Media
+                </MenuItem>
                 <MenuItem value="Acrylic">
                   Acrylic
                 </MenuItem>
-                <MenuItem value="Oil pastel">
-                  Oil pastel
+                <MenuItem value="Oil">
+                  Oil
                 </MenuItem>
-                <MenuItem value="Gouache">
-                  Gouache
+                <MenuItem value="Oil Pastel">
+                  Oil Pastel
                 </MenuItem>
                 <MenuItem value="Ink">Ink</MenuItem>
                 <MenuItem value="Charcoal">
@@ -554,25 +563,42 @@ const AddProduct: React.FC = () => {
               </Select>
             </FormControl>
 
-            <TextField
-              label="Width (cm)"
-              type="number"
-              value={values.width}
-              onChange={handleInputChange("width")}
-              fullWidth
-            />
-
-            <TextField
-              label="Height (cm)"
-              type="number"
-              value={values.height}
-              onChange={handleInputChange("height")}
-              fullWidth
-            />
+            <FormControl fullWidth>
+              <InputLabel>Size</InputLabel>
+              <Select
+                value={size}
+                label="Size"
+                onChange={handleSelectChange("size")}
+              >
+                <MenuItem value="">
+                  <em>Please select</em>
+                </MenuItem>
+                <MenuItem value="30cm X 30cm">
+                  30cm X 30cm
+                </MenuItem>
+                <MenuItem value="40cm x 40cm">
+                  40cm x 40cm
+                </MenuItem>
+                <MenuItem value="50cm x 50cm">
+                  50cm x 50cm
+                </MenuItem>
+                  <MenuItem value="51cm x 41cm">
+                  51cm x 41cm
+                </MenuItem>
+                <MenuItem value="60cm x 60cm">
+                  60cm x 60cm
+                </MenuItem>
+                 <MenuItem value="61cm x 46cm">
+                  61cm x 46cm
+                </MenuItem>
+                <MenuItem value="73cm x 116cm">
+                73cm x 116cm
+                </MenuItem>              
+              </Select>
+            </FormControl>
 
             <FormControl fullWidth>
               <InputLabel>Framing</InputLabel>
-
               <Select
                 value={framing}
                 label="Framing"

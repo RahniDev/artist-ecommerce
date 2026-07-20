@@ -39,7 +39,7 @@ export const productById = async (
 
         const product = await Product.findById(id)
             .populate("category")
-            .select("name price category quantity sold weight width height length photos material medium createdAt")
+            .select("name price category quantity sold weight size length photos material medium createdAt")
 
 
         if (!product) {
@@ -85,7 +85,7 @@ export const list = async (req: Request, res: Response) => {
         const products = await Product.find({
             quantity: { $gt: 0 }
         })
-            .select("name price category quantity sold weight width height length photos material medium createdAt")
+            .select("name price category quantity sold weight size length photos material medium createdAt")
             .sort({ createdAt: -1 })
             .limit(12)
             .lean();
@@ -136,7 +136,7 @@ export const create = async (req: Request, res: Response) => {
             });
         });
 
-        let { name, price, category, weight, width, height, length, framing, material, medium, additionalDetails, quality, colors } = fields;
+        let { name, price, category, weight, size, length, framing, material, medium, additionalDetails, quality, colors } = fields;
         // normalize fields to ensure expected type
         const normalize = (v: string | string[] | undefined) => Array.isArray(v) ? v[0] : v;
         const normalizeArray = (v: string | string[] | undefined) => {
@@ -148,8 +148,7 @@ export const create = async (req: Request, res: Response) => {
         const priceValue = Number(normalize(price));
         const categoryValue = normalize(category);
         const weightValue = Number(normalize(weight));
-        const widthValue = normalize(width) ? Number(normalize(width)) : undefined;
-        const heightValue = normalize(height) ? Number(normalize(height)) : undefined;
+        const sizeValue = normalize(size)
         const lengthValue = normalize(length) ? Number(normalize(length)) : undefined;
         const framingValue = normalize(framing);
         const additionalDetailsValue = normalize(additionalDetails);
@@ -176,8 +175,7 @@ export const create = async (req: Request, res: Response) => {
             category: categoryValue,
             quantity: quantityValue,
             weight: weightValue,
-            width: widthValue,
-            height: heightValue,
+            size: sizeValue,
             length: lengthValue,
             framing: framingValue,
             material: materialValue,
@@ -338,7 +336,7 @@ export const listSearch = async (req: Request, res: Response) => {
 
     try {
         const products = await Product.find(query)
-            .select("name price category quantity sold weight width height length photos createdAt")
+            .select("name price category quantity sold weight size length photos createdAt")
             .lean();
 
         const transformedProducts = products.map(p => applyLang(p, lang as string));
@@ -466,8 +464,7 @@ export const listByFilters = async (req: Request, res: Response) => {
             colors
             framing
             weight
-            width
-            height
+            size           
             length
             photos
             createdAt

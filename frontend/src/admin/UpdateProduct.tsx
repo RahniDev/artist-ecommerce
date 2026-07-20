@@ -26,7 +26,6 @@ import {
     Typography,
 } from "@mui/material";
 import type { SelectChangeEvent } from "@mui/material/Select";
-import { PAINT_COLOR_OPTIONS } from "../../../shared/colourPalette";
 import ShowImage from "../core/ShowImage";
 
 const UpdateProduct = () => {
@@ -46,8 +45,7 @@ const UpdateProduct = () => {
         name: "",
         price: "",
         weight: "",
-        width: "",
-        height: "",
+        size: "",
         length: "",
         categories: [],
         category: "",
@@ -58,15 +56,14 @@ const UpdateProduct = () => {
         updatedProductName: "",
         material: "",
         medium: "",
-        colors: [],
         framing: "",
         additionalDetails: "",
-        quality: "",
     });
 
     const {
         name,
         price,
+        size,
         categories,
         category,
         loading,
@@ -75,10 +72,8 @@ const UpdateProduct = () => {
         updatedProductName,
         material,
         medium,
-        colors,
         framing,
         additionalDetails,
-        quality,
     } = values;
 
     const formData = useRef<FormData | null>(null);
@@ -143,12 +138,12 @@ const UpdateProduct = () => {
                     ...prev,
                     error: res.error ?? "Failed to load product",
                 }));
-                
+
                 return;
             }
 
             const product = res.data;
-setProduct(product);
+            setProduct(product);
             const fd = new FormData();
             fd.set("name", product.name ?? "");
             fd.set("price", product.price?.toString() ?? "");
@@ -156,16 +151,10 @@ setProduct(product);
             fd.set("material", product.material ?? "");
             fd.set("medium", product.medium ?? "");
             fd.set("framing", product.framing ?? "");
-            fd.set("quality", product.quality ?? "");
             fd.set("additionalDetails", product.additionalDetails ?? "");
             fd.set("weight", product.weight?.toString() ?? "");
-            fd.set("width", product.width?.toString() ?? "");
-            fd.set("height", product.height?.toString() ?? "");
+            fd.set("size", product.size?.toString() ?? "");
             fd.set("length", product.length?.toString() ?? "");
-
-            (product.colors ?? []).forEach((color: string) => {
-                fd.append("colors", color);
-            });
 
             formData.current = fd;
 
@@ -177,12 +166,9 @@ setProduct(product);
                 material: product.material ?? "",
                 medium: product.medium ?? "",
                 framing: product.framing ?? "",
-                quality: product.quality ?? "",
                 additionalDetails: product.additionalDetails ?? "",
-                colors: product.colors ?? [],
                 weight: product.weight?.toString() ?? "",
-                width: product.width?.toString() ?? "",
-                height: product.height?.toString() ?? "",
+                size: product.size?.toString() ?? "",
                 length: product.length?.toString() ?? "",
             }));
         } catch {
@@ -219,22 +205,6 @@ setProduct(product);
         const value = event.target.value;
         formData.current.set("category", value);
         setValues((prev) => ({ ...prev, category: value }));
-    };
-
-    const handleColorToggle = (hex: string) => {
-        if (!formData.current) return;
-
-        const updatedColors = colors.includes(hex)
-            ? colors.filter((c) => c !== hex)
-            : [...colors, hex];
-
-        formData.current.delete("colors");
-        updatedColors.forEach((color) => formData.current!.append("colors", color));
-
-        setValues((prev) => ({
-            ...prev,
-            colors: updatedColors,
-        }));
     };
 
     const handlePhotoFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -313,11 +283,11 @@ setProduct(product);
             }));
         }
     };
-   const productPhoto = photosPreview.length > 0
+    const productPhoto = photosPreview.length > 0
         ? {
-              _id: product?._id ?? "",
-              photos: photosPreview.map((url) => ({ url })),
-          }
+            _id: product?._id ?? "",
+            photos: photosPreview.map((url) => ({ url })),
+        }
         : product;
     return (
         <Layout
@@ -426,58 +396,6 @@ setProduct(product);
                             </Select>
                         </FormControl>
 
-                        <Box>
-                            <Typography fontWeight={600} sx={{ mb: 1 }}>
-                                Colors
-                            </Typography>
-
-                            <Box
-                                sx={{
-                                    display: "grid",
-                                    gridTemplateColumns: "repeat(30, 18px)",
-                                    gap: 1.2,
-                                    alignItems: "center",
-                                }}
-                            >
-                                {PAINT_COLOR_OPTIONS.map((color) => {
-                                    const selected = colors.includes(color.hex);
-
-                                    return (
-                                        <Box
-                                            key={color.hex}
-                                            onClick={() => handleColorToggle(color.hex)}
-                                            title={color.name}
-                                            sx={{
-                                                width: 20,
-                                                height: 20,
-                                                borderRadius: "50%",
-                                                cursor: "pointer",
-                                                backgroundColor: color.hex,
-                                                border: selected
-                                                    ? "3px solid #111"
-                                                    : "1px solid rgba(0,0,0,0.15)",
-                                                boxShadow: selected ? "0 0 0 3px rgba(0,0,0,0.12)" : "none",
-                                                transition: "all 0.2s ease",
-                                                "&:hover": {
-                                                    transform: "scale(1.08)",
-                                                },
-                                            }}
-                                        />
-                                    );
-                                })}
-                            </Box>
-
-                            {colors.length > 0 && (
-                                <Typography variant="body2" color="text.secondary" sx={{ mt: 1.5 }}>
-                                    Selected:{" "}
-                                    {PAINT_COLOR_OPTIONS
-                                        .filter((c) => colors.includes(c.hex))
-                                        .map((c) => c.name)
-                                        .join(", ")}
-                                </Typography>
-                            )}
-                        </Box>
-
                         <FormControl fullWidth>
                             <InputLabel>Medium</InputLabel>
                             <Select
@@ -501,19 +419,10 @@ setProduct(product);
                         <TextField
                             label="Width (cm)"
                             type="number"
-                            value={values.width}
-                            onChange={handleInputChange("width")}
+                            value={values.size}
+                            onChange={handleInputChange("size")}
                             fullWidth
                         />
-
-                        <TextField
-                            label="Height (cm)"
-                            type="number"
-                            value={values.height}
-                            onChange={handleInputChange("height")}
-                            fullWidth
-                        />
-
                         <FormControl fullWidth>
                             <InputLabel>Framing</InputLabel>
                             <Select
@@ -526,22 +435,6 @@ setProduct(product);
                                 </MenuItem>
                                 <MenuItem value="Unframed">Unframed</MenuItem>
                                 <MenuItem value="Ready to hang">Ready to hang</MenuItem>
-                            </Select>
-                        </FormControl>
-
-                        <FormControl fullWidth>
-                            <InputLabel>Quality</InputLabel>
-                            <Select
-                                value={quality}
-                                label="Quality"
-                                onChange={handleSelectChange("quality")}
-                            >
-                                <MenuItem value="">
-                                    <em>Please select</em>
-                                </MenuItem>
-                                <MenuItem value="Low quality">Low quality</MenuItem>
-                                <MenuItem value="Medium quality">Medium quality</MenuItem>
-                                <MenuItem value="High quality">High quality</MenuItem>
                             </Select>
                         </FormControl>
 

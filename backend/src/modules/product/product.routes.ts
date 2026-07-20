@@ -30,7 +30,7 @@ router.param('productId', productById);
 router.get('/products/:productId', read);
 router.post('/products/create/:userId', requireSignin, isAuth, isAdmin, create);
 router.delete('/products/:productId/:userId', requireSignin, isAuth, isAdmin, deleteProduct);
-router.patch('/products/:productId/:userId', requireSignin, isAuth, isAdmin, update);
+router.put('/products/:productId/:userId', requireSignin, isAuth, isAdmin, update);
 router.get('/products/related/:productId', listRelated);
 
 export default router;

@@ -99,21 +99,18 @@ export type ProductFormField =
   | "quantity"
   | "photo"
   | "weight"
-  | "width"
-  | "height"
+  | "size"
   | "length"
   | "framing"
   | "additionalDetails"
   | "medium"
-  | "material"
-  | "quality";
+  | "material";
 
 export interface ProductFormBase {
   name: string;
   price: string;
   weight: string;
-  width: string;
-  height: string;
+  size: string;
   length: string;
   categories: Category[];
   category: string;
@@ -121,8 +118,6 @@ export interface ProductFormBase {
   material: string;
   framing: string;
   medium: string;
-  quality: string;
-  colors: string[];
   loading: boolean;
   error: string;
   additionalDetails?: string;
@@ -216,10 +211,9 @@ export interface IProduct {
   count?: number;
   material?: string;
   medium?: string;
-  colors?: string[];
+  size: string;
   framing?: string;
   additionalDetails?: string;
-  quality?: string;
 }
 
 export interface IPriceRange {
