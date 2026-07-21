@@ -95,7 +95,7 @@ const handleImageClick = (src: string) => {
                   </Typography>
 
                   <Typography sx={{ whiteSpace: "pre-wrap", my: 2 }} variant="body1" color="text.primary">
-                    {description}
+                    {product.size}
                   </Typography>
 
                   <SoldBadge quantity={product.quantity} />

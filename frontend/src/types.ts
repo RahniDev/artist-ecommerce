@@ -364,6 +364,8 @@ export interface LayoutProps {
   description?: string;
   className?: string;
   children: ReactNode;
+  backgroundColor?: string;
+  textColor?: string;
 }
 
 export interface FooterData {
@@ -389,6 +391,16 @@ export interface CheckboxProps {
   categories: Category[];
   handleFilters: (selected: string[]) => void;
 }
+
+export interface NavbarProps {
+  backgroundColor?: string;
+  textColor?: string;
+};
+
+export interface FooterProps {
+  backgroundColor?: string;
+  textColor?: string;
+};
 
 export interface CartItem {
   _id: string;

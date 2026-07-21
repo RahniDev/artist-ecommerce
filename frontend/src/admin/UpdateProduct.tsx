@@ -416,13 +416,84 @@ const UpdateProduct = () => {
                             </Select>
                         </FormControl>
 
-                        <TextField
-                            label="Width (cm)"
-                            type="number"
-                            value={values.size}
-                            onChange={handleInputChange("size")}
-                            fullWidth
-                        />
+
+                        <FormControl fullWidth>
+                            <InputLabel>Size</InputLabel>
+                            <Select
+                                value={size}
+                                label="Size"
+                                onChange={handleSelectChange("size")}
+                            >
+                                <MenuItem value="">
+                                    <em>Please select</em>
+                                </MenuItem>
+                                <MenuItem value="26cm X 36cm">
+                                    26cm X 36cm
+                                </MenuItem>
+                                <MenuItem value="30cm X 26cm">
+                                    30cm X 26cm
+                                </MenuItem>
+                                <MenuItem value="30cm X 30cm">
+                                    30cm X 30cm
+                                </MenuItem>
+                                <MenuItem value="30cm X 42cm">
+                                    30cm X 42cm
+                                </MenuItem>
+                                <MenuItem value="31cm X 41cm">
+                                    31cm X 41cm
+                                </MenuItem>
+                                <MenuItem value="36cm x 51cm">
+                                    36cm x 51cm
+                                </MenuItem>
+                                <MenuItem value="36cm x 26cm">
+                                    36cm x 26cm
+                                </MenuItem>
+                                <MenuItem value="38cm x 46cm">
+                                    38cm x 46cm
+                                </MenuItem>
+                                <MenuItem value="40cm x 40cm">
+                                    40cm x 40cm
+                                </MenuItem>
+                                <MenuItem value="41cm x 31cm">
+                                    41cm x 31cm
+                                </MenuItem>
+                                <MenuItem value="41cm x 51cm">
+                                    41cm x 51cm
+                                </MenuItem>
+                                <MenuItem value="46cm x 61cm">
+                                    46cm x 61cm
+                                </MenuItem>
+                                <MenuItem value="46cm x 55cm">
+                                    46cm x 55cm
+                                </MenuItem>
+                                <MenuItem value="50cm x 50cm">
+                                    50cm x 50cm
+                                </MenuItem>
+                                <MenuItem value="50cm x 61cm">
+                                    50cm x 61cm
+                                </MenuItem>
+                                <MenuItem value="51cm x 36cm">
+                                    51cm x 36cm
+                                </MenuItem>
+                                <MenuItem value="51cm x 41cm">
+                                    51cm x 41cm
+                                </MenuItem>
+                                <MenuItem value="55cm x 46cm">
+                                    55cm x 46cm</MenuItem>
+                                <MenuItem value="60cm x 60cm">
+                                    60cm x 60cm
+                                </MenuItem>
+                                <MenuItem value="61cm x 46cm">
+                                    61cm x 46cm
+                                </MenuItem>
+                                <MenuItem value="61cm x 50cm">
+                                    61cm x 50cm
+                                </MenuItem>
+                                <MenuItem value="73cm x 116cm">
+                                    73cm x 116cm
+                                </MenuItem>
+                            </Select>
+                        </FormControl>
                         <FormControl fullWidth>
                             <InputLabel>Framing</InputLabel>
                             <Select

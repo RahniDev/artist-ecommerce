@@ -1,28 +1,18 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ProductImage from "./ShowImage";
 import type { CardProps } from "../types";
 import { Card, CardContent, Typography, Box, Stack } from "@mui/material";
 import SoldBadge from "./SoldBadge";
-import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
-import { addToCart } from "../redux/slices/cartSlice";
-import { useDispatch } from "react-redux";
 import { useLocalizedDescription } from "../hooks/useLocalizedDescription";
 
 const ProductCard: React.FC<CardProps> = ({
     product,
-    redirect = false,
     textColor,
     secondaryColor
 }) => {
-    const dispatch = useDispatch();
-    const navigate = useNavigate();
 
     const { description } = useLocalizedDescription(product);
 
-    const handleAddToCart = () => {
-        dispatch(addToCart(product));
-        if (redirect) navigate("/cart");
-    };
     return (
         <Card elevation={0}
             sx={{
@@ -56,23 +46,16 @@ const ProductCard: React.FC<CardProps> = ({
                 }}>
                     <Stack spacing={1}>
                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            {product.quantity > 0 && (
-                                <>
-                                    <Typography variant="body1" color={textColor}>
-                                        € {product.price}
-                                    </Typography>
-                                </>
-                            )}
-                            <ShoppingBagOutlinedIcon onClick={() => { handleAddToCart() }} fontSize="medium" sx={{ mt: 1, color: textColor }} />
+                            <Typography
+                                variant="subtitle1"
+                                component="div"
+                                color={textColor}>
+                                {product.nameEn}
+                            </Typography>
+                             {/* Directs to product page, not cart */}
+                            <Link to={`/product/${product._id}`} style={{ marginTop: 1, color: textColor, marginRight: "2rem" }}>Collect</Link>
                         </Box>
-                        <Typography
-                            variant="subtitle1"
-                            component="div"
-                            color={textColor}>
-                            {product.nameEn}
-                        </Typography>
                         <Box component={Link} to={`/products/${product._id}`}>
-
                             {product.nameEn !== product.name && (
                                 <Typography variant="body1"
                                     fontStyle="italic">

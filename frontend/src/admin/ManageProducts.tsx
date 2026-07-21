@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
-import { getProducts, deleteProduct } from "./apiAdmin";
+import { deleteProduct, manageProductsList } from "./apiAdmin";
 import type { Product, IAuthData } from "../types";
 import Loader from "../core/Loader";
 import ManageProductRow from "./ManageProductRow";
@@ -26,7 +26,7 @@ const ManageProducts: React.FC = () => {
         setError(null);
 
         try {
-            const data = await getProducts();
+            const data = await manageProductsList();
             if (data.error) {
                 setError(data.error);
             } else {

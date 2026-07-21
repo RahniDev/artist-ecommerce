@@ -23,15 +23,18 @@ import { useSelector, useDispatch } from "react-redux";
 import type { RootState } from "../redux/store";
 import { clearAuth } from "../redux/slices/authSlice";
 import LangToggle from "./LangToggle";
-import type { Category } from "../types";
+import type { Category, NavbarProps } from "../types";
 import { getCategories } from "./apiCore";
 import CategoryDropdown from "./CategoryDropdown";
 
-const linkStyle = {
-  color: "#3a3535",
+const Navbar: React.FC<NavbarProps> = ({
+  backgroundColor = "#FFFFFF",
+  textColor = "#3a3535",
+}) => {
+  const linkStyle = {
+  color: textColor,
+  textDecoration: "none",
 };
-
-const Navbar: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -169,7 +172,15 @@ const Navbar: React.FC = () => {
   );
 
   return (
-    <AppBar position="static" elevation={1} sx={{ backgroundColor: "#fff" }}>
+    <AppBar
+  position="static"
+  elevation={0}
+  sx={{
+    backgroundColor,
+    color: textColor,
+    transition: "background-color 0.3s ease",
+  }}
+>
       <Toolbar sx={{ display: "flex", alignItems: "center" }}>
 
         {/* LEFT — hamburger on mobile, logo always */}
@@ -230,12 +241,12 @@ const Navbar: React.FC = () => {
               </Menu>
             </>
           ) : (
-            <IconButton component={NavLink} to="/signin" sx={{ color: "#3a3535" }}>
+            <IconButton component={NavLink} to="/signin" sx={{ color: textColor }}>
               <Person2OutlinedIcon fontSize="medium" />
             </IconButton>
           )}
 
-          <IconButton component={NavLink} to="/cart" sx={{ color: "#3a3535" }}>
+          <IconButton component={NavLink} to="/cart" sx={{ color: textColor }}>
             <Badge badgeContent={cartCount} color="error">
               <ShoppingCartOutlinedIcon />
             </Badge>

@@ -77,6 +77,25 @@ export const read = async (req: Request, res: Response): Promise<Response> => {
         photoCount: photos.length
     });
 }
+export const manageProductsList = async (req: Request, res: Response) => {
+    try {
+        const { lang = 'en' } = req.query;
+        // const start = Date.now();
+        const products = await Product.find({
+            quantity: { $gt: 0 }
+        })
+            .select("name price category quantity sold weight size length photos material medium createdAt")
+            .sort({ createdAt: -1 })
+            .lean();
+        //console.log("Query:", Date.now() - start, "ms");
+
+        const transformedProducts = products.map(p => applyLang(p, lang as string));
+
+        return res.status(200).json({ data: transformedProducts });
+    } catch (err) {
+        return res.status(400).json({ error: "Products not found" });
+    }
+};
 
 export const list = async (req: Request, res: Response) => {
     try {

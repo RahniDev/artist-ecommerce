@@ -1,44 +1,36 @@
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import type { LayoutProps } from '../types'
-import { Box, Container, Typography } from "@mui/material";
 
 const Layout: React.FC<LayoutProps> = ({
   title = "",
   className = "",
   children,
-}) => {
+  backgroundColor = "#FFFFFF",
+  textColor = "#3a3535"
+}: LayoutProps) => {
   return (
-    <Box display="flex" flexDirection="column" minHeight="100vh">
-      <Navbar />
+    <>
+      <Navbar
+        backgroundColor={backgroundColor}
+        textColor={textColor}
+      />
 
-      {/* Page header */}
-      {(title) && (
-        <Box
-          sx={{
-            textAlign: "center",
-            backgroundColor: "background.default",
-          }}
-        >
-          {title && (
-            <Typography variant="h4" component="h1" gutterBottom mt={4}>
-              {title}
-            </Typography>
-          )}
-        </Box>
-      )}
-      {/* Main content */}
-      <Container
-        maxWidth="xl"
-        sx={{ flexGrow: 1, py: 4 }}
-        className={className}
+      <main
+        style={{
+          backgroundColor,
+          color: textColor,
+          minHeight: "100vh",
+        }}
       >
         {children}
-      </Container>
+      </main>
 
-      {/* Footer */}
-      <Footer />
-    </Box>
+      <Footer
+        backgroundColor={backgroundColor}
+        textColor={textColor}
+      />
+    </>
   );
 };
 

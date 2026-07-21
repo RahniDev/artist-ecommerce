@@ -17,6 +17,7 @@ import {
   Container,
   FormControl,
   InputLabel,
+  Menu,
   MenuItem,
   Select,
   TextField,
@@ -42,6 +43,7 @@ const AddProduct: React.FC = () => {
 
   const [imgPreviews, setImgPreviews] = useState<string[]>([]);
   const [parentCategory, setParentCategory] = useState("");
+  const [selectedSubcategory, setSelectedSubcategory] = useState("");
 
   const [values, setValues] = useState<AddProductValues>({
     name: "",
@@ -61,7 +63,6 @@ const AddProduct: React.FC = () => {
     additionalDetails: "",
     material: "",
     medium: "",
-    quality: "",
   });
 
   const {
@@ -69,7 +70,6 @@ const AddProduct: React.FC = () => {
     price,
     size,
     categories,
-    category,
     loading,
     error,
     createdProduct,
@@ -202,15 +202,20 @@ const AddProduct: React.FC = () => {
   const handleParentCategoryChange = (
     event: SelectChangeEvent<string>
   ) => {
-    const value = event.target.value;
+    const parentCategoryId = event.target.value;
 
-    setParentCategory(value);
+    setParentCategory(parentCategoryId);
+    setSelectedSubcategory("");
 
-    formData.current?.delete("category");
+    if (parentCategoryId) {
+      formData.current?.set("category", parentCategoryId);
+    } else {
+      formData.current?.delete("category");
+    }
 
     setValues((previous) => ({
       ...previous,
-      category: "",
+      category: parentCategoryId,
     }));
   };
 
@@ -222,11 +227,19 @@ const AddProduct: React.FC = () => {
     }
 
     const subcategoryId = event.target.value;
-    formData.current.set("category", subcategoryId);
+    const finalCategoryId = subcategoryId || parentCategory;
+
+    setSelectedSubcategory(subcategoryId);
+
+    if (finalCategoryId) {
+      formData.current.set("category", finalCategoryId);
+    } else {
+      formData.current.delete("category");
+    }
 
     setValues((previous) => ({
       ...previous,
-      category: subcategoryId,
+      category: finalCategoryId,
     }));
   };
 
@@ -236,6 +249,7 @@ const AddProduct: React.FC = () => {
     });
 
     setParentCategory("");
+    setSelectedSubcategory("");
     setImgPreviews([]);
     formData.current = new FormData();
 
@@ -270,15 +284,6 @@ const AddProduct: React.FC = () => {
       setValues((previous) => ({
         ...previous,
         error: "Please select a category.",
-      }));
-
-      return;
-    }
-
-    if (!category) {
-      setValues((previous) => ({
-        ...previous,
-        error: "Please select a subcategory.",
       }));
 
       return;
@@ -465,20 +470,16 @@ const AddProduct: React.FC = () => {
 
             <FormControl
               fullWidth
-              required
-              disabled={
-                !parentCategory ||
-                subcategories.length === 0
-              }
+              disabled={!parentCategory || subcategories.length === 0}
             >
               <InputLabel id="subcategory-label">
-                Subcategory
+                Subcategory (optional)
               </InputLabel>
 
               <Select
                 labelId="subcategory-label"
-                value={category}
-                label="Subcategory"
+                value={selectedSubcategory}
+                label="Subcategory (optional)"
                 onChange={handleSubcategoryChange}
               >
                 <MenuItem value="">
@@ -487,7 +488,7 @@ const AddProduct: React.FC = () => {
                       ? "Select a category first"
                       : subcategories.length === 0
                         ? "No subcategories available"
-                        : "Please select a subcategory"}
+                        : "No subcategory"}
                   </em>
                 </MenuItem>
 
@@ -513,7 +514,7 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="">
                   <em>Please select</em>
                 </MenuItem>
-
+                <MenuItem value="Paper">Paper</MenuItem>
                 <MenuItem value="100% Cotton Premium Paper">100% Cotton Premium Paper</MenuItem>
                 <MenuItem value="100% Linen Canvas">100% Linen Canvas</MenuItem>
                 <MenuItem value="100% Cotton Premium Canvas">100% Cotton Premium Canvas</MenuItem>
@@ -541,11 +542,17 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="Watercolour & Gouache">
                   Watercolour & Gouache
                 </MenuItem>
+                <MenuItem value="Watercolour & Pen">
+                  Watercolour & Pen
+                </MenuItem>
                 <MenuItem value="Watercolour & Other Media">
                   Watercolour & Other Media
                 </MenuItem>
                 <MenuItem value="Acrylic">
                   Acrylic
+                </MenuItem>
+                    <MenuItem value="Acrylic, collage & fabric">
+                  Acrylic, collage & fabric
                 </MenuItem>
                 <MenuItem value="Oil">
                   Oil
@@ -557,8 +564,17 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="Charcoal">
                   Charcoal
                 </MenuItem>
+                <MenuItem value="Acrylic & Charcoal">
+                  Acrylic & Charcoal
+                </MenuItem>
+                 <MenuItem value="Acrylic & Fabric">
+                  Acrylic & Fabric
+                </MenuItem>
                 <MenuItem value="Mixed media">
                   Mixed media
+                </MenuItem>
+                 <MenuItem value="Mixed media & handmade paper">
+                  Mixed media & handmade paper
                 </MenuItem>
               </Select>
             </FormControl>
@@ -573,27 +589,74 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="">
                   <em>Please select</em>
                 </MenuItem>
+                 <MenuItem value="26cm X 36cm">
+                  26cm X 36cm
+                </MenuItem>
+                <MenuItem value="30cm X 26cm">
+                  30cm X 26cm
+                </MenuItem>
                 <MenuItem value="30cm X 30cm">
                   30cm X 30cm
+                </MenuItem>
+                 <MenuItem value="30cm X 42cm">
+                  30cm X 42cm
+                </MenuItem>
+                <MenuItem value="31cm X 41cm">
+                  31cm X 41cm
+                </MenuItem>
+                <MenuItem value="36cm x 51cm">
+                  36cm x 51cm
+                </MenuItem>
+                <MenuItem value="36cm x 26cm">
+                  36cm x 26cm
+                </MenuItem>
+                <MenuItem value="38cm x 46cm">
+                38cm x 46cm
                 </MenuItem>
                 <MenuItem value="40cm x 40cm">
                   40cm x 40cm
                 </MenuItem>
+                  <MenuItem value="41cm x 31cm">
+                  41cm x 31cm
+                </MenuItem>
+                <MenuItem value="41cm x 51cm">
+                  41cm x 51cm
+                </MenuItem>
+                <MenuItem value="46cm x 61cm">
+                  46cm x 61cm
+                </MenuItem>
+                <MenuItem value="46cm x 55cm">
+                  46cm x 55cm
+                </MenuItem>
                 <MenuItem value="50cm x 50cm">
                   50cm x 50cm
                 </MenuItem>
-                  <MenuItem value="51cm x 41cm">
+                 <MenuItem value="50cm x 61cm">
+                  50cm x 61cm
+                </MenuItem>
+                <MenuItem value="51cm x 36cm">
+                  51cm x 36cm
+                </MenuItem>
+                <MenuItem value="51cm x 41cm">
                   51cm x 41cm
                 </MenuItem>
+                <MenuItem value="55cm x 46cm">
+                  55cm x 46cm</MenuItem>
                 <MenuItem value="60cm x 60cm">
                   60cm x 60cm
                 </MenuItem>
-                 <MenuItem value="61cm x 46cm">
+                <MenuItem value="61cm x 46cm">
                   61cm x 46cm
                 </MenuItem>
+                 <MenuItem value="61cm x 50cm">
+                  61cm x 50cm
+                </MenuItem>
+                 <MenuItem value="92cm x 60cm">
+                  92cm x 60cm
+                </MenuItem>
                 <MenuItem value="73cm x 116cm">
-                73cm x 116cm
-                </MenuItem>              
+                  73cm x 116cm
+                </MenuItem>
               </Select>
             </FormControl>
 
@@ -652,11 +715,7 @@ const AddProduct: React.FC = () => {
               variant="contained"
               size="large"
               sx={{ mt: 2 }}
-              disabled={
-                loading ||
-                !parentCategory ||
-                !category
-              }
+              disabled={loading || !parentCategory}
             >
               Add Painting
             </Button>

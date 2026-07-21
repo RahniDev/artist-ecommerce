@@ -162,6 +162,18 @@ export const updateOrderStatus = async (
     }
 };
 
+export const manageProductsList = async (): Promise<ApiResponse<Product[]>> => {
+    try {
+        const url = addLanguageParam(`${API}/products/manage-products`);
+        const res = await fetch(url);
+        const data = await res.json();
+        return data;
+    } catch (err) {
+        console.error(err);
+        return { error: "Failed to fetch products" };
+    }
+};
+
 export const getProducts = async (): Promise<ApiResponse<Product[]>> => {
     try {
         const url = addLanguageParam(`${API}/products?limit=undefined`);

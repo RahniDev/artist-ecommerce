@@ -10,7 +10,8 @@ list,
 listRelated,
 listCategories,
 listSearch,
-listByFilters
+listByFilters,
+manageProductsList
 } from './product.controller.js';
 import { userById } from '../user/user.controller.js'
 
@@ -19,6 +20,7 @@ const router: Router = Router();
 router.get('/products/search', listSearch);
 router.get('/products/categories', listCategories);
 router.get('/products', list);
+router.get('/products/manage-products', manageProductsList);
 router.post('/products/filter', listByFilters);
 
 

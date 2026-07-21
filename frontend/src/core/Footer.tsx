@@ -3,10 +3,13 @@ import { Link as RouterLink } from "react-router-dom";
 import { Box, Grid, Typography, Link, Divider, IconButton } from "@mui/material";
 import InstagramIcon from "@mui/icons-material/Instagram";
 import { getCategories } from "./apiCore";
-import type { Category } from "../types";
+import type { Category, FooterProps } from "../types";
 import Newsletter from "../user/Newsletter";
 
-const Footer: React.FC = () => {
+const Footer: React.FC<FooterProps> = ({
+  backgroundColor = "#FFFFFF",
+  textColor = "#3a3535",
+})  => {
     const [categories, setCategories] = useState<Category[]>([]);
 
     useEffect(() => { loadCategories(); }, []);
@@ -20,7 +23,11 @@ const Footer: React.FC = () => {
     const topLevel = categories.filter(c => !c.parent);
 
     return (
-        <Box component="footer" sx={{ bgcolor: "#f5f5f5", mt: 4, p: 4 }}>
+        <Box component="footer" sx={{
+        backgroundColor,
+        color: textColor,
+        transition: "background-color 0.3s ease",
+      }}>
             <Grid container spacing={4} alignItems="flex-start">
 
                 {/* Newsletter */}
