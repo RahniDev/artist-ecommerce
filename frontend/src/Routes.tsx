@@ -1,5 +1,4 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Shop from './core/Shop';
 import Signup from "./user/Signup";
 import Signin from "./user/Signin";
 import PrivateRoute from "./auth/PrivateRoute";
@@ -22,6 +21,7 @@ import About from "./core/About";
 import ShippingReturns from "./core/ShippingReturns";
 import PrivacyPolicy from "./core/PrivacyPolicy";
 import ResetPassword from "./user/ResetPassword";
+import Collections from "./core/Collections"
 
 const AppRoutes: React.FC = () => {
   return (
@@ -29,7 +29,7 @@ const AppRoutes: React.FC = () => {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<EntrancePage />} />
-        <Route path="/collect" element={<Shop />} />
+        <Route path="/collections" element={<Collections />} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/signup" element={<Signup />} />

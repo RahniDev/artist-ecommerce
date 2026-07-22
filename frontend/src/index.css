@@ -3,12 +3,10 @@ body {
 }
 
 #logo {
-  font-family: "Dancing Script", cursive;
+  font-family: "Instrument Serif", serif;
   font-size: 1.4rem;
-  font-weight: 400;
   text-decoration: none;
-  color: #111;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.12em;
 }
 
 #hero {

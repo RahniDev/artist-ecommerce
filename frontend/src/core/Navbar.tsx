@@ -32,9 +32,9 @@ const Navbar: React.FC<NavbarProps> = ({
   textColor = "#3a3535",
 }) => {
   const linkStyle = {
-  color: textColor,
-  textDecoration: "none",
-};
+    color: textColor,
+    textDecoration: "none",
+  };
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -173,14 +173,15 @@ const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <AppBar
-  position="static"
-  elevation={0}
-  sx={{
-    backgroundColor,
-    color: textColor,
-    transition: "background-color 0.3s ease",
-  }}
->
+      position="static"
+      elevation={0}
+      sx={{
+        backgroundColor,
+        color: textColor,
+        fontSize: "15px",
+        transition: "background-color 0.3s ease",
+      }}
+    >
       <Toolbar sx={{ display: "flex", alignItems: "center" }}>
 
         {/* LEFT — hamburger on mobile, logo always */}
@@ -190,7 +191,7 @@ const Navbar: React.FC<NavbarProps> = ({
               <MenuIcon />
             </IconButton>
           )}
-          <NavLink to="/" id="logo" style={linkStyle}>SK</NavLink>
+          <NavLink to="/" id="logo" style={linkStyle}>SAKARI</NavLink>
         </Box>
 
         {/* CENTER — desktop only */}

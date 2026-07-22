@@ -49,12 +49,27 @@ const Category = () => {
     Form: "#D4D1CA",
   };
 
-
+  /*
+Body copy 16–18px.
+Lots of white space.
+*/
   const categoryTextColors: Record<string, string> = {
-    "Darker Depths": "#F1E8DE",
-    "Worlds & Dimensions": "#F1E8DE",
-    "Vibration": "#e5eafb",
-    "Essence": "#4b3c4b"
+    // Light rooms
+    Untitled: "#2A2A2A",
+    Reality: "#2A2A2A",
+    Guidance: "#2A2A2A",
+    Essence: "#2A2A2A",
+    // Mid rooms
+    Memory: "#F2EFE8",
+    Truth: "#F2EFE8",
+    // Dark rooms
+    Space: "#F4F1EB",
+    Unknown: "#F4F1EB",
+    Dimensions: "#F4F1EB",
+    Solitude: "#F4F1EB",
+    "Darker Depths": "#F4F1EB",
+    Thresholds: "#F4F1EB",
+    Vibration: "#F4F1EB",
   }
   const secondaryTextColors: Record<string, string> = {
     "Darker Depths": "#BFB3A9",
@@ -70,7 +85,7 @@ const Category = () => {
     return (
       <Layout title="" description="" backgroundColor={bgColor}
         textColor={textColor}>
-        <Box p={4} sx={{ display: "flex", justifyContent: "center", minHeight: "100vh", fontSize: "18px", backgroundColor: bgColor, color: textColor }}>
+        <Box p={4} sx={{ display: "flex", justifyContent: "center", minHeight: "100vh", fontSize: "18px", backgroundColor: bgColor, color: textColor, fontFamily: "Inter, sans-serif" }}>
           New works are currently in progress.
         </Box>
       </Layout>
@@ -78,16 +93,16 @@ const Category = () => {
   }
 
   return (
-    <Box sx={{ backgroundColor: bgColor, color: textColor }}>
+    <Box sx={{ backgroundColor: bgColor, color: textColor, fontFamily: "Inter, sans-serif", padding: "2rem" }}>
       <Layout title="" description="" backgroundColor={bgColor}
         textColor={textColor}>
-        <h1 style={{ textAlign: "center" }}>{category.name}</h1>
+        <h1 style={{ textAlign: "center", fontFamily: "Instrument Serif, serif", fontSize: "43px" }}>{category.name}</h1>
         <Masonry
           columns={{
             xs: 1,
-            sm: 2,
-            md: 3,
-            lg: 3,
+            sm: 1,
+            md: 2,
+            lg: 2,
           }}
           spacing={4}
         >
