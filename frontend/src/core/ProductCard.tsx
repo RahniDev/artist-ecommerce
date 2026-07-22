@@ -35,46 +35,10 @@ const ProductCard: React.FC<CardProps> = ({
                         showAll={false}
                     />
                     {/*
-On the entrance page, imagine the name appearing almost imperceptibly:
 
-          SAKARI
-
-with very generous spacing and lots of empty space around it.
-I can even imagine the entrance page
-
-Then "ENTER" beneath it.
-
-                 SAKARI
-
-
-
-                 ENTER
-
-                 Font weight
-
-I wouldn't use Regular.
-
-I'd use Light or Book if available.
-
-For example:
-
-Canela Light
-Instrument Serif Regular
-Cormorant Garamond Medium
-
-#2B2B2B or #343434
-
-On your darker rooms, instead of pure white:
-
-#F3F0EA
-
-This tiny change makes everything feel softer and more considered.
-
-next remove the collect (shop) page.
 I would make Collect something completely different.
 
-Instead of showing paintings, make it answer the questions a collector has once they've already fallen in love with a work.
-
+collect answers questions
 For example:
 
 Collect

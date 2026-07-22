@@ -1,6 +1,15 @@
+import {Box} from '@mui/material'
+
 const Collections = () => {
 return (
-    <div>COLLECTIONS</div>
+    
+    <Box>
+        {categories.map(category =>(
+            <Box key={category._id}>
+
+            </Box>
+        ))}
+    </Box>
 )
 }
 
