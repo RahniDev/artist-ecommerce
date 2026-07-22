@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Layout from './core/Layout'
 import Signup from "./user/Signup";
 import Signin from "./user/Signin";
 import PrivateRoute from "./auth/PrivateRoute";
@@ -29,7 +30,7 @@ const AppRoutes: React.FC = () => {
       <Routes>
         {/* Public Routes */}
         <Route path="/" element={<EntrancePage />} />
-        <Route path="/collections" element={<Collections />} />
+        <Route path="/collections" element={<Layout><Collections /></Layout>} />
         <Route path="/signin" element={<Signin />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/signup" element={<Signup />} />

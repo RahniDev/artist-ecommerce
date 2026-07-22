@@ -167,7 +167,7 @@ export interface ApiResponse<T = any> {
 }
 
 export interface Category {
-  subcategories: any;
+  subcategories?: Category[];
   _id: string;
   name: string;
   level: number;

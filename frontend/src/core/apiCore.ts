@@ -11,41 +11,51 @@ import type {
   ApiResponse
 } from "../types";
 import { API } from "../config";
-import { store } from "../redux/store";
 
-const getCurrentLanguage = (): string => {
-  try {
-    const state = store.getState();
-    return state.language?.currentLanguage || 'en';
-  } catch (error) {
-    console.warn('Could not get language from Redux, defaulting to en');
-    return 'en';
-  }
-};
+
 // Add language parameter to url
-const addLanguageParam = (url: string): string => {
-  const lang = getCurrentLanguage();
-  const separator = url.includes('?') ? '&' : '?';
-  return `${url}${separator}lang=${lang}`;
-};
-async function fetchJSON<T>(url: string, options?: RequestInit): Promise<ApiResponse<T>> {
-  try {
-    const urlWithLang = addLanguageParam(url);
+const addLanguageParam = (
+  url: string,
+  language?: string
+): string => {
+  if (!language) return url;
 
-    const res = await fetch(urlWithLang, { ...options, credentials: "include" });
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}lang=${language}`;
+};
+
+async function fetchJSON<T>(
+  url: string,
+  options?: RequestInit,
+  language?: string
+): Promise<ApiResponse<T>> {
+  try {
+    const urlWithLang = addLanguageParam(url, language);
+
+    const res = await fetch(urlWithLang, {
+      ...options,
+      credentials: "include",
+    });
+
     if (!res.ok) {
       const text = await res.text();
-      return { error: `API error: ${res.status} ${res.statusText} - ${text}` };
+
+      return {
+        error: `API error: ${res.status} ${res.statusText} - ${text}`,
+      };
     }
+
     const data = await res.json();
     return { data };
-  } catch (err: any) {
-    return { error: err.message || "Network error" };
+  } catch (err) {
+    return {
+      error: err instanceof Error ? err.message : "Network error",
+    };
   }
 }
 
 export async function getProducts(
-sortBy: string): Promise<ApiResponse<{ data: IProduct[] }>> {
+  sortBy: string): Promise<ApiResponse<{ data: IProduct[] }>> {
   return fetchJSON<{ data: IProduct[] }>(
     `${API}/products?sortBy=${sortBy}&order=desc&limit=6`
   );
@@ -65,19 +75,8 @@ export async function listRelated(
   );
 }
 
-export async function getCategories(): Promise<ApiResponse<Category[]>> {
-  try {
-    const url = addLanguageParam(`${API}/categories`);
-    const res = await fetch(url);
-    if (!res.ok) {
-      const text = await res.text();
-      return { error: `API error: ${res.status} ${res.statusText} - ${text}` };
-    }
-    const data: Category[] = await res.json();
-    return { data };
-  } catch (err: any) {
-    return { error: err.message || "Network error" };
-  }
+export function getCategories(): Promise<ApiResponse<Category[]>> {
+  return fetchJSON<Category[]>(`${API}/categories`);
 }
 
 export async function getFilteredProducts(

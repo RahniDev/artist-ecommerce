@@ -3,11 +3,10 @@ import {
   createAsyncThunk,
   type PayloadAction,
 } from "@reduxjs/toolkit";
-import { getCategories, listSearchedProducts } from "../../core/apiCore";
-import type { Category, IProduct } from "../../types";
+import { listSearchedProducts } from "../../core/apiCore";
+import type { IProduct } from "../../types";
 
 interface SearchState {
-  categories: Category[];
   category: string;
   search: string;
   results: IProduct[];
@@ -17,7 +16,6 @@ interface SearchState {
 }
 
 const initialState: SearchState = {
-  categories: [],
   category: "",
   search: "",
   results: [],
@@ -25,15 +23,6 @@ const initialState: SearchState = {
   loading: false,
   error: undefined,
 };
-
-export const fetchCategories = createAsyncThunk(
-  "search/fetchCategories",
-  async () => {
-    const res = await getCategories();
-    if (res.error) throw new Error(res.error);
-    return res.data ?? [];
-  }
-);
 
 export const fetchSearchResults = createAsyncThunk(
   "search/fetchSearchResults",
@@ -72,10 +61,6 @@ const searchSlice = createSlice({
 
   extraReducers: builder => {
     builder
-      .addCase(fetchCategories.fulfilled, (state, action) => {
-        state.categories = action.payload;
-      })
-
       .addCase(fetchSearchResults.pending, state => {
         state.loading = true;
         state.error = undefined;

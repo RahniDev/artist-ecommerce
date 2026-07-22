@@ -16,16 +16,29 @@ const initialState: CategoriesState = {
   loaded: false,
 };
 
-export const fetchCategories = createAsyncThunk(
-    "categories/fetchCategories",
-    async (_, { rejectWithValue }) => {
-        try {
-            return await getCategories()
-        } catch (error) {
-            return rejectWithValue(error instanceof Error ? error.message : "Failed to load categories")
-        }
+export const fetchCategories = createAsyncThunk<
+  Category[],
+  void,
+  { rejectValue: string }
+>(
+  "categories/fetchCategories",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await getCategories();
+if (!response.data) {
+  return rejectWithValue("No categories returned");
+}
+
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error
+          ? error.message
+          : "Failed to load categories"
+      );
     }
-)
+  }
+);
 
 const categoriesSlice = createSlice({
     name: "categories",
@@ -40,17 +53,7 @@ const categoriesSlice = createSlice({
             .addCase(fetchCategories.fulfilled, (state, action) => {
                 state.loading = false;
                 state.loaded = true;
-                // handle ApiResponse<Category[]> or raw Category[]
-                const payload: any = action.payload;
-                if (Array.isArray(payload)) {
-                    state.items = payload;
-                } else if (Array.isArray(payload?.data)) {
-                    state.items = payload.data;
-                } else if (Array.isArray(payload?.result)) {
-                    state.items = payload.result;
-                } else {
-                    state.items = [];
-                }
+                state.items = action.payload;
             })
             .addCase(fetchCategories.rejected, (state, action) => {
                 state.loading = false;
