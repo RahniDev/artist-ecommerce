@@ -64,7 +64,7 @@ Lots of white space.
     Truth: "#F2EFE8",
     // Dark rooms
     Space: "#F4F1EB",
-    Unknown: "#F4F1EB",
+    "The Unknown": "#F4F1EB",
     Dimensions: "#F4F1EB",
     Solitude: "#F4F1EB",
     "Darker Depths": "#F4F1EB",
@@ -102,7 +102,7 @@ Lots of white space.
             xs: 1,
             sm: 1,
             md: 2,
-            lg: 2,
+            lg: 3,
           }}
           spacing={4}
         >

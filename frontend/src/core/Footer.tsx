@@ -7,9 +7,9 @@ import type { Category, FooterProps } from "../types";
 import Newsletter from "../user/Newsletter";
 
 const Footer: React.FC<FooterProps> = ({
-  backgroundColor = "#FFFFFF",
-  textColor = "#3a3535",
-})  => {
+    backgroundColor,
+    textColor,
+}) => {
     const [categories, setCategories] = useState<Category[]>([]);
 
     useEffect(() => { loadCategories(); }, []);
@@ -20,14 +20,14 @@ const Footer: React.FC<FooterProps> = ({
         else setCategories(res.data ?? []);
     };
 
-    const topLevel = categories.filter(c => !c.parent);
+    const topLevel = categories.filter(c => !c.parentCategory);
 
     return (
         <Box component="footer" sx={{
-        backgroundColor,
-        color: textColor,
-        transition: "background-color 0.3s ease",
-      }}>
+            backgroundColor,
+            color: textColor,
+            transition: "background-color 0.3s ease",
+        }}>
             <Grid container spacing={4} alignItems="flex-start">
 
                 {/* Newsletter */}
@@ -37,11 +37,11 @@ const Footer: React.FC<FooterProps> = ({
 
                 {/* Shop */}
                 <Grid size={{ xs: 4, md: 2 }}>
-                    <Typography variant="h6" gutterBottom>Shop</Typography>
+                    <Typography variant="h6" gutterBottom>Artworks</Typography>
                     <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
                         {topLevel.map(c => (
                             <li key={c._id}>
-                                <Link component={RouterLink} to={`/collection/${c._id}`} underline="hover" color="textPrimary">
+                                <Link component={RouterLink} to={`/collection/${c._id}`} underline="hover" color={textColor}>
                                     {c.name}
                                 </Link>
                             </li>
@@ -53,26 +53,26 @@ const Footer: React.FC<FooterProps> = ({
                 <Grid size={{ xs: 4, md: 2 }}>
                     <Typography variant="h6" gutterBottom>Help</Typography>
                     <Box component="ul" sx={{ listStyle: "none", p: 0, m: 0 }}>
-                        <li><Link component={RouterLink} to="/contact" underline="hover">Contact</Link></li>
-                        <li><Link component={RouterLink} to="/shipping-returns" underline="hover">Shipping & Returns</Link></li>
-                        <li><Link component={RouterLink} to="/privacy-policy" underline="hover">Privacy Policy</Link></li>
+                        <li><Link component={RouterLink} color={textColor} to="/contact" underline="hover">Contact</Link></li>
+                        <li><Link component={RouterLink} color={textColor} to="/shipping-returns" underline="hover">Shipping & Returns</Link></li>
+                        <li><Link component={RouterLink} color={textColor} to="/privacy-policy" underline="hover">Privacy Policy</Link></li>
                     </Box>
-                   
+
                 </Grid>
 
                 {/* Social */}
                 <Grid size={{ xs: 4, md: 2 }}>
-                    <IconButton component="a" href="https://instagram.com/sakari.artist" target="_blank" rel="noopener noreferrer" color="primary">
+                    <IconButton component="a" href="https://instagram.com/sakari.artist" target="_blank" rel="noopener noreferrer" sx={{ color: textColor }}>
                         <InstagramIcon />
                     </IconButton>
-                     <Typography variant="body2" sx={{ mt: 1 }}>
+                    <Typography variant="body2" sx={{ mt: 1 }}>
                         <strong>T.&nbsp;</strong>+33 1 23 45 67 89
                     </Typography>
                 </Grid>
 
             </Grid>
             <Divider sx={{ my: 3 }} />
-            <Typography variant="body2" color="textSecondary" align="center">
+            <Typography variant="body2" color={textColor} align="center">
                 &copy; {new Date().getFullYear()} Sakari De-Meis. All rights reserved.
             </Typography>
         </Box>

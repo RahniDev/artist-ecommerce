@@ -168,10 +168,11 @@ export interface ApiResponse<T = any> {
 
 export interface Category {
   subcategories?: Category[];
+  slug: string;
   _id: string;
   name: string;
   level: number;
-  parent?: string | Category | null;
+  parentCategory?: string | Category | null;
 }
 
 export interface CategoryInput {

@@ -6,8 +6,7 @@ import SoldBadge from "./SoldBadge";
 
 const ProductCard: React.FC<CardProps> = ({
     product,
-    textColor,
-    secondaryColor
+    textColor
 }) => {
 
     return (
@@ -36,9 +35,7 @@ const ProductCard: React.FC<CardProps> = ({
                     />
                     {/*
 
-I would make Collect something completely different.
-
-collect answers questions
+Collect page answers questions
 For example:
 
 Collect
@@ -87,7 +84,7 @@ Available
 
 After it's added, the button could change to:
 
-✓ Added to Collection
+Added to Collection
 
 Next on the collection page:
 

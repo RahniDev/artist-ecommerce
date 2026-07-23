@@ -205,7 +205,7 @@ const Navbar: React.FC<NavbarProps> = ({
           <LangToggle />
           {user ? (
             <>
-              <IconButton onMouseEnter={handleMouseEnter} sx={{ color: "#3a3535" }}>
+              <IconButton onMouseEnter={handleMouseEnter} sx={{ color: textColor }}>
                 <Person2OutlinedIcon fontSize="medium" />
               </IconButton>
               <Menu anchorEl={anchorEl}

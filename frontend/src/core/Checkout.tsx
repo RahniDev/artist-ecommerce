@@ -107,16 +107,12 @@ const Checkout: React.FC<CheckoutProps> = ({ onSuccess }) => {
       (err, instance) => {
         console.error("Braintree error:", err);
         if (err) return setData(prev => ({ ...prev, error: "Failed to load payment UI" }));
-        // console.log("Braintree instance created:", instance);
         dropInInstance.current = instance;
       }
     );
   }, [data.clientToken]);
 
   const payOrder = async () => {
-    // console.log("selectedShipping:", selectedShipping);
-    // console.log("address:", address);
-
     if (!dropInInstance.current || !selectedShipping || !address) {
       return;
     }

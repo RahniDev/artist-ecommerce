@@ -55,7 +55,6 @@ const CollectionSlider = () => {
       <Typography
         variant="subtitle1"
         textAlign="center"
-        fontFamily="playfair display"
         fontStyle="italic"
         sx={{ pb: 4, color: "#222" }}
       >

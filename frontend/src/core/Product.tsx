@@ -13,8 +13,7 @@ import ProductImage from "./ShowImage";
 import { Box, Typography, Grid } from "@mui/material";
 import ImageModal from "./ImageModal";
 import { toCartItem } from "../redux/slices/cartSlice";
-import { useLocalizedDescription } from "../hooks/useLocalizedDescription";
-
+import Loader from './Loader'
 
 const Product: React.FC = () => {
   const { productId } = useParams<{ productId: string }>();
@@ -43,14 +42,11 @@ const handleImageClick = (src: string) => {
     };
   }, [dispatch, productId, currentLanguage]);
 
-
-  const { description } = useLocalizedDescription(product);
-
   return (
     <Layout title="" description="">
       <Grid container spacing={2} p={3}>
         <Grid width="100%">
-          {loading && <Typography>Loading...</Typography>}
+          <Loader loading={loading} />
           {error && <Typography color="error">{error}</Typography>}
 
           {product && (

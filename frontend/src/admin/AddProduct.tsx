@@ -2,14 +2,6 @@ import {
   useEffect, useMemo, useRef, useState,
   type ChangeEvent, type FormEvent
 } from "react";
-import Layout from "../core/Layout";
-import { createProduct, getCategories } from "./apiAdmin";
-import type {
-  AddProductValues,
-  Category,
-  ProductFormField,
-} from "../types";
-import Loader from "../core/Loader";
 import {
   Alert,
   Box,
@@ -17,7 +9,6 @@ import {
   Container,
   FormControl,
   InputLabel,
-  Menu,
   MenuItem,
   Select,
   TextField,
@@ -27,7 +18,16 @@ import type { SelectChangeEvent } from "@mui/material/Select";
 import { useSelector } from "react-redux";
 import type { RootState } from "../redux/store";
 import { Link, useNavigate } from "react-router-dom";
+import { createProduct, getCategories } from "./apiAdmin";
+import type {
+  AddProductValues,
+  Category,
+  ProductFormField,
+} from "../types";
+import Loader from "../core/Loader";
 import ProductImage from "../core/ShowImage";
+import Layout from "../core/Layout";
+import { PAINTING_SIZES, MEDIUM_OPTIONS, MATERIAL_OPTIONS, FRAMING_OPTIONS } from "../constants/productOptions";
 
 type CategoryWithSubcategories = Category & {
   parent?: string | null;
@@ -514,14 +514,11 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="">
                   <em>Please select</em>
                 </MenuItem>
-                <MenuItem value="Paper">Paper</MenuItem>
-                <MenuItem value="100% Cotton Premium Paper">100% Cotton Premium Paper</MenuItem>
-                <MenuItem value="100% Linen Canvas">100% Linen Canvas</MenuItem>
-                <MenuItem value="100% Cotton Premium Canvas">100% Cotton Premium Canvas</MenuItem>
-                <MenuItem value="Recycled Canvas">Recycled Canvas - made from 6 recycled plastic bottles</MenuItem>
-                <MenuItem value="Premium Canvas">Premium Canvas</MenuItem>
-                <MenuItem value="Board">Board</MenuItem>
-              </Select>
+                {MATERIAL_OPTIONS.map((material) => (
+                  <MenuItem key={material} value={material}>
+                    {material}
+                  </MenuItem>
+                ))}</Select>
             </FormControl>
 
             <FormControl fullWidth>
@@ -535,47 +532,11 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="">
                   <em>Please select</em>
                 </MenuItem>
-
-                <MenuItem value="Watercolour">
-                  Watercolour
-                </MenuItem>
-                <MenuItem value="Watercolour & Gouache">
-                  Watercolour & Gouache
-                </MenuItem>
-                <MenuItem value="Watercolour & Pen">
-                  Watercolour & Pen
-                </MenuItem>
-                <MenuItem value="Watercolour & Other Media">
-                  Watercolour & Other Media
-                </MenuItem>
-                <MenuItem value="Acrylic">
-                  Acrylic
-                </MenuItem>
-                    <MenuItem value="Acrylic, collage & fabric">
-                  Acrylic, collage & fabric
-                </MenuItem>
-                <MenuItem value="Oil">
-                  Oil
-                </MenuItem>
-                <MenuItem value="Oil Pastel">
-                  Oil Pastel
-                </MenuItem>
-                <MenuItem value="Ink">Ink</MenuItem>
-                <MenuItem value="Charcoal">
-                  Charcoal
-                </MenuItem>
-                <MenuItem value="Acrylic & Charcoal">
-                  Acrylic & Charcoal
-                </MenuItem>
-                 <MenuItem value="Acrylic & Fabric">
-                  Acrylic & Fabric
-                </MenuItem>
-                <MenuItem value="Mixed media">
-                  Mixed media
-                </MenuItem>
-                 <MenuItem value="Mixed media & handmade paper">
-                  Mixed media & handmade paper
-                </MenuItem>
+                {MEDIUM_OPTIONS.map((paintingMedium) => (
+                  <MenuItem key={paintingMedium} value={paintingMedium}>
+                    {paintingMedium}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
 
@@ -589,74 +550,12 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="">
                   <em>Please select</em>
                 </MenuItem>
-                 <MenuItem value="26cm X 36cm">
-                  26cm X 36cm
-                </MenuItem>
-                <MenuItem value="30cm X 26cm">
-                  30cm X 26cm
-                </MenuItem>
-                <MenuItem value="30cm X 30cm">
-                  30cm X 30cm
-                </MenuItem>
-                 <MenuItem value="30cm X 42cm">
-                  30cm X 42cm
-                </MenuItem>
-                <MenuItem value="31cm X 41cm">
-                  31cm X 41cm
-                </MenuItem>
-                <MenuItem value="36cm x 51cm">
-                  36cm x 51cm
-                </MenuItem>
-                <MenuItem value="36cm x 26cm">
-                  36cm x 26cm
-                </MenuItem>
-                <MenuItem value="38cm x 46cm">
-                38cm x 46cm
-                </MenuItem>
-                <MenuItem value="40cm x 40cm">
-                  40cm x 40cm
-                </MenuItem>
-                  <MenuItem value="41cm x 31cm">
-                  41cm x 31cm
-                </MenuItem>
-                <MenuItem value="41cm x 51cm">
-                  41cm x 51cm
-                </MenuItem>
-                <MenuItem value="46cm x 61cm">
-                  46cm x 61cm
-                </MenuItem>
-                <MenuItem value="46cm x 55cm">
-                  46cm x 55cm
-                </MenuItem>
-                <MenuItem value="50cm x 50cm">
-                  50cm x 50cm
-                </MenuItem>
-                 <MenuItem value="50cm x 61cm">
-                  50cm x 61cm
-                </MenuItem>
-                <MenuItem value="51cm x 36cm">
-                  51cm x 36cm
-                </MenuItem>
-                <MenuItem value="51cm x 41cm">
-                  51cm x 41cm
-                </MenuItem>
-                <MenuItem value="55cm x 46cm">
-                  55cm x 46cm</MenuItem>
-                <MenuItem value="60cm x 60cm">
-                  60cm x 60cm
-                </MenuItem>
-                <MenuItem value="61cm x 46cm">
-                  61cm x 46cm
-                </MenuItem>
-                 <MenuItem value="61cm x 50cm">
-                  61cm x 50cm
-                </MenuItem>
-                 <MenuItem value="92cm x 60cm">
-                  92cm x 60cm
-                </MenuItem>
-                <MenuItem value="73cm x 116cm">
-                  73cm x 116cm
-                </MenuItem>
+
+                {PAINTING_SIZES.map((paintingSize) => (
+                  <MenuItem key={paintingSize} value={paintingSize}>
+                    {paintingSize}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
 
@@ -670,12 +569,11 @@ const AddProduct: React.FC = () => {
                 <MenuItem value="">
                   <em>Please select</em>
                 </MenuItem>
-                <MenuItem value="Unframed">
-                  Unframed
-                </MenuItem>
-                <MenuItem value="Ready to hang">
-                  Ready to hang
-                </MenuItem>
+                {FRAMING_OPTIONS.map((framing) => (
+                  <MenuItem key={framing} value={framing}>
+                    {framing}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
 
