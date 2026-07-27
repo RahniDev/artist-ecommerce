@@ -171,7 +171,7 @@ It's subtle, balanced, and keeps the focus on the painting rather than on naviga
                                 {product.nameEn}
                             </Typography>
                             {/* Directs to product page, not cart */}
-                            <Link to={`/product/${product._id}`} style={{ fontSize: "16px", marginTop: 1, color: textColor, marginRight: "2rem" }}>Collect</Link>
+                            <Link to={`/product/${product._id}`} style={{ fontSize: "16px", marginTop: 1, color: textColor, marginRight: "2rem" }}>View details</Link>
                         </Box>
                         <Box component={Link} to={`/products/${product._id}`}>
                             {product.nameEn !== product.name && (

@@ -14,9 +14,13 @@ import { setLanguage } from "../redux/slices/languageSlice";
 
 type Lang = "en" | "fr" | "de" | "es" | "it";
 
-export default function LangToggle() {
+type LangToggleProps = {
+  textColor: string;
+};
+
+export default function LangToggle({textColor}: LangToggleProps) {
   const { i18n } = useTranslation();
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
   const currentLang: Lang =
     i18n.language.startsWith("fr")
@@ -29,11 +33,11 @@ export default function LangToggle() {
             ? "it"
             : "en";
 
- const handleChange = (event: SelectChangeEvent) => {
+  const handleChange = (event: SelectChangeEvent) => {
     const newLang = event.target.value as Lang;
-    
+
     i18n.changeLanguage(newLang);
-    
+
     dispatch(setLanguage(newLang));
   };
   return (
@@ -46,6 +50,7 @@ export default function LangToggle() {
         sx={{
           minWidth: 70,
           height: 32,
+          color: textColor,
           fontWeight: 600,
           display: "flex",
           alignItems: "center",

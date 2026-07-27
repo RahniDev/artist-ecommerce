@@ -201,8 +201,8 @@ const Navbar: React.FC<NavbarProps> = ({
         {isMobile && <Box sx={{ flexGrow: 1 }} />}
 
         {/* RIGHT */}
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2, minWidth: 120, justifyContent: "flex-end" }}>
-          <LangToggle />
+        <Box sx={{ display: "flex", alignItems: "center", gap: 2, minWidth: 120, justifyContent: "flex-end"}}>
+          <LangToggle textColor={textColor} />
           {user ? (
             <>
               <IconButton onMouseEnter={handleMouseEnter} sx={{ color: textColor }}>
