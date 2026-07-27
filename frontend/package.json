@@ -16,6 +16,7 @@
     "@mui/lab": "^7.0.1-beta.22",
     "@mui/material": "^7.3.5",
     "@reduxjs/toolkit": "^2.11.2",
+    "@vercel/analytics": "^2.0.1",
     "braintree-web-drop-in": "^1.46.0",
     "date-fns": "^4.4.0",
     "i18next": "^25.7.3",
