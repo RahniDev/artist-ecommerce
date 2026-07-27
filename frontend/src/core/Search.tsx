@@ -2,11 +2,11 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import type { RootState, AppDispatch } from "../redux/store";
 import {
-  fetchCategories,
   fetchSearchResults,
   setSearch,
   resetSearch,
 } from "../redux/slices/searchSlice";
+import { fetchCategories } from "../redux/slices/categorySlice";
 import SearchIcon from "@mui/icons-material/Search";
 import {
   Box,

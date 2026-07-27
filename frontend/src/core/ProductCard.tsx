@@ -52,17 +52,14 @@ Shipping
 Framing
 Certificates of authenticity
 International collectors
-Commissions (if you ever offer them)
 Contact
 
 The paintings themselves remain discoverable only through their collections.
 If you really want a page showing everything...
 
-I would call it Archive, not Collect.
+I would call it Archive.
 
 An archive is for browsing.
-
-Collect is about acquiring.
 
 next - change the product page to the off-white colour. make the image
 size large. 
