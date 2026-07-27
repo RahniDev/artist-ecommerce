@@ -5,6 +5,7 @@ import type { Category } from "../types";
 import type { RootState, AppDispatch } from "../redux/store";
 import { Box, Container, Typography, Divider, Card, CardActionArea } from "@mui/material";
 import { fetchCategories } from "../redux/slices/categorySlice";
+import Loader from "./Loader";
 
 const Collections = () => {
     const navigate = useNavigate();
@@ -42,7 +43,7 @@ const Collections = () => {
 
         navigate(`/collection/${category._id}`);
     };
-    console.log(collectionsCategory)
+    loaded && console.log(collectionsCategory)
 
     return (
         <Box
@@ -57,6 +58,7 @@ const Collections = () => {
             }}
         >
             <Container maxWidth="xl">
+
                 <Box
                     sx={{
                         textAlign: "center",
@@ -66,6 +68,7 @@ const Collections = () => {
                         },
                     }}
                 >
+                    <Loader loading={loading} />
                     <Typography
                         component="h1"
                         sx={{
