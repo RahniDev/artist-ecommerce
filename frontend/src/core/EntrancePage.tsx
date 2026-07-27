@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import hero from '../assets/hero.webp'
 import { Box, Typography } from '@mui/material'
-import { Analytics } from "@vercel/analytics/next"
+import { Analytics } from "@vercel/analytics/react"
 
 const EntrancePage = () => {
     return (
