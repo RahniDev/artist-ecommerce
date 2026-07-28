@@ -39,31 +39,7 @@ Archive = a page showing everything
 
 Put comma in the price.
 
-After it's added, the button could change to:
-
-Added to Collection
-
-Next on the collection page:
-
-┌─────────────────────────────┐
-
-        [ Painting ]
-
-The Quiet Between      View details
-
-└─────────────────────────────┘
-
-definitely wouldn't use a filled button.
-
-Buttons immediately say:
-
-Buy me.
-
-Instead, I'd make it look like a subtle text link.
-
-For example:
-
-The Quiet Between      View details →
+View work on the collection page:
 with a very subtle underline appearing only on hover.
 
 Title:
@@ -73,48 +49,8 @@ Instrument Serif
 Medium weight
 
 View details:
-
-Inter
-14px
-Regular
 Slightly lighter colour
-
-The title should naturally draw the eye first.
-
-Alignment
-
-I'd also keep the width of the text aligned with the painting.
-
-┌──────────────────────┐
-│                      │
-│      Painting        │
-│                      │
-└──────────────────────┘
-
-The Quiet Between      View details →
-
-Not centred underneath.
-
-The left/right alignment gives it a quiet, editorial feel.
-
-One thing I might even do
-
-Instead of "View details", consider:
-
-View work →
-View artwork →
-Open →
-
-I actually like View work → best for your site.
-
-It sounds less like inspecting product specifications and more like entering the artwork.
-
-So my preferred layout would be:
-
-The Quiet Between                    View work →
-
-It's subtle, balanced, and keeps the focus on the painting rather than on navigation. It also reinforces the feeling that you're moving from the gallery room into a dedicated space for that single work, rather than opening a product page in a typical online shop.
-                 */}
+The title should naturally draw the eye first.      */}
                 </Box>
                 <CardContent sx={{
                     width: "100%",
@@ -131,7 +67,7 @@ It's subtle, balanced, and keeps the focus on the painting rather than on naviga
                                 {product.nameEn}
                             </Typography>
                             {/* Directs to product page, not cart */}
-                            <Link to={`/product/${product._id}`} style={{ fontSize: "16px", marginTop: 1, color: textColor, marginRight: "2rem" }}>View details</Link>
+                            <Link to={`/product/${product._id}`} style={{ fontSize: "14px", marginTop: 1, color: textColor, marginRight: "0rem" }}>View work →</Link>
                         </Box>
                         <Box component={Link} to={`/products/${product._id}`}>
                             {product.nameEn !== product.name && (
@@ -151,4 +87,3 @@ It's subtle, balanced, and keeps the focus on the painting rather than on naviga
 };
 
 export default ProductCard;
-

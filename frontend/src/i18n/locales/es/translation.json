@@ -1,5 +1,6 @@
 {
   "add_to_cart": "Adquirir",
+  "added_to_collection": "Añadido a la colección",
   "similar_paintings": "Pinturas similares",
   "cart_items_count": "Tu carrito tiene {{count}} artículos",
   "empty_cart": "Tu carrito está vacío",
