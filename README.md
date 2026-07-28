@@ -8,8 +8,11 @@ Frontend: React 19, TypeScript, Redux & Redux Toolkit, Material UI
 
 Backend: Node, Express, TypeScript, MongoDB
 
-Using React Compiler for optimal performance
-
+Deployment: 
+- Vercel (Frontend Hosting)
+- Render (Backend Hosting)
+- Cloudflare R2 (Image Storage)
+- GitHub Actions (Continuous Integration)
 
 ### Features
 
@@ -18,16 +21,14 @@ Using React Compiler for optimal performance
 - Checkout (payment with Braintree)
 - Emails to user and admin after every order placed
 - Email to user when order is shipped
-- Search products
 - Multiple image upload 
 - Thumbnails and modal on product page
 - Related products section on product page
 - Product breadcrumbs
 - React multi-language translation using I18n
-- Translation of product names & descriptions using DeepL
+- Translation of product names using DeepL
 - Newsletter signup form - Mailchimp
-- Product images stored on Cloudfare
-- Shop page: filter paintings by colour, material, medium, size, framing and price
+- Custom background colours for each art collection like gallery walls
 
 ### Security
 - API Rate limiting
