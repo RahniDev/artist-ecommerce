@@ -23,6 +23,7 @@ import ShippingReturns from "./core/ShippingReturns";
 import PrivacyPolicy from "./core/PrivacyPolicy";
 import ResetPassword from "./user/ResetPassword";
 import Collections from "./core/Collections"
+import Collect from "./core/Collect";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -32,6 +33,7 @@ const AppRoutes: React.FC = () => {
         <Route path="/" element={<EntrancePage />} />
         <Route path="/collections" element={<Layout><Collections /></Layout>} />
         <Route path="/signin" element={<Signin />} />
+        <Route path="/collect" element={<Collect />} />
         <Route path="/forgotPassword" element={<ForgotPassword />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/product/:productId" element={<Product />} />

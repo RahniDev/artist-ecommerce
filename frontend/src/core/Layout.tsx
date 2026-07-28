@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { useDispatch, useSelector } from "react-redux";
 import type { AppDispatch, RootState } from "../redux/store";
-
+import { Box } from "@mui/material";
 import { fetchCategories } from "../redux/slices/categorySlice";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
@@ -14,8 +14,8 @@ const Layout: React.FC<LayoutProps> = ({
 }: LayoutProps) => {
   const dispatch = useDispatch<AppDispatch>();
 
-// The loaded check prevents every component using fetchCategories 
-// from causing another request
+  // The loaded check prevents every component using fetchCategories 
+  // from causing another request
   const loaded = useSelector(
     (state: RootState) => state.categories.loaded
   );
@@ -30,7 +30,11 @@ const Layout: React.FC<LayoutProps> = ({
     }
   }, [dispatch, loaded, loading]);
   return (
-    <>
+    <Box
+      sx={{
+        backgroundColor
+      }}
+    >
       <Navbar
         backgroundColor={backgroundColor}
         textColor={textColor}
@@ -50,7 +54,7 @@ const Layout: React.FC<LayoutProps> = ({
         backgroundColor={backgroundColor}
         textColor={textColor}
       />
-    </>
+    </Box>
   );
 };
 

@@ -1,5 +1,6 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addToCart } from "../redux/slices/cartSlice";
+import type { RootState } from "../redux/store";
 import { useNavigate } from "react-router-dom";
 import type { AddToCartButtonProps } from "../types";
 import { Button } from "@mui/material";
@@ -10,15 +11,22 @@ const AddToCartButton: React.FC<AddToCartButtonProps> = ({ product, redirect = t
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+    const cartItems = useSelector((state: RootState) => state.cart.items);
+    
+    const isInCart = cartItems.some(
+    (item) => item._id === product._id
+  );
+
   const handleAddToCart = () => {
-    dispatch(addToCart(product as unknown as Parameters<typeof addToCart>[0]));
+        if (!isInCart) {dispatch(addToCart(product as unknown as Parameters<typeof addToCart>[0]));
     if (redirect) navigate("/cart");
   };
+}
 
   return (
     <Button variant="outlined" onClick={handleAddToCart}>
-      {t("add_to_cart")}
-    </Button>
+      {isInCart ? t("added_to_cart") : t("add_to_cart")}
+          </Button>
   );
 };
 

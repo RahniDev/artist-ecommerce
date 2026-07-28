@@ -22,10 +22,10 @@ const Product: React.FC = () => {
   const [modalOpen, setModalOpen] = useState<boolean>(false);
   const [modalSrc, setModalSrc] = useState<string>("");
 
-const handleImageClick = (src: string) => {
-  setModalSrc(src);
-  setModalOpen(true);
-};
+  const handleImageClick = (src: string) => {
+    setModalSrc(src);
+    setModalOpen(true);
+  };
 
   const { product, related, loading, error } = useSelector(
     (state: RootState) => state.product
@@ -41,10 +41,10 @@ const handleImageClick = (src: string) => {
       dispatch(clearProduct());
     };
   }, [dispatch, productId, currentLanguage]);
-
+const pageBackground = "rgb(250, 250, 250)";
   return (
-    <Layout title="" description="">
-      <Grid container spacing={2} p={3}>
+    <Layout title="" description="" backgroundColor={pageBackground}>
+      <Grid container spacing={2} p={3} sx={{ backgroundColor: pageBackground }}>
         <Grid width="100%">
           <Loader loading={loading} />
           {error && <Typography color="error">{error}</Typography>}
@@ -61,8 +61,8 @@ const handleImageClick = (src: string) => {
                       item={product}
                       url="product"
                       sizes="(max-width: 900px) 100vw, 50vw"
-                      width={380}
-                      height={380}
+                      width={500}
+                      height={400}
                       showAll={true}
                       onImageClick={handleImageClick}
                     />
@@ -85,10 +85,11 @@ const handleImageClick = (src: string) => {
                     <Typography variant="body1" color="text.primary" fontStyle="italic">
                       {product.name}
                     </Typography>)}
-
                   <Typography variant="body2" color="text.secondary">
                     {product.category?.name ?? "Uncategorized"}
                   </Typography>
+                  <Typography variant="body2">{product.medium} on {product.material}</Typography>
+
 
                   <Typography sx={{ whiteSpace: "pre-wrap", my: 2 }} variant="body1" color="text.primary">
                     {product.size}
@@ -102,6 +103,7 @@ const handleImageClick = (src: string) => {
                         color="success.main"
                         fontWeight="bold"
                         mb="10px"
+                        mt="20px"
                       >
                         € {product.price}
                       </Typography>
@@ -109,7 +111,7 @@ const handleImageClick = (src: string) => {
                       <AddToCartButton
                         product={toCartItem(product)}
                         redirect={false}
-                        aria-label="Add to cart"
+                        aria-label="Collect"
                       />  </>)}
                 </Grid>
               </Grid>

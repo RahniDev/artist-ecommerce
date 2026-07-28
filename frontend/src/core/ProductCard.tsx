@@ -34,50 +34,10 @@ const ProductCard: React.FC<CardProps> = ({
                         showAll={false}
                     />
                     {/*
-
-Collect page answers questions
-For example:
-
-Collect
-
-Acquiring an original work
-
-A short introduction.
-
-Then sections such as:
-
-Availability
-Reserving a painting
-Shipping
-Framing
-Certificates of authenticity
-International collectors
-Contact
-
 The paintings themselves remain discoverable only through their collections.
-If you really want a page showing everything...
+Archive = a page showing everything
 
-I would call it Archive.
-
-An archive is for browsing.
-
-next - change the product page to the off-white colour. make the image
-size large. 
-Add Available above the price and put comma in the price.
-
-Presence Within
-
-Watercolour on paper
-
-76 × 56 cm
-
-2026
-
-Available
-
-€1,450
-
-[ Collect ]
+Put comma in the price.
 
 After it's added, the button could change to:
 
