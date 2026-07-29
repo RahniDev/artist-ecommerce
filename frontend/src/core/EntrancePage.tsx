@@ -1,9 +1,21 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import hero from '../assets/hero.webp'
 import { Box, Typography } from '@mui/material'
 import { Analytics } from "@vercel/analytics/react"
 
 const EntrancePage = () => {
+    const navigate = useNavigate();
+    const [fadeOut, setFadeOut] = useState(false);
+
+    const handleEnter = () => {
+        setFadeOut(true);
+
+        setTimeout(() => {
+            navigate("/collections");
+        }, 900);
+    };
+
     return (
         <>
             <Box sx={{
@@ -12,7 +24,10 @@ const EntrancePage = () => {
                 justifyContent: "center",
                 alignItems: "center",
                 margin: "auto",
-                height: "100vh"
+                height: "100vh",
+                opacity: fadeOut ? 0 : 1,
+                transition: "opacity 900ms ease-in-out",
+                bgcolor: "rgb(250,250,250)",
             }}>
                 <Analytics />
                 <Box
@@ -35,7 +50,7 @@ const EntrancePage = () => {
                     sx={{
                         mt: 3,
                         mb: 1,
-                        fontFamily: '"Instrument Serif", serif',
+                        fontFamily: "Instrument Serif, serif",
                         fontSize: {
                             xs: "2rem",
                             md: "2.3rem",
@@ -47,26 +62,19 @@ const EntrancePage = () => {
                     SAKARI
                 </Typography>
                 <Typography
-                    component={Link}
-                    to="/collections"
+                    onClick={handleEnter}
                     sx={{
                         mt: 0.5,
-                        p: 0,
-                        border: 0,
-                        background: "transparent",
-                        color: "#1f1f1f",
                         cursor: "pointer",
-                        fontFamily: '"Inter", sans-serif',
-                        fontSize: "0.9rem",
-                        fontWeight: 300,
-                        letterSpacing: "0.1em",
-                        textTransform: "uppercase",
-                        opacity: 0.8,
                         textDecoration: "none",
-                        transition: "opacity 200ms ease", "&:hover": {
-                            textDecoration: "underline"
+                        opacity: 0.8,
+                        "&:hover": {
+                            textDecoration: "underline",
                         },
-                    }}>Enter</Typography>
+                    }}
+                >
+                    Enter
+                </Typography>
             </Box>
         </>
     )

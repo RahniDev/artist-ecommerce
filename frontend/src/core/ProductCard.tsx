@@ -39,14 +39,8 @@ Archive = a page showing everything
 
 Put comma in the price.
 
-View work on the collection page:
+"View work":
 with a very subtle underline appearing only on hover.
-
-Title:
-
-Instrument Serif
-18–22px
-Medium weight
 
 View details:
 Slightly lighter colour
@@ -62,7 +56,9 @@ The title should naturally draw the eye first.      */}
                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                             <Typography
                                 variant="h2"
-                                fontSize="19px"
+                                fontSize="20px"
+                                fontWeight="400"
+                                fontFamily="Instrument Serif, serif"
                                 color={textColor}>
                                 {product.nameEn}
                             </Typography>
