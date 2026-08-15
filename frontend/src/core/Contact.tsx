@@ -56,12 +56,12 @@ const Contact: React.FC = () => {
         success: true,
         error: null,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setForm((prev: ContactFormState) => ({
         ...prev,
         loading: false,
         success: false,
-        error: err.message || "Failed to send message",
+        error: err instanceof Error ? err.message : "Failed to send message",
       }));
     }
   };

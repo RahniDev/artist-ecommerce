@@ -9,7 +9,7 @@ import braintree from "braintree-web-drop-in";
 import Loader from "./Loader";
 import AddressForm from "./AddressForm";
 import { MuiTelInput } from 'mui-tel-input';
-import type { Address, CheckoutState, CartItem } from "../types";
+import type { Address, CheckoutState, CartItem, SelectedShipping } from "../types";
 import ShippingRates from "./ShippingRates";
 
 interface CheckoutProps {
@@ -19,7 +19,7 @@ interface CheckoutProps {
 const Checkout: React.FC<CheckoutProps> = ({ onSuccess }) => {
   const dispatch = useDispatch();
   const products = useSelector((state: RootState) => state.cart.items);
-  const [selectedShipping, setSelectedShipping] = useState<any>(null);
+  const [selectedShipping, setSelectedShipping] = useState<SelectedShipping | null>(null);
 
   const [data, setData] = useState<CheckoutState>({
     loading: false,
@@ -171,7 +171,7 @@ const Checkout: React.FC<CheckoutProps> = ({ onSuccess }) => {
       setData(prev => ({ ...prev, loading: false }));
     }
   };
-
+console.log("Checkout data:", selectedShipping);
   return (
     <Box>
       <h2>Total: €{getTotal()}</h2>

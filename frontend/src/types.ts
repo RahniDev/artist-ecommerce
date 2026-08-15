@@ -161,6 +161,17 @@ export interface CreateOrderInput {
   user: string | null;
 }
 
+export interface SelectedShipping {
+  id: string;
+  type: string;
+  carrier: string;
+  service: string;
+  rate: string;
+  currency: string;
+  insuranceValue: string;
+  deliveryEstimate: string;
+}
+
 export interface ApiResponse<T = any> {
   data?: T;
   error?: string;

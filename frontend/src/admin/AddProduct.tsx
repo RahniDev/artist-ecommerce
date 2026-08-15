@@ -1,6 +1,6 @@
 import {
   useEffect, useMemo, useRef, useState,
-  type ChangeEvent, type FormEvent
+  type ChangeEvent
 } from "react";
 import {
   Alert,
@@ -44,9 +44,10 @@ const AddProduct: React.FC = () => {
   const [imgPreviews, setImgPreviews] = useState<string[]>([]);
   const [parentCategory, setParentCategory] = useState("");
   const [selectedSubcategory, setSelectedSubcategory] = useState("");
+  const [titleType, setTitleType] = useState<"untitled" | "custom">("untitled");
 
   const [values, setValues] = useState<AddProductValues>({
-    name: "",
+    name: "Untitled",
     price: "",
     weight: "",
     size: "",
@@ -247,7 +248,7 @@ const AddProduct: React.FC = () => {
     imgPreviews.forEach((preview) => {
       URL.revokeObjectURL(preview);
     });
-
+    setTitleType("untitled");
     setParentCategory("");
     setSelectedSubcategory("");
     setImgPreviews([]);
@@ -255,7 +256,7 @@ const AddProduct: React.FC = () => {
 
     setValues((previous) => ({
       ...previous,
-      name: "",
+      name: "Untitled",
       price: "",
       size: "",
       category: "",
@@ -423,13 +424,48 @@ const AddProduct: React.FC = () => {
               ))}
             </Box>
 
-            <TextField
-              label="Title"
-              value={name}
-              onChange={handleInputChange("name")}
-              required
-              fullWidth
-            />
+            <FormControl fullWidth>
+              <InputLabel>Title</InputLabel>
+
+              <Select
+                value={titleType}
+                label="Title"
+                onChange={(event) => {
+                  const value = event.target.value as "untitled" | "custom";
+
+                  setTitleType(value);
+
+                  if (value === "untitled") {
+                    formData.current?.set("name", "Untitled");
+
+                    setValues((previous) => ({
+                      ...previous,
+                      name: "Untitled",
+                    }));
+                  } else {
+                    formData.current?.set("name", "");
+
+                    setValues((previous) => ({
+                      ...previous,
+                      name: "",
+                    }));
+                  }
+                }}
+              >
+                <MenuItem value="untitled">Untitled</MenuItem>
+                <MenuItem value="custom">Custom title</MenuItem>
+              </Select>
+            </FormControl>
+
+            {titleType === "custom" && (
+              <TextField
+                label="Painting title"
+                value={name}
+                onChange={handleInputChange("name")}
+                required
+                fullWidth
+              />
+            )}
 
             <TextField
               label="Price"

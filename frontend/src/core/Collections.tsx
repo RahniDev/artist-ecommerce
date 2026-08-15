@@ -6,10 +6,12 @@ import type { RootState, AppDispatch } from "../redux/store";
 import { Box, Container, Typography, Divider, Card, CardActionArea } from "@mui/material";
 import { fetchCategories } from "../redux/slices/categorySlice";
 import Loader from "./Loader";
+import { useTranslation } from "react-i18next";
 
 const Collections = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch<AppDispatch>();
+    const { t } = useTranslation();
 
     const { items: categories, loaded, loading } = useSelector(
         (state: RootState) => state.categories
@@ -85,7 +87,7 @@ const Collections = () => {
                             mb: 2,
                         }}
                     >
-                        Explore the Work
+                        {t('explore_work')}
                     </Typography>
 
                     <Typography
@@ -100,7 +102,7 @@ const Collections = () => {
                             color: "text.secondary",
                         }}
                     >
-                        Enter each body of work as a distinct gallery space.
+                        {t('enter_each_collection')}
                     </Typography>
                 </Box>
 

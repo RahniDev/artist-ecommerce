@@ -95,13 +95,22 @@ export const listSearchedProducts = async (
   params: { search?: string; category?: string }
 ): Promise<ApiResponse<IProduct[]>> => {
   try {
-    const query = new URLSearchParams(params as any).toString();
+    const searchParams = new URLSearchParams();
+    if (params.search) {
+      searchParams.set("search", params.search);
+    }
+
+    if (params.category) {
+      searchParams.set("category", params.category);
+    }
+
+    const query = searchParams.toString();
     const baseUrl = `${API}/products/search?${query}`;
     const url = addLanguageParam(baseUrl);
     const res = await fetch(url);
     const data = await res.json();
     return { data: Array.isArray(data) ? data : [] };
-  } catch (err) {
+  } catch {
     return { error: "Search failed" };
   }
 };
@@ -137,9 +146,11 @@ export const createOrder = async ({
     }
     return await res.json();
   }
-  catch (err: any) {
-    return { error: err.message };
-  }
+  catch (err: unknown) {
+  return {
+    error: err instanceof Error ? err.message : "An unknown error occurred",
+  };
+}
 };
 
 export async function processPayment(
@@ -184,7 +195,7 @@ export async function getBraintreeClientToken(
 
     const data = await res.json();
     return { clientToken: data.clientToken };
-  } catch (err: any) {
-    return { error: err.message || "Failed to get Braintree token" };
+  } catch (err: unknown) {
+    return { error: err instanceof Error ? err.message : "Failed to get Braintree token" };
   }
 }
