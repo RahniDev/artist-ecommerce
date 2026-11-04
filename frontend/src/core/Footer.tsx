@@ -27,6 +27,7 @@ const Footer: React.FC<FooterProps> = ({
             backgroundColor,
             color: textColor,
             transition: "background-color 0.3s ease",
+            mx: "20px"
         }}>
             <Grid container spacing={4} alignItems="flex-start">
 

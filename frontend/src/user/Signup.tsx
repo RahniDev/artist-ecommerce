@@ -1,5 +1,5 @@
 import { useState } from "react";
-import type { ChangeEvent, FormEvent } from "react";
+import type { ChangeEvent, SubmitEvent } from "react";
 import { Link as RouterLink } from "react-router-dom";
 import Layout from "../core/Layout";
 import { signup } from "../auth";
@@ -37,7 +37,7 @@ const Signup: React.FC = () => {
                 setValues({ ...values, error: "", [field]: event.target.value });
             };
 
-    const handleSubmit = async (event: FormEvent) => {
+    const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
         event.preventDefault();
         setValues({ ...values, error: "" });
 

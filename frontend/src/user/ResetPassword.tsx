@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type SubmitEvent } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
     Box,
@@ -20,7 +20,7 @@ const ResetPassword: React.FC = () => {
     const [success, setSuccess] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
         setError("");
 

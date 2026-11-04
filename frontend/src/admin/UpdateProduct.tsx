@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import type { ChangeEvent, FormEvent } from "react";
+import type { ChangeEvent, SubmitEvent } from "react";
 import { useParams, useNavigate, Navigate } from "react-router-dom";
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
@@ -239,7 +239,7 @@ const UpdateProduct = () => {
         setPhotosPreview(files.map((file) => URL.createObjectURL(file)));
     };
 
-    const clickSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    const clickSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
         event.preventDefault();
         if (!productId || !formData.current) return;
 

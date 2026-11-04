@@ -1,4 +1,4 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useState, type ChangeEvent, type SubmitEvent } from "react";
 import { Link as RouterLink } from 'react-router-dom';
 import Layout from "../core/Layout";
 import { isAuthenticated } from "../auth";
@@ -51,7 +51,7 @@ const AddCategory = () => {
     setParent(e.target.value);
   };
 
-  const clickSubmit = async (e: FormEvent<HTMLFormElement>) => {
+  const clickSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setLoading(true);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type SubmitEvent } from "react";
 import {
     Box,
     Button,
@@ -20,7 +20,7 @@ const ForgotPassword: React.FC = () => {
         setEmail(e.target.value);
     };
 
-    const sendEmail = async (e: React.FormEvent<HTMLFormElement>) => {
+    const sendEmail = async (e: SubmitEvent<HTMLFormElement>) => {
         e.preventDefault();
 
         if (!email) {

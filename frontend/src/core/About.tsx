@@ -19,7 +19,7 @@ const About = () => {
           color: "#555",
         }}
       >
-        <Box sx={{ display: "flex", width: "30%", justifyContent: { xs: "center", md: "flex-start" } }}>
+        <Box sx={{ display: "flex", width: "30%", justifyContent: "center" }}>
           <Avatar
             src={profileImg}
             alt="Artist Portrait"

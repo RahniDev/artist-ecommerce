@@ -1,6 +1,7 @@
 import {
   useEffect, useMemo, useRef, useState,
-  type ChangeEvent
+  type ChangeEvent,
+  type SubmitEvent
 } from "react";
 import {
   Alert,
@@ -273,7 +274,7 @@ const AddProduct: React.FC = () => {
   };
 
   const clickSubmit = async (
-    event: FormEvent<HTMLFormElement>
+    event: SubmitEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
 
@@ -358,7 +359,7 @@ const AddProduct: React.FC = () => {
         }, ready to add a new painting?`}
     >
       <Container maxWidth="md">
-        <Box sx={{ mt: 4 }}>
+        <Box sx={{ mt: 4}}>
           <Loader loading={loading} />
 
           {createdProduct && (
@@ -382,6 +383,7 @@ const AddProduct: React.FC = () => {
               display: "flex",
               flexDirection: "column",
               gap: 2,
+              mb: 8
             }}
           >
             <Typography variant="h6">

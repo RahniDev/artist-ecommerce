@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react'
 import { API } from '../config';
-import { Box, Button, TextField, Alert } from "@mui/material";
+import { Box, Button, TextField, Alert, Typography } from "@mui/material";
 import type { ContactFormState } from '../types';
 import Layout from './Layout';
 
@@ -71,11 +71,13 @@ const Contact: React.FC = () => {
       <Box
         component="form"
         onSubmit={handleSubmit}
-        sx={{ display: "flex", flexDirection: "column", gap: 2, maxWidth: 500, mx: "auto"}}
+        sx={{ display: "flex", flexDirection: "column", gap: 2, maxWidth: 500, minHeight: 500, justifyContent: "center", m: "auto" }}
       >
         {form.success && <Alert severity="success">Message sent successfully!</Alert>}
         {form.success === false && <Alert severity="error">{form.error}</Alert>}
-
+        <Typography variant="h1" component="h1" padding='40px' fontSize='32px' gutterBottom>
+          Contact
+        </Typography>
         <TextField
           label="Name"
           value={form.name}

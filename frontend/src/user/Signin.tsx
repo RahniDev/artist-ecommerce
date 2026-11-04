@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import type { ChangeEvent, FormEvent } from "react";
+import type { ChangeEvent, SubmitEvent } from "react";
 import Layout from "../core/Layout";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { signin, authenticate, isAuthenticated } from "../auth";
@@ -50,7 +50,7 @@ const Signin: React.FC = () => {
                 }));
             };
 
-    const handleSubmit = async (event: FormEvent) => {
+    const handleSubmit = async (event: SubmitEvent<HTMLFormElement>) => {
         event.preventDefault();
         setErrors({
             email: "",
