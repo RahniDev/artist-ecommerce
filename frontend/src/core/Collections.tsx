@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import formImage from "../assets/collections/alchemical-explosion.webp";
 import untitledImage from "../assets/collections/untitled34.webp";
 import collectionsImage from "../assets/collections/murkiness.webp";
+import { categoryColors, categoryTextColors } from "../constants/categoryColors";
 
 const Collections = () => {
     const navigate = useNavigate();
@@ -208,7 +209,6 @@ const MainCategoryCard = ({
     const categoryImages: Record<string, string> = {
         form: formImage,
         untitled: untitledImage,
-        // archive: archiveImage,
         collections: collectionsImage,
     };
     return (
@@ -293,7 +293,7 @@ const SubcategoryCard = ({
         <Card
             elevation={0}
             sx={{
-                bgcolor: "#fff",
+                bgcolor: categoryColors[subcategory.name] || "#fff",
                 borderRadius: 0,
                 border: "1px solid",
                 borderColor: "rgba(40, 37, 37, 0.12)",
@@ -325,7 +325,7 @@ const SubcategoryCard = ({
                             md: "2rem",
                         },
                         fontWeight: 400,
-                        color: "#282525",
+                        color: categoryTextColors[subcategory.name] || "#fff",
                     }}
                 >
                     {subcategory.name}
