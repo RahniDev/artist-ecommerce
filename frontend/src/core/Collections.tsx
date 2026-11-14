@@ -7,6 +7,9 @@ import { Box, Container, Typography, Divider, Card, CardActionArea } from "@mui/
 import { fetchCategories } from "../redux/slices/categorySlice";
 import Loader from "./Loader";
 import { useTranslation } from "react-i18next";
+import formImage from "../assets/collections/alchemical-explosion.webp";
+import untitledImage from "../assets/collections/untitled34.webp";
+import collectionsImage from "../assets/collections/murkiness.webp";
 
 const Collections = () => {
     const navigate = useNavigate();
@@ -132,6 +135,7 @@ const Collections = () => {
                     ))}
                 </Box>
 
+
                 {collectionsCategory?.subcategories &&
                     collectionsCategory.subcategories.length > 0 && (
                         <Box>
@@ -201,6 +205,12 @@ const MainCategoryCard = ({
     category,
     onClick,
 }: MainCategoryCardProps) => {
+    const categoryImages: Record<string, string> = {
+        form: formImage,
+        untitled: untitledImage,
+        // archive: archiveImage,
+        collections: collectionsImage,
+    };
     return (
         <Card
             elevation={0}
@@ -209,6 +219,8 @@ const MainCategoryCard = ({
                 border: "1px solid",
                 borderColor: "rgba(40, 37, 37, 0.18)",
                 borderRadius: 0,
+                backgroundImage: `url(${categoryImages[category.name.trim().toLowerCase()]})`,
+                backgroundSize: "cover",
                 transition: "transform 250ms ease, box-shadow 250ms ease",
                 "&:hover": {
                     transform: "translateY(-6px)",
@@ -243,7 +255,7 @@ const MainCategoryCard = ({
                             },
                             fontWeight: 400,
                             lineHeight: 1,
-                            color: "#282525",
+                            color: "#fff",
                             mb: 1.5,
                         }}
                     >
@@ -255,7 +267,7 @@ const MainCategoryCard = ({
                             fontSize: "0.75rem",
                             textTransform: "uppercase",
                             letterSpacing: "0.16em",
-                            color: "text.secondary",
+                            color: "#fff",
                         }}
                     >
                         {category.name.trim().toLowerCase() === "collections"
